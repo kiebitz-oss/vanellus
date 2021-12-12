@@ -14,23 +14,32 @@ import {
     randomBytes,
 } from "../crypto"
 
+import { KeyPair, ECDHData, SignedData } from "../crypto/interfaces"
+import Settings from "../settings"
+
 import JSONRPCBackend from "./jsonrpc"
 
 // The appointments backend
 export default class AppointmentsBackend extends JSONRPCBackend {
-    constructor(settings) {
+    constructor(settings: Settings) {
         super(settings, "appointmentsApi")
-        this.settings = settings
     }
 
     async confirmProvider(
-        { key, encryptedProviderData, publicProviderData, signedKeyData },
-        keyPair
+        {
+            encryptedProviderData,
+            publicProviderData,
+            signedKeyData,
+        }: {
+            encryptedProviderData: ECDHData
+            publicProviderData: SignedData
+            signedKeyData: SignedData
+        },
+        keyPair: KeyPair
     ) {
         return await this.call(
             "confirmProvider",
             {
-                key,
                 encryptedProviderData,
                 publicProviderData,
                 signedKeyData,
@@ -41,13 +50,29 @@ export default class AppointmentsBackend extends JSONRPCBackend {
 
     // public endpoints
 
-    async getAppointmentsByZipCode({ zipCode }) {
+    async getAppointmentsByZipCode({ zipCode }: { zipCode: string }) {
         return await this.call("getAppointmentsByZipCode", {
             zipCode,
         })
     }
 
-    async getStats({ id, metric, type, n, filter, from, to }) {
+    async getStats({
+        id,
+        metric,
+        type,
+        n,
+        filter,
+        from,
+        to,
+    }: {
+        id?: string
+        metric?: string
+        type: string
+        n?: number
+        filter?: { [Key: string]: any }
+        from?: string
+        to?: string
+    }) {
         return await this.call("getStats", {
             id,
             metric,
@@ -64,36 +89,16 @@ export default class AppointmentsBackend extends JSONRPCBackend {
         return await this.call("getKeys", {})
     }
 
-    // data endpoints
-
-    async deleteData({ id }, keyPair) {
-        return await this.call("deleteData", { id }, keyPair)
-    }
-
-    async getData({ id }, keyPair) {
-        return await this.call("getData", { id }, keyPair)
-    }
-
-    async bulkGetData({ ids }, keyPair) {
-        return await this.call("bulkGetData", { ids }, keyPair)
-    }
-
-    async bulkStoreData({ dataList }, keyPair) {
-        return await this.call("bulkStoreData", { dataList }, keyPair)
-    }
-
-    // store provider data for verification
-    async storeData({ id, data, permissions, grant }, keyPair) {
-        return await this.call(
-            "storeData",
-            { id, data, permissions, grant },
-            keyPair
-        )
-    }
-
     // user endpoints
 
-    async cancelAppointment({ providerID, id, signedTokenData }, keyPair) {
+    async cancelAppointment(
+        {
+            providerID,
+            id,
+            signedTokenData,
+        }: { providerID: string; id: string; signedTokenData: SignedData },
+        keyPair: KeyPair
+    ) {
         return await this.call(
             "cancelAppointment",
             { providerID, id, signedTokenData },
@@ -102,8 +107,18 @@ export default class AppointmentsBackend extends JSONRPCBackend {
     }
 
     async bookAppointment(
-        { providerID, id, encryptedData, signedTokenData },
-        keyPair
+        {
+            providerID,
+            id,
+            encryptedData,
+            signedTokenData,
+        }: {
+            providerID: string
+            id: string
+            encryptedData: ECDHData
+            signedTokenData: SignedData
+        },
+        keyPair: KeyPair
     ) {
         return await this.call(
             "bookAppointment",
@@ -120,6 +135,13 @@ export default class AppointmentsBackend extends JSONRPCBackend {
         code,
         queueData,
         signedTokenData,
+    }: {
+        hash: string
+        encryptedData: ECDHData
+        publicKey: string
+        code?: string
+        queueData?: { [Key: string]: any }
+        signedTokenData: SignedData
     }) {
         return await this.call("getToken", {
             hash: hash,
@@ -134,25 +156,31 @@ export default class AppointmentsBackend extends JSONRPCBackend {
     // provider-only endpoints
 
     // get all published appointments from the backend
-    async getAppointments({}, keyPair) {
+    async getAppointments({}, keyPair: KeyPair) {
         return await this.call("getProviderAppointments", {}, keyPair)
     }
 
     // publish all local appointments to the backend
-    async publishAppointments({ offers }, keyPair) {
+    async publishAppointments(
+        { offers }: { offers: SignedData[] },
+        keyPair: KeyPair
+    ) {
         return await this.call("publishAppointments", { offers }, keyPair)
     }
 
-    async cancelBooking({ id }, keyPair) {
+    async cancelBooking({ id }: { id: string }, keyPair: KeyPair) {
         return await this.call("cancelBooking", { id }, keyPair)
     }
 
     // get n tokens from the given queue IDs
-    async getBookedAppointments({}, keyPair) {
+    async getBookedAppointments({}, keyPair: KeyPair) {
         return await this.call("getBookedAppointments", {}, keyPair)
     }
 
-    async storeProviderData({ encryptedData, code }, keyPair) {
+    async storeProviderData(
+        { encryptedData, code }: { encryptedData: ECDHData; code?: string },
+        keyPair: KeyPair
+    ) {
         return await this.call(
             "storeProviderData",
             { encryptedData, code },
@@ -160,17 +188,23 @@ export default class AppointmentsBackend extends JSONRPCBackend {
         )
     }
 
-    async checkProviderData({}, keyPair) {
+    async checkProviderData({}, keyPair: KeyPair) {
         return await this.call("checkProviderData", {}, keyPair)
     }
 
     // mediator-only endpoint
 
-    async getPendingProviderData({ limit }, keyPair) {
+    async getPendingProviderData(
+        { limit }: { limit: number },
+        keyPair: KeyPair
+    ) {
         return await this.call("getPendingProviderData", { limit }, keyPair)
     }
 
-    async getVerifiedProviderData({ limit }, keyPair) {
+    async getVerifiedProviderData(
+        { limit }: { limit: number },
+        keyPair: KeyPair
+    ) {
         return await this.call("getVerifiedProviderData", { limit }, keyPair)
     }
 }

@@ -2,7 +2,12 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export async function appointments(state, keyStore, settings, data) {
+export async function appointments(
+    state: any,
+    keyStore: any,
+    settings: any,
+    data: string
+) {
     const backend = settings.get("backend")
 
     try {

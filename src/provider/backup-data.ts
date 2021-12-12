@@ -4,14 +4,19 @@
 
 import { aesEncrypt, deriveSecrets } from "../crypto"
 import { base322buf, b642buf } from "../helpers/conversion"
-import { markAsLoading } from "helpers/actions"
 import { Provider } from "./"
 
 export const localKeys = ["keyPairs"]
 export const cloudKeys = ["data", "data::verified", "data::encryptionKeyPair"]
 
+interface BackupData {
+    createdAt: string
+    version: string
+    [Key: string]: any
+}
+
 // make sure the signing and encryption key pairs exist
-export async function backupData(this: Provider, lockName) {
+export async function backupData(this: Provider, lockName: string) {
     if (lockName === undefined) lockName = "backupData"
 
     try {
@@ -22,7 +27,10 @@ export async function backupData(this: Provider, lockName) {
     }
 
     try {
-        const data = {}
+        const data: BackupData = {
+            version: "0.2",
+            createdAt: new Date().toISOString(),
+        }
 
         if (this.loggedOut) return
 
@@ -30,7 +38,10 @@ export async function backupData(this: Provider, lockName) {
             data[key] = this.backend.local.get(`${key}`)
         }
 
-        const cloudData = {}
+        const cloudData: BackupData = {
+            version: "0.2",
+            createdAt: new Date().toISOString(),
+        }
         for (const key of cloudKeys) {
             const v = this.backend.local.get(`${key}`)
             cloudData[key] = v
@@ -40,32 +51,31 @@ export async function backupData(this: Provider, lockName) {
         }
 
         const referenceData = { local: { ...data }, cloud: { ...cloudData } }
-        if (state !== undefined && state.referenceData != undefined) {
+        if (this.referenceData !== null) {
             if (
-                JSON.stringify(state.referenceData) ===
+                JSON.stringify(this.referenceData) ===
                 JSON.stringify(referenceData)
             ) {
-                return state
+                return {
+                    status: "succeeded",
+                    ...this.referenceData,
+                }
             }
         }
-
-        cloudData.version = "0.2"
-        cloudData.createdAt = new Date().toISOString()
-
-        data.version = "0.2"
-        data.createdAt = new Date().toISOString()
 
         // locally stored data
         const encryptedData = await aesEncrypt(
             JSON.stringify(data),
-            base322buf(secret)
+            base322buf(this.secret)
         )
 
-        const [id, key] = await deriveSecrets(
-            b642buf(this.keyPairs.sync),
+        const idAndKey = await deriveSecrets(
+            b642buf(this.keyPairs!.sync),
             32,
             2
         )
+
+        const [id, key] = idAndKey!
 
         // cloud stored data
         const encryptedCloudData = await aesEncrypt(

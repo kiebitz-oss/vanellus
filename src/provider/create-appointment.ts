@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { randomBytes } from "../crypto"
-import { Provider } from "./"
+import { Provider, Appointment } from "./"
 
 export function createSlot() {
     return {
@@ -14,7 +14,10 @@ export function createSlot() {
     }
 }
 
-export async function createAppointment(this: Provider, appointment) {
+export async function createAppointment(
+    this: Provider,
+    appointment: Appointment
+) {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("createAppointment")
@@ -24,17 +27,7 @@ export async function createAppointment(this: Provider, appointment) {
 
     try {
         const openAppointments = this.openAppointments
-        const slotData = []
-        for (let i = 0; i < appointment.slots; i++) {
-            slotData.push(createSlot())
-        }
-        openAppointments.push({
-            slotData: slotData,
-            bookings: [],
-            modified: true,
-            id: randomBytes(32),
-            ...appointment,
-        })
+        openAppointments.push(appointment)
         this.openAppointments = openAppointments
         return {
             status: "loaded",

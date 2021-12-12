@@ -10,7 +10,7 @@ import {
     hashString,
 } from "../crypto"
 
-async function hashContactData(data) {
+async function hashContactData(data: any) {
     const hashData = {
         name: data.name,
         grantSeed: data.grantSeed,
@@ -23,11 +23,11 @@ async function hashContactData(data) {
 }
 
 export async function getToken(
-    state,
-    keyStore,
-    settings,
-    contactData,
-    userSecret
+    state: any,
+    keyStore: any,
+    settings: any,
+    contactData: any,
+    userSecret: any
 ) {
     const backend = settings.get("backend")
 
@@ -53,14 +53,14 @@ export async function getToken(
                 code: userSecret.slice(0, 4),
                 version: "0.3",
                 createdAt: new Date().toISOString(),
-                publicKey: signingKeyPair.publicKey, // the signing key to control the ID
-                encryptionPublicKey: encryptionKeyPair.publicKey,
+                publicKey: signingKeyPair!.publicKey, // the signing key to control the ID
+                encryptionPublicKey: encryptionKeyPair!.publicKey,
                 id: randomBytes(32), // the ID where we want to receive data
             }
 
             const signedToken = await backend.appointments.getToken({
                 hash: dataHash,
-                publicKey: signingKeyPair.publicKey,
+                publicKey: signingKeyPair!.publicKey,
                 code: contactData.code,
             })
 

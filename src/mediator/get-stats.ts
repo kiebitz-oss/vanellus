@@ -2,13 +2,14 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { markAsLoading } from "helpers/actions"
-
 // make sure the signing and encryption key pairs exist
-export async function getStats(state, keyStore, settings, params) {
+export async function getStats(
+    state: any,
+    keyStore: any,
+    settings: any,
+    params: any
+) {
     const backend = settings.get("backend")
-    markAsLoading(state, keyStore)
-
     try {
         const stats = await backend.appointments.getStats(params)
         return {
@@ -16,7 +17,7 @@ export async function getStats(state, keyStore, settings, params) {
             data: stats,
         }
     } catch (e) {
-        console.err(e)
+        console.error(e)
         return {
             status: "failed",
             error: e,

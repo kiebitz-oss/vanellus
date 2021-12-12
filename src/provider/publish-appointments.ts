@@ -3,10 +3,11 @@
 // README.md contains license information.
 
 import { randomBytes, sign } from "../crypto"
+import { SignedData } from "../crypto/interfaces"
 import { Provider } from "./"
 
 export async function publishAppointments(this: Provider) {
-    const properties = this.settings.get("appointmentProperties")
+    if (this.keyPairs === null) return
 
     try {
         // we lock the local backend to make sure we don't have any data races
@@ -21,9 +22,9 @@ export async function publishAppointments(this: Provider) {
             []
         )
 
-        const signedAppointments = []
+        const signedAppointments: SignedData[] = []
         const relevantAppointments = openAppointments.filter(
-            (oa) =>
+            (oa: any) =>
                 new Date(oa.timestamp) >
                     new Date(new Date().getTime() - 1000 * 60 * 60 * 4) &&
                 oa.modified
@@ -31,18 +32,21 @@ export async function publishAppointments(this: Provider) {
 
         for (const appointment of relevantAppointments) {
             try {
+                const properties: { [Key: string]: any } = {}
                 const convertedAppointment = {
                     id: appointment.id,
                     duration: appointment.duration,
                     timestamp: appointment.timestamp,
-                    publicKey: keyPairs.encryption.publicKey,
-                    properties: {},
-                    slotData: appointment.slotData.map((sl) => ({
+                    publicKey: this.keyPairs.encryption.publicKey,
+                    properties: properties,
+                    slotData: appointment.slotData.map((sl: any) => ({
                         id: sl.id,
                     })),
                 }
 
-                for (const [k, v] of Object.entries(properties)) {
+                for (const [k, v] of Object.entries(
+                    this.settings.appointmentProperties
+                )) {
                     for (const [kk] of Object.entries(v.values)) {
                         if (appointment[kk] === true)
                             convertedAppointment.properties[k] = kk
@@ -51,10 +55,12 @@ export async function publishAppointments(this: Provider) {
                 // we sign each appointment individually so that the client can
                 // verify that they've been posted by a valid provider
                 const signedAppointment = await sign(
-                    keyPairs.signing.privateKey,
+                    this.keyPairs.signing.privateKey,
                     JSON.stringify(convertedAppointment),
-                    keyPairs.signing.publicKey
+                    this.keyPairs.signing.publicKey
                 )
+
+                if (signedAppointment === null) throw "null"
 
                 signedAppointments.push(signedAppointment)
             } catch (e) {
@@ -73,7 +79,7 @@ export async function publishAppointments(this: Provider) {
             {
                 offers: signedAppointments,
             },
-            keyPairs.signing
+            this.keyPairs.signing
         )
 
         for (const appointment of relevantAppointments) {

@@ -3,10 +3,14 @@
 // README.md contains license information.
 
 import { generateECDHKeyPair, generateECDSAKeyPair } from "../crypto"
-import { markAsLoading } from "helpers/actions"
 
 // make sure the signing and encryption key pairs exist
-export async function keyPairs(state, keyStore, settings, data) {
+export async function keyPairs(
+    state: any,
+    keyStore: any,
+    settings: any,
+    data: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -17,8 +21,6 @@ export async function keyPairs(state, keyStore, settings, data) {
     }
 
     try {
-        markAsLoading(state, keyStore)
-
         if (data !== undefined) backend.local.set("mediator::keyPairs", data)
 
         const mediatorKeyPairs = backend.local.get("mediator::keyPairs")

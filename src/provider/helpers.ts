@@ -2,18 +2,18 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export function enrichAppointments(appointments) {
+export function enrichAppointments(appointments: any) {
     const sortedAppointments = appointments
         .sort(
-            (a, b) =>
+            (a: any, b: any) =>
                 new Date(a.timestamp).getTime() -
                 new Date(b.timestamp).getTime()
         )
-        .map((oa) => ({ ...oa }))
-    let activeAppointments = []
+        .map((oa: any) => ({ ...oa }))
+    let activeAppointments: any[] = []
 
     for (const [i, oa] of sortedAppointments
-        .filter((app) => app.slots > 0)
+        .filter((app: any) => app.slotData.length > 0)
         .entries()) {
         oa.maxOverlap = 0
         oa.index = i

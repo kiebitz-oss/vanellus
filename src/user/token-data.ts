@@ -2,7 +2,7 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export async function tokenData(state, keyStore, settings) {
+export async function tokenData(state: any, keyStore: any, settings: any) {
     const backend = settings.get("backend")
 
     try {

@@ -6,8 +6,8 @@ import { ecdhEncrypt, generateECDHKeyPair, sign } from "../crypto"
 import { Provider } from "./"
 
 // store the provider data for validation in the backend
-export async function submitProviderData(this: Provider, data, keys) {
-    const backend = settings.get("backend")
+export async function submitProviderData(this: Provider, data: any, keys: any) {
+    if (this.keyPairs === null) return
 
     try {
         // we lock the local backend to make sure we don't have any data races
@@ -43,7 +43,7 @@ export async function submitProviderData(this: Provider, data, keys) {
         try {
             const result = await this.backend.appointments.storeProviderData(
                 {
-                    encryptedData: encryptedData,
+                    encryptedData: encryptedData!,
                     code: data.data.code,
                 },
                 this.keyPairs.signing
@@ -65,4 +65,6 @@ export async function submitProviderData(this: Provider, data, keys) {
     }
 }
 
-submitProviderData.reset = (this: Provider) => ({ status: "initialized" })
+export function reset(this: Provider) {
+    return { status: "initialized" }
+}

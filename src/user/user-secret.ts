@@ -5,7 +5,12 @@
 import { randomBytes } from "../crypto"
 import { buf2base32, b642buf } from "../helpers/conversion"
 
-export async function userSecret(state, keyStore, settings, data) {
+export async function userSecret(
+    state: any,
+    keyStore: any,
+    settings: any,
+    data: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -31,7 +36,7 @@ export async function userSecret(state, keyStore, settings, data) {
     }
 }
 
-userSecret.init = async (keyStore, settings) => {
+userSecret.init = async (keyStore: any, settings: any) => {
     const backend = settings.get("backend")
 
     try {

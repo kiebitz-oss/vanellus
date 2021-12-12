@@ -4,7 +4,13 @@
 
 import { sign, ecdhDecrypt, ephemeralECDHEncrypt } from "../crypto"
 
-export async function confirmSingleProvider(providerData, keyPairs, backend) {
+import { KeyPairs } from "./"
+
+export async function confirmSingleProvider(
+    providerData: any,
+    keyPairs: KeyPairs,
+    backend: any
+) {
     const keyHashesData = {
         signing: providerData.publicKeys.signing,
         encryption: providerData.publicKeys.encryption,
@@ -56,15 +62,17 @@ export async function confirmSingleProvider(providerData, keyPairs, backend) {
         signedPublicData: signedPublicProviderData,
     }
 
-    // we encrypt the data with the public key supplied by the provider
-    const [encryptedProviderData, _] = await ephemeralECDHEncrypt(
+    const encryptedData = await ephemeralECDHEncrypt(
         JSON.stringify(fullData),
         providerData.entry.encryptedData.publicKey
     )
 
+    // we encrypt the data with the public key supplied by the provider
+    const [encryptedProviderData, _] = encryptedData!
+
     const signedEncryptedProviderData = await sign(
         keyPairs.signing.privateKey,
-        encryptedProviderData,
+        JSON.stringify(encryptedProviderData),
         keyPairs.signing.publicKey
     )
 
@@ -79,11 +87,11 @@ export async function confirmSingleProvider(providerData, keyPairs, backend) {
 }
 
 export async function confirmProvider(
-    state,
-    keyStore,
-    settings,
-    providerData,
-    keyPairs
+    state: any,
+    keyStore: any,
+    settings: any,
+    providerData: any,
+    keyPairs: any
 ) {
     const backend = settings.get("backend")
 

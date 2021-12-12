@@ -3,12 +3,11 @@
 // README.md contains license information.
 
 import { randomBytes, sign, verify, ecdhDecrypt } from "../crypto"
-import { formatDate, formatTime } from "helpers/time"
-import { Provider } from "./"
+import { formatDate, formatTime } from "../helpers/time"
+import { Provider, Appointment, Slot } from "./"
 
 export async function getAppointments(this: Provider) {
-    const backend = settings.get("backend")
-    const properties = settings.get("appointmentProperties")
+    if (this.keyPairs === null) return
 
     try {
         // we lock the local backend to make sure we don't have any data races
@@ -17,14 +16,14 @@ export async function getAppointments(this: Provider) {
         throw null // we throw a null exception (which won't affect the store state)
     }
 
-    const decryptBookings = async (bookings) => {
+    const decryptBookings = async (bookings: any) => {
+        if (this.keyPairs === null) return
         for (const booking of bookings) {
-            const dd = JSON.parse(
-                await ecdhDecrypt(
-                    booking.encryptedData,
-                    this.keyPairs.encryption.privateKey
-                )
+            const decryptedData = await ecdhDecrypt(
+                booking.encryptedData,
+                this.keyPairs.encryption.privateKey
             )
+            const dd = JSON.parse(decryptedData!)
             booking.data = dd
         }
         return bookings
@@ -38,7 +37,7 @@ export async function getAppointments(this: Provider) {
             this.keyPairs.signing
         )
 
-        const newAppointments = []
+        const newAppointments: Appointment[] = []
 
         for (const appointment of result) {
             const verified = await verify(
@@ -69,23 +68,22 @@ export async function getAppointments(this: Provider) {
 
                 // remove slots that do not exist in the backend
                 existingAppointment.slotData =
-                    existingAppointment.slotData.filter((sl) =>
-                        appData.slotData.some((slot) => slot.id === sl.id)
+                    existingAppointment.slotData.filter((sl: Slot) =>
+                        appData.slotData.some((slot: Slot) => slot.id === sl.id)
                     )
 
                 // add new slots from the backend
                 existingAppointment.slotData = [
                     ...existingAppointment.slotData,
                     ...appData.slotData.filter(
-                        (sl) =>
+                        (sl: any) =>
                             !existingAppointment.slotData.some(
-                                (slot) => slot.id === sl.id
+                                (slot: any) => slot.id === sl.id
                             )
                     ),
                 ]
 
                 // we update the slot data length
-                existingAppointment.slots = appData.slotData.length
                 existingAppointment.updatedAt = appData.updatedAt
                 existingAppointment.bookings = await decryptBookings(
                     appointment.bookings || []
@@ -93,18 +91,15 @@ export async function getAppointments(this: Provider) {
                 continue
             }
 
-            const newAppointment = {
+            const newAppointment: Appointment = {
                 updatedAt: appData.updatedAt,
                 timestamp: appData.timestamp,
                 duration: appData.duration,
                 slotData: appData.slotData,
+                properties: appData.properties,
                 bookings: await decryptBookings(appointment.bookings || []),
+                modified: false,
                 id: appData.id,
-                slots: appData.slotData.length,
-            }
-
-            for (const [k, v] of Object.entries(appData.properties)) {
-                newAppointment[v] = true
             }
 
             newAppointments.push(newAppointment)

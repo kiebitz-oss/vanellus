@@ -15,8 +15,18 @@ export const backupKeys = [
     "secret",
 ]
 
+interface Dictionary<T> {
+    [Key: string]: T
+}
+
 // make sure the signing and encryption key pairs exist
-export async function backupData(state, keyStore, settings, secret, lockName) {
+export async function backupData(
+    state: any,
+    keyStore: any,
+    settings: any,
+    secret: any,
+    lockName: string
+) {
     const backend = settings.get("backend")
 
     if (lockName === undefined) lockName = "backupData"
@@ -29,7 +39,7 @@ export async function backupData(state, keyStore, settings, secret, lockName) {
     }
 
     try {
-        const data = {}
+        const data: Dictionary<any> = {}
 
         for (const key of backupKeys) {
             data[key] = backend.local.get(`user::${key}`)
@@ -41,7 +51,9 @@ export async function backupData(state, keyStore, settings, secret, lockName) {
             createdAt: new Date().toISOString(),
         }
 
-        const [id, key] = await deriveSecrets(base322buf(secret), 32, 2)
+        const idAndKey = await deriveSecrets(base322buf(secret), 32, 2)
+
+        const [id, key] = idAndKey!
 
         const encryptedData = await aesEncrypt(
             JSON.stringify(fullData),

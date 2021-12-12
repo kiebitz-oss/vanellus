@@ -2,7 +2,12 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export async function queueData(state, keyStore, settings, data) {
+export async function queueData(
+    state: any,
+    keyStore: any,
+    settings: any,
+    data: any
+) {
     const backend = settings.get("backend")
 
     try {

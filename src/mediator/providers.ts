@@ -3,9 +3,13 @@
 // README.md contains license information.
 
 import { verify, ecdhDecrypt } from "../crypto"
-import { markAsLoading } from "helpers/actions"
 
-export async function verifiedProviders(state, keyStore, settings, keyPairs) {
+export async function verifiedProviders(
+    state: any,
+    keyStore: any,
+    settings: any,
+    keyPairs: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -16,8 +20,13 @@ export async function verifiedProviders(state, keyStore, settings, keyPairs) {
     }
 
     try {
-        return await providers(state, keyStore, settings, keyPairs, (...args) =>
-            backend.appointments.getVerifiedProviderData(...args)
+        return await providers(
+            state,
+            keyStore,
+            settings,
+            keyPairs,
+            (...args: any[]) =>
+                backend.appointments.getVerifiedProviderData(...args)
         )
     } finally {
         backend.local.unlock("verifiedProviders")
@@ -26,7 +35,12 @@ export async function verifiedProviders(state, keyStore, settings, keyPairs) {
 
 verifiedProviders.actionName = "verifiedProviders"
 
-export async function pendingProviders(state, keyStore, settings, keyPairs) {
+export async function pendingProviders(
+    state: any,
+    keyStore: any,
+    settings: any,
+    keyPairs: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -37,8 +51,13 @@ export async function pendingProviders(state, keyStore, settings, keyPairs) {
     }
 
     try {
-        return await providers(state, keyStore, settings, keyPairs, (...args) =>
-            backend.appointments.getPendingProviderData(...args)
+        return await providers(
+            state,
+            keyStore,
+            settings,
+            keyPairs,
+            (...args: any[]) =>
+                backend.appointments.getPendingProviderData(...args)
         )
     } finally {
         backend.local.unlock("pendingProviders")
@@ -47,8 +66,13 @@ export async function pendingProviders(state, keyStore, settings, keyPairs) {
 
 pendingProviders.actionName = "pendingProviders"
 
-async function providers(state, keyStore, settings, keyPairs, loader) {
-    markAsLoading(state, keyStore)
+async function providers(
+    state: any,
+    keyStore: any,
+    settings: any,
+    keyPairs: any,
+    loader: any
+) {
     try {
         const providersList = await loader({ n: 10 }, keyPairs.signing)
         const invalidEntries = []
@@ -59,7 +83,7 @@ async function providers(state, keyStore, settings, keyPairs, loader) {
                     entry.encryptedData,
                     keyPairs.provider.privateKey
                 )
-                const decryptedData = JSON.parse(decryptedJSONData)
+                const decryptedData = JSON.parse(decryptedJSONData!)
                 decryptedData.entry = entry
                 decryptedProviderList.push(decryptedData)
             } catch (e) {

@@ -6,7 +6,11 @@ import { randomBytes } from "../crypto"
 import { createSlot } from "./create-appointment"
 import { Provider } from "./"
 
-export async function updateAppointment(this: Provider, data, appointment) {
+export async function updateAppointment(
+    this: Provider,
+    data: any,
+    appointment: any
+) {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("updateAppointment")
@@ -21,26 +25,29 @@ export async function updateAppointment(this: Provider, data, appointment) {
         )
 
         const otherAppointments = openAppointments.filter(
-            (ap) => ap.id !== appointment.id
+            (ap: any) => ap.id !== appointment.id
         )
-        if (!openAppointments.find((ap) => ap.id === appointment.id))
+        if (!openAppointments.find((ap: any) => ap.id === appointment.id))
             return {
                 status: "failed",
             }
 
         const openSlots = appointment.slotData.filter(
-            (sl) => !sl.canceled && sl.open
+            (sl: any) => !sl.canceled && sl.open
         )
         const closedSlots = appointment.slotData.filter(
-            (sl) => !sl.canceled && !sl.open
+            (sl: any) => !sl.canceled && !sl.open
         )
 
         // we take as many slots from the closed ones
-        const cs = Math.min(closedSlots.length, data.slots)
+        const cs = Math.min(closedSlots.length, data.slotData.length)
         // then we take the rest from the open ones
-        const os = Math.min(openSlots.length, Math.max(0, data.slots - cs))
+        const os = Math.min(
+            openSlots.length,
+            Math.max(0, data.slotData.length - cs)
+        )
         // and we possible add new slots as well
-        const ns = Math.max(0, data.slots - cs - os)
+        const ns = Math.max(0, data.slotData.length - cs - os)
 
         appointment.slotData = [
             ...closedSlots.slice(0, cs),

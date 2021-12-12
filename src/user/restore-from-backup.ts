@@ -7,7 +7,12 @@ import { base322buf, b642buf } from "../helpers/conversion"
 import { backupKeys } from "./backup-data"
 
 // make sure the signing and encryption key pairs exist
-export async function restoreFromBackup(state, keyStore, settings, secret) {
+export async function restoreFromBackup(
+    state: any,
+    keyStore: any,
+    settings: any,
+    secret: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -18,9 +23,11 @@ export async function restoreFromBackup(state, keyStore, settings, secret) {
     }
 
     try {
-        const [id, key] = await deriveSecrets(base322buf(secret), 32, 2)
+        const secrets = await deriveSecrets(base322buf(secret), 32, 2)
+        const [id, key] = secrets!
         const data = await backend.storage.getSettings({ id: id })
-        const dd = JSON.parse(await aesDecrypt(data, b642buf(key)))
+        const decryptedData = await aesDecrypt(data, b642buf(key))
+        const dd = JSON.parse(decryptedData!)
 
         for (const key of backupKeys) {
             backend.local.set(`user::${key}`, dd[key])

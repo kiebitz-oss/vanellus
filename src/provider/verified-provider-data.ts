@@ -22,5 +22,3 @@ export async function verifiedProviderData(this: Provider) {
         this.unlock("verifiedProviderData")
     }
 }
-
-verifiedProviderData.actionName = "verifiedProviderData"

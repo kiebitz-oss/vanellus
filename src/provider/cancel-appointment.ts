@@ -2,9 +2,12 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Provider } from "./"
+import { Provider, Appointment } from "./"
 
-export async function cancelAppointment(this: Provider, appointment) {
+export async function cancelAppointment(
+    this: Provider,
+    appointment: Appointment
+) {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("canceledAppointment")
@@ -31,7 +34,6 @@ export async function cancelAppointment(this: Provider, appointment) {
         )
 
         // we simply remove all slots
-        canceledAppointment.slots = 0
         canceledAppointment.slotData = []
         canceledAppointment.modified = true
 

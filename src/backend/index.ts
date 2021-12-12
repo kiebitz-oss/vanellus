@@ -3,14 +3,21 @@
 // README.md contains license information.
 
 import AppointmentsBackend from "./appointments"
-import { PrefixStore } from "./store"
+import { PrefixStore, Store } from "./store"
 import StorageBackend from "./storage"
 import LocalBackend from "./local"
+import Settings from "../settings"
 
 export * from "./store"
 
 export default class Backend {
-    constructor(settings, store, temporaryStore) {
+    public local: LocalBackend
+    public storage: StorageBackend
+    public temporary: LocalBackend
+    public settings: Settings
+    public appointments: AppointmentsBackend
+
+    constructor(settings: Settings, store: Store, temporaryStore: Store) {
         this.settings = settings
         this.storage = new StorageBackend(settings)
         this.appointments = new AppointmentsBackend(settings)

@@ -2,13 +2,25 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-function timeout(ms) {
+function timeout(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+import { Store } from "./store"
+import Settings from "../settings"
+
+type Task = [string, Date, number]
+
 // The local backend
 export default class LocalBackend {
-    constructor(settings, store) {
+    public store: Store
+    public settings: Settings
+
+    private _taskId: number
+    private _tasks: Task[]
+    private _locked: boolean
+
+    constructor(settings: Settings, store: Store) {
         this.settings = settings
         this.store = store
         this._taskId = 0
@@ -16,11 +28,11 @@ export default class LocalBackend {
         this._locked = false
     }
 
-    get(key, defaultValue) {
+    get(key: string, defaultValue?: any) {
         return this.store.get(key, defaultValue)
     }
 
-    unlock(task) {
+    unlock(task: string) {
         if (this._tasks.length === 0) throw "should not happen"
         if (this._tasks[0][0] !== task) throw "wrong task"
         this._tasks = this._tasks.slice(1)
@@ -31,8 +43,8 @@ export default class LocalBackend {
         this._tasks = []
     }
 
-    async lock(task) {
-        if (this._tasks.find((t) => t[0] === task) !== undefined) {
+    async lock(task: string) {
+        if (this._tasks.find((t: Task) => t[0] === task) !== undefined) {
             console.log(`task ${task} is already in queue, aborting...`)
             throw "already queued up" // there's already a task queued up
         }
@@ -44,7 +56,7 @@ export default class LocalBackend {
             if (this._tasks.length === 0) throw "should not happen"
             const [t, dt, id] = this._tasks[0]
             if (id === taskId) break // it's our turn
-            if (new Date() - dt > 1000 * 60 * 5)
+            if (new Date().getTime() - dt.getTime() > 1000 * 60 * 5)
                 // tasks time out after 5 minutes
                 this._tasks = this._tasks.slice(1)
             await timeout(10)
@@ -53,15 +65,15 @@ export default class LocalBackend {
         // now we go...
     }
 
-    set(key, data) {
+    set(key: string, data: any) {
         return this.store.set(key, data)
     }
 
-    delete(key) {
+    delete(key: string) {
         return this.store.delete(key)
     }
 
-    deleteAll(prefix) {
+    deleteAll(prefix: string) {
         return this.store.deleteAll(prefix)
     }
 }

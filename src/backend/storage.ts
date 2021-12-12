@@ -3,19 +3,22 @@
 // README.md contains license information.
 
 import JSONRPCBackend from "./jsonrpc"
+import Settings from "../settings"
 
 // The storage backend
 export default class StorageBackend extends JSONRPCBackend {
-    constructor(settings) {
+    public settings: Settings
+
+    constructor(settings: Settings) {
         super(settings, "storageApi")
         this.settings = settings
     }
 
-    async storeSettings({ id, data }) {
+    async storeSettings({ id, data }: { id: string; data: any }) {
         return await this.call("storeSettings", { id, data })
     }
 
-    async getSettings({ id }) {
+    async getSettings({ id }: { id: string }) {
         return await this.call("getSettings", { id })
     }
 }

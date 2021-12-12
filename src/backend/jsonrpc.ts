@@ -3,32 +3,66 @@
 // README.md contains license information.
 
 import { sign } from "../crypto"
-import { hash, urlEncode } from "helpers/data"
+import { hash, urlEncode } from "../helpers/data"
+import Settings from "../settings"
+import { KeyPair } from "../crypto/interfaces"
 
-function RPCException(result) {
-    this.error = result.error
-    this.name = "RPCException"
+class RPCException {
+    public error: any
+    public name: string
+    public result: Result
+    constructor(result: Result) {
+        this.name = "RPCException"
+        this.result = result
+    }
+}
+
+interface Result {
+    result?: any
+}
+
+interface Headers {
+    [Key: string]: string
+}
+
+interface Opts {
+    headers?: Headers
+    url: string
+    method: string
+    json?: { [Key: string]: any }
+    data?: { [Key: string]: any }
+    params?: { [Key: string]: any }
+}
+
+interface Result {
+    errors?: { [Key: string]: any }
+    hash?: number
+    status: number
 }
 
 class JSONRPCBackend {
-    constructor(settings, urlKey) {
+    public settings: Settings
+    public urlKey: string
+
+    constructor(settings: Settings, urlKey: string) {
         this.settings = settings
         this.urlKey = urlKey
     }
 
-    get apiUrl() {
-        return this.settings.get(this.urlKey)
+    get apiUrl(): string {
+        return this.settings.apiUrl(this.urlKey)
     }
 
-    request(opts) {
-        const normalize = (data) => {
+    request(opts: Opts): Promise<Result> {
+        const normalize = (data: Result): Result => {
             if (data.errors === undefined) data.errors = {}
             return data
         }
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
-            const params = urlEncode(opts.params)
+            let params = ""
+            if (opts.params !== undefined) urlEncode(opts.params)
             xhr.open(
                 opts.method,
                 opts.url + (params !== null ? "?" + params : "")
@@ -90,7 +124,12 @@ class JSONRPCBackend {
         })
     }
 
-    async call(method, params, keyPair, id) {
+    async call(
+        method: string,
+        params: { [Key: string]: any },
+        keyPair?: KeyPair,
+        id?: string
+    ) {
         let callParams
         if (keyPair !== undefined) {
             const dataToSign = {
@@ -120,7 +159,7 @@ class JSONRPCBackend {
             })
             return result.result
         } catch (result) {
-            throw new RPCException(result)
+            throw new RPCException(result as Result)
         }
     }
 }

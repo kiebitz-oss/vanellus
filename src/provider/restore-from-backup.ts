@@ -9,9 +9,9 @@ import { Provider } from "./"
 
 export async function restoreFromBackup(
     this: Provider,
-    secret,
-    data,
-    localOnly // if true, only local data will be imported
+    secret: any,
+    data: any,
+    localOnly: any // if true, only local data will be imported
 ) {
     try {
         // we lock the local backend to make sure we don't have any data races
@@ -21,7 +21,8 @@ export async function restoreFromBackup(
     }
 
     try {
-        const dd = JSON.parse(await aesDecrypt(data, base322buf(secret)))
+        const decryptedData = await aesDecrypt(data, base322buf(secret))
+        const dd = JSON.parse(decryptedData!)
 
         if (dd === null)
             return {
@@ -42,19 +43,20 @@ export async function restoreFromBackup(
         }
 
         if (dd.keyPairs.sync !== undefined && localOnly !== true) {
-            const [id, key] = await deriveSecrets(
+            const derivedSecrets = await deriveSecrets(
                 b642buf(dd.keyPairs.sync),
                 32,
                 2
             )
 
+            const [id, key] = derivedSecrets!
+
             try {
                 const cloudData = await this.backend.storage.getSettings({
                     id: id,
                 })
-                const ddCloud = JSON.parse(
-                    await aesDecrypt(cloudData, b642buf(key))
-                )
+                const decryptedData = await aesDecrypt(cloudData, b642buf(key))
+                const ddCloud = JSON.parse(decryptedData!)
 
                 for (const key of cloudKeys) {
                     if (ddCloud[key] !== undefined && ddCloud[key] !== null)
@@ -82,5 +84,3 @@ export async function restoreFromBackup(
         this.unlock("restoreFromBackup")
     }
 }
-
-restoreFromBackup.actionName = "restoreFromBackup"

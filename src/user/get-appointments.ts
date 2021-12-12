@@ -4,7 +4,7 @@
 
 import { verify } from "../crypto"
 
-async function verifyOffer(offer, item) {
+async function verifyOffer(offer: any, item: any) {
     // to do: verify based on key chain
     /*
     let found = false;
@@ -21,7 +21,7 @@ async function verifyOffer(offer, item) {
     return JSON.parse(offer.data)
 }
 
-async function verifyProviderData(item) {
+async function verifyProviderData(item: any) {
     // to do: verify based on key chain
     /*
     let found = false;
@@ -39,7 +39,12 @@ async function verifyProviderData(item) {
     return JSON.parse(item.provider.data)
 }
 
-export async function getAppointments(state, keyStore, settings, queueData) {
+export async function getAppointments(
+    state: any,
+    keyStore: any,
+    settings: any,
+    queueData: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -74,7 +79,11 @@ export async function getAppointments(state, keyStore, settings, queueData) {
                     for (const offer of item.offers) {
                         const verifiedOffer = await verifyOffer(offer, item)
                         for (const slot of verifiedOffer.slotData) {
-                            if (offer.bookedSlots.some((id) => id === slot.id))
+                            if (
+                                offer.bookedSlots.some(
+                                    (id: any) => id === slot.id
+                                )
+                            )
                                 slot.open = false
                             else slot.open = true
                         }

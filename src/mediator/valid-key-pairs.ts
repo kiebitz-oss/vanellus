@@ -2,8 +2,6 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export async function validKeyPairs(state, keyStore, settings, key) {
+export async function validKeyPairs() {
     return { valid: true }
 }
-
-validKeyPairs.actionName = "validKeyPairs"

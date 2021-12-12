@@ -6,11 +6,11 @@ import { sign, ecdhDecrypt, ephemeralECDHEncrypt } from "../crypto"
 import { confirmSingleProvider } from "./confirm-provider"
 
 export async function reconfirmProviders(
-    state,
-    keyStore,
-    settings,
-    providers,
-    keyPairs
+    state: any,
+    keyStore: any,
+    settings: any,
+    providers: any,
+    keyPairs: any
 ) {
     const backend = settings.get("backend")
 

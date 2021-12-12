@@ -6,9 +6,7 @@ import { buf2base32, b642buf } from "../helpers/conversion"
 import { randomBytes } from "../crypto"
 import { Provider } from "./"
 
-export async function providerSecret(this: Provider, data, lockName) {
-    const backend = settings.get("backend")
-
+export async function providerSecret(this: Provider, data: any, lockName: any) {
     if (lockName === undefined) lockName = "providerSecret"
 
     try {
@@ -34,7 +32,7 @@ export async function providerSecret(this: Provider, data, lockName) {
     }
 }
 
-providerSecret.init = (this: Provider) => {
+export function init(this: Provider) {
     let data = this.backend.local.get("secret")
     if (data === null) {
         data = buf2base32(b642buf(randomBytes(15)))

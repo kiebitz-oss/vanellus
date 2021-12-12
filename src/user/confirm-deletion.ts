@@ -2,7 +2,11 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export async function confirmDeletion(state, keyStore, settings) {
+export async function confirmDeletion(
+    state: any,
+    keyStore: any,
+    settings: any
+) {
     const backend = settings.get("backend")
 
     try {

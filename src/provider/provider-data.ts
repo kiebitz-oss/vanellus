@@ -6,7 +6,7 @@ import { randomBytes } from "../crypto"
 import { Provider } from "./"
 
 // generate and return the (local) provider data
-export async function providerData(this: Provider, data) {
+export async function providerData(this: Provider, data: any) {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("providerData")

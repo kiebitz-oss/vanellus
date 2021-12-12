@@ -5,11 +5,11 @@
 import { ecdhEncrypt } from "../crypto"
 
 export async function cancelInvitation(
-    state,
-    keyStore,
-    settings,
-    acceptedInvitation,
-    tokenData
+    state: any,
+    keyStore: any,
+    settings: any,
+    acceptedInvitation: any,
+    tokenData: any
 ) {
     const backend = settings.get("backend")
 
@@ -58,7 +58,7 @@ export async function cancelInvitation(
     }
 }
 
-cancelInvitation.init = async (ks, settings) => {
+cancelInvitation.init = async (ks: any, settings: any) => {
     const backend = settings.get("backend")
 
     try {

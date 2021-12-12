@@ -5,7 +5,7 @@
 import { ecdhDecrypt } from "../crypto"
 import { Provider } from "./"
 
-export async function checkVerifiedProviderData(this: Provider, data) {
+export async function checkVerifiedProviderData(this: Provider, data: any) {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("checkVerifiedProviderData")
@@ -16,13 +16,13 @@ export async function checkVerifiedProviderData(this: Provider, data) {
     try {
         const verifiedData = await this.backend.appointments.checkProviderData(
             {},
-            this.keyPairs.signing
+            this.keyPairs!.signing
         )
         if (verifiedData === null) {
             this.verifiedData = null
             return { status: "not-found" }
         }
-        const keyPair = this.encryptionKeyPair
+        const keyPair = this.keyPairs!.encryption
         if (keyPair === null) {
             this.verifiedData = null
             return {

@@ -4,13 +4,15 @@
 
 import { ecdhEncrypt, ephemeralECDHEncrypt } from "../crypto"
 
+interface StructuredError {}
+
 export async function confirmOffers(
-    state,
-    keyStore,
-    settings,
-    offers,
-    invitation,
-    tokenData
+    state: any,
+    keyStore: any,
+    settings: any,
+    offers: any,
+    invitation: any,
+    tokenData: any
 ) {
     const backend = settings.get("backend")
 
@@ -36,10 +38,11 @@ export async function confirmOffers(
 
         for (const offer of offers) {
             try {
-                const [encryptedData] = await ephemeralECDHEncrypt(
+                const encryptedDataAndPublicKey = await ephemeralECDHEncrypt(
                     JSON.stringify(providerData),
                     offer.publicKey
                 )
+                const [encryptedData] = encryptedDataAndPublicKey!
                 let result
                 try {
                     result = await backend.appointments.bookAppointment(
@@ -51,8 +54,9 @@ export async function confirmOffers(
                         },
                         tokenData.signingKeyPair
                     )
-                } catch (e) {
+                } catch (e: any) {
                     if (typeof e === "object" && e.name === "RPCException") {
+                        // @ts:ignore
                         if (e.error.code === 401) {
                             // to do: mark appointment as taken
                         } else {

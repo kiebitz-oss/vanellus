@@ -2,7 +2,11 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export async function acceptedInvitation(state, keyStore, settings) {
+export async function acceptedInvitation(
+    state: any,
+    keyStore: any,
+    settings: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -22,7 +26,7 @@ export async function acceptedInvitation(state, keyStore, settings) {
     }
 }
 
-acceptedInvitation.init = async (ks, settings) => {
+acceptedInvitation.init = async (ks: any, settings: any) => {
     const backend = settings.get("backend")
 
     try {

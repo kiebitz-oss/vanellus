@@ -4,6 +4,9 @@ copyright:
 prettier:
 	npx prettier --write .
 
+test:
+	npx mocha
+
 build:
 	npx tsc --build
 

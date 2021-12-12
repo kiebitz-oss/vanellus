@@ -4,7 +4,12 @@
 
 import { randomBytes } from "../crypto"
 
-export async function contactData(state, keyStore, settings, data) {
+export async function contactData(
+    state: any,
+    keyStore: any,
+    settings: any,
+    data: any
+) {
     const backend = settings.get("backend")
 
     try {
@@ -33,7 +38,7 @@ export async function contactData(state, keyStore, settings, data) {
 
 contactData.actionName = "contactData"
 
-contactData.init = async (keyStore, settings) => {
+contactData.init = async (keyStore: any, settings: any) => {
     const backend = settings.get("backend")
 
     try {
