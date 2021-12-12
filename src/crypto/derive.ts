@@ -7,31 +7,34 @@ import { b642buf, buf2b64, str2ab, ab2str } from "../helpers/conversion"
 import { salt } from "./token"
 
 export async function deriveSecrets(key: ArrayBuffer, len: number, n: number) {
-  try {
-    console.log("deriving secrets...")
+    try {
+        console.log("deriving secrets...")
 
-    const baseKey = await crypto.subtle.importKey("raw", key, "HKDF", false, [
-      "deriveKey",
-      "deriveBits",
-    ])
+        const baseKey = await crypto.subtle.importKey(
+            "raw",
+            key,
+            "HKDF",
+            false,
+            ["deriveKey", "deriveBits"]
+        )
 
-    const secrets = []
-    for (let i = 0; i < n; i++) {
-      const secret = await crypto.subtle.deriveBits(
-        {
-          name: "HKDF",
-          hash: "SHA-256",
-          salt: salt, // this is public information
-          info: str2ab(`${i}`), // we use a number string here for simplicity
-        },
-        baseKey,
-        len * 8
-      )
-      secrets.push(buf2b64(secret))
+        const secrets = []
+        for (let i = 0; i < n; i++) {
+            const secret = await crypto.subtle.deriveBits(
+                {
+                    name: "HKDF",
+                    hash: "SHA-256",
+                    salt: salt, // this is public information
+                    info: str2ab(`${i}`), // we use a number string here for simplicity
+                },
+                baseKey,
+                len * 8
+            )
+            secrets.push(buf2b64(secret))
+        }
+        return secrets
+    } catch (e) {
+        console.error(e)
+        return null
     }
-    return secrets
-  } catch (e) {
-    console.error(e)
-    return null
-  }
 }

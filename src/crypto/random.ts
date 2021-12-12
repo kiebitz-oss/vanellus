@@ -5,7 +5,7 @@
 import { buf2b64 } from "../helpers/conversion"
 
 export function randomBytes(n: number) {
-  const array = new Uint8Array(n)
-  crypto.getRandomValues(array)
-  return buf2b64(Buffer.from(array))
+    const array = new Uint8Array(n)
+    crypto.getRandomValues(array)
+    return buf2b64(Buffer.from(array))
 }
