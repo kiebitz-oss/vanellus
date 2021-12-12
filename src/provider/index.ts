@@ -39,8 +39,16 @@ export class Provider {
     public publishAppointments = publishAppointments
     public getAppointments = getAppointments
 
+    // this will be replaced by persistent storage
     private _loggedOut: boolean
     private _openAppointments: Array<Appointment>
+    private _id: string
+
+    constructor(id: string){
+        // the ID will be used to address local storage so that e.g. we can
+        // manage multiple providers, users etc. if necessary...
+        this._id = id
+    }
 
     public get openAppointments(): Array<Appointment> {
         return this._openAppointments
