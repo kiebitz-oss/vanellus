@@ -23,5 +23,6 @@ describe("get appointments test", function () {
             to: today,
         })
         equal(result.status, Status.Succeeded)
+        equal(result.data.length, 0)
     })
 })

@@ -6,7 +6,6 @@ import { sign } from "../crypto"
 import { hash, urlEncode } from "../helpers/data"
 import { Settings } from "../settings"
 import { KeyPair } from "../crypto/interfaces"
-import fetch from "node-fetch"
 
 class RPCException {
     public error: any
