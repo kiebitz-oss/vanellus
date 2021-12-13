@@ -7,7 +7,9 @@ import {
     generateECDSAKeyPair,
     generateSymmetricKey,
 } from "../crypto"
-import { Provider, KeyPairs } from "./"
+
+import { Provider } from "./"
+import { KeyPairs } from "../interfaces"
 
 // make sure the signing and encryption key pairs exist
 export async function generateKeyPairs(this: Provider): Promise<KeyPairs> {

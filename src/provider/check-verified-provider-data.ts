@@ -18,23 +18,13 @@ export async function checkVerifiedProviderData(this: Provider, data: any) {
             {},
             this.keyPairs!.signing
         )
-        if (verifiedData === null) {
-            this.verifiedData = null
-            return { status: "not-found" }
-        }
-        const keyPair = this.keyPairs!.encryption
-        if (keyPair === null) {
-            this.verifiedData = null
-            return {
-                status: "failed",
-            }
-        }
+
         try {
             // to do: verify the signature of the encrypted data!
 
             const decryptedJSONData = await ecdhDecrypt(
-                verifiedData.encryptedProviderData.data,
-                keyPair.privateKey
+                verifiedData.result.encryptedProviderData.data,
+                this.keyPairs!.encryption.privateKey
             )
 
             if (decryptedJSONData === null) {

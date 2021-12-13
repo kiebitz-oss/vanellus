@@ -23,3 +23,9 @@ export interface SignedData {
     signature: string
     data: string
 }
+
+export interface KeyPairs {
+    signing: KeyPair
+    encryption: KeyPair
+    sync: string
+}

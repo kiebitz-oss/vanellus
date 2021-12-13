@@ -6,7 +6,8 @@ import { Status, Result, Error } from "../interfaces"
 import { aesEncrypt, deriveSecrets } from "../crypto"
 import { KeyPair } from "../interfaces"
 import { base322buf, b642buf } from "../helpers/conversion"
-import { Provider, KeyPairs, Data, VerifiedData } from "./"
+import { KeyPairs, ProviderData, VerifiedProviderData } from "../interfaces"
+import { Provider } from "./"
 
 interface BackupData {
     createdAt: string
@@ -19,8 +20,8 @@ interface LocalBackupData extends BackupData {
 }
 
 interface CloudBackupData extends BackupData {
-    verifiedData: VerifiedData | null
-    data: Data | null
+    verifiedData: VerifiedProviderData | null
+    data: ProviderData | null
 }
 
 interface BackupDataResult extends Result {

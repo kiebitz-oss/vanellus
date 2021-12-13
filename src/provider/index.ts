@@ -19,37 +19,15 @@ import { getAppointments } from "./get-appointments"
 
 import { Actor } from "../actor"
 import { Backend } from "../backend"
-import { Settings } from "../interfaces"
-import { KeyPair } from "../interfaces"
-
-export interface Slot {
-    id: string
-}
-
-export interface Appointment {
-    bookings: any[]
-    updatedAt: string
-    modified: boolean
-    timestamp: string
-    duration: number
-    properties: { [Key: string]: any }
-    id: string
-    slotData: Slot[]
-}
-
-export interface KeyPairs {
-    signing: KeyPair
-    encryption: KeyPair
-    sync: string
-}
-
-export interface ReferenceData {
-    [Key: string]: any
-}
-
-export interface VerifiedData {}
-
-export interface Data {}
+import {
+    ProviderBackupReferenceData,
+    ProviderData,
+    VerifiedProviderData,
+    KeyPair,
+    KeyPairs,
+    Settings,
+    Appointment,
+} from "../interfaces"
 
 export class Provider extends Actor {
     public backupData = backupData
@@ -71,11 +49,11 @@ export class Provider extends Actor {
         super("provider", id, settings, backend)
     }
 
-    public get openAppointments(): Array<Appointment> {
+    public get openAppointments(): Appointment[] {
         return this.get("openAppointments")
     }
 
-    public set openAppointments(appointments: Array<Appointment>) {
+    public set openAppointments(appointments: Appointment[]) {
         this.set("openAppointments", appointments)
     }
 
@@ -95,23 +73,29 @@ export class Provider extends Actor {
         this.set("keyPairs", keyPairs)
     }
 
-    public get referenceData(): ReferenceData | null {
+    public get referenceData(): ProviderBackupReferenceData | null {
         return this.get("referenceData")
     }
 
-    public get data(): Data | null {
+    public set referenceData(
+        referenceData: ProviderBackupReferenceData | null
+    ) {
+        this.set("referenceData", referenceData)
+    }
+
+    public get data(): ProviderData | null {
         return this.get("verifiedData")
     }
 
-    public set data(data: Data | null) {
+    public set data(data: ProviderData | null) {
         this.set("data", data)
     }
 
-    public get verifiedData(): VerifiedData | null {
+    public get verifiedData(): VerifiedProviderData | null {
         return this.get("verifiedData")
     }
 
-    public set verifiedData(verifiedData: any) {
+    public set verifiedData(verifiedData: VerifiedProviderData | null) {
         this.set("verifiedData", verifiedData)
     }
 

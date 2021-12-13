@@ -14,8 +14,16 @@ import {
     randomBytes,
 } from "../crypto"
 
-import { Settings, KeyPair, ECDHData, SignedData } from "../interfaces"
-
+import {
+    RPCError,
+    Settings,
+    KeyPair,
+    ECDHData,
+    SignedData,
+    SignedAppointment,
+    ProviderAppointments,
+} from "../interfaces"
+import { e } from "./helpers"
 import JSONRPCBackend from "./jsonrpc"
 
 // The appointments backend
@@ -57,12 +65,14 @@ export class AppointmentsBackend extends JSONRPCBackend {
         zipCode: string
         from: string
         to: string
-    }) {
-        return await this.call("getAppointmentsByZipCode", {
-            zipCode,
-            from,
-            to,
-        })
+    }): Promise<ProviderAppointments[] | RPCError> {
+        return e<ProviderAppointments[]>(
+            this.call("getAppointmentsByZipCode", {
+                zipCode,
+                from,
+                to,
+            })
+        )
     }
 
     async getStats({
@@ -165,8 +175,13 @@ export class AppointmentsBackend extends JSONRPCBackend {
     // provider-only endpoints
 
     // get all published appointments from the backend
-    async getAppointments({}, keyPair: KeyPair) {
-        return await this.call("getProviderAppointments", {}, keyPair)
+    async getAppointments(
+        {},
+        keyPair: KeyPair
+    ): Promise<SignedAppointment[] | RPCError> {
+        return e<SignedAppointment[]>(
+            this.call("getProviderAppointments", {}, keyPair)
+        )
     }
 
     // publish all local appointments to the backend

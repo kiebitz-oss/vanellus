@@ -3,8 +3,8 @@
 // README.md contains license information.
 
 import { sign } from "../crypto"
-import { hash, urlEncode } from "../helpers/data"
-import { Settings } from "../interfaces"
+import { urlEncode } from "../helpers/data"
+import { Settings, Error, RPCResponse } from "../interfaces"
 import { KeyPair } from "../interfaces"
 
 class RPCException {
@@ -16,10 +16,6 @@ class RPCException {
         this.name = "RPCException"
         this.result = result
     }
-}
-
-interface Result {
-    result?: any
 }
 
 interface Headers {
@@ -35,11 +31,7 @@ interface Opts {
     params?: { [Key: string]: any }
 }
 
-interface Result {
-    errors?: { [Key: string]: any }
-    hash?: number
-    status: number
-}
+type Result = any
 
 class JSONRPCBackend {
     public settings: Settings
@@ -54,56 +46,43 @@ class JSONRPCBackend {
         return this.settings.apiUrls[this.urlKey]
     }
 
-    request(opts: Opts): Promise<Result> {
-        const normalize = (data: Result): Result => {
-            if (data.errors === undefined) data.errors = {}
-            return data
+    async request(opts: Opts): Promise<RPCResponse> {
+        let params = ""
+        if (opts.params !== undefined) params = urlEncode(opts.params)!
+
+        const fetchOpts: { [Key: string]: any } = {
+            method: opts.method || "GET",
+            headers: opts.headers || {},
         }
 
-        return new Promise(async (resolve, reject) => {
-            let params = ""
-            if (opts.params !== undefined) params = urlEncode(opts.params)!
+        if (opts.data !== undefined) {
+            fetchOpts.headers["Content-Type"] =
+                "application/x-www-form-urlencoded"
+            fetchOpts.body = urlEncode(opts.data)
+        } else if (opts.json !== undefined) {
+            fetchOpts.headers["Content-Type"] = "application/json"
+            fetchOpts.body = JSON.stringify(opts.json)
+        }
 
-            const fetchOpts: { [Key: string]: any } = {
-                method: opts.method || "GET",
-                headers: opts.headers || {},
-            }
-
-            if (opts.data !== undefined) {
-                fetchOpts.headers["Content-Type"] =
-                    "application/x-www-form-urlencoded"
-                fetchOpts.body = urlEncode(opts.data)
-            } else if (opts.json !== undefined) {
-                fetchOpts.headers["Content-Type"] = "application/json"
-                fetchOpts.body = JSON.stringify(opts.json)
-            }
-
-            try {
-                const response = await fetch(
-                    opts.url + (params !== null ? "?" + params : ""),
-                    fetchOpts
-                )
-                const json = (await response.json()) as any
-                const data = normalize(json!)
-                data.hash = hash(JSON.stringify(json!))
-                data.status = response.status
-                if (response.status >= 200 && response.status < 300) {
-                    resolve(data)
-                } else {
-                    reject(data)
-                }
-            } catch (e) {
-                reject({
-                    jsonrpc: "2.0",
-                    id: "-1",
-                    error: {
-                        code: -1,
-                        message: "request failed",
-                        data: {},
+        try {
+            const response = await fetch(
+                opts.url + (params !== null ? "?" + params : ""),
+                fetchOpts
+            )
+            return (await response.json()) as RPCResponse
+        } catch (e) {
+            return {
+                jsonrpc: "2.0",
+                id: "-1",
+                error: {
+                    code: -1,
+                    message: "request failed",
+                    data: {
+                        error: (e as Error).toString(),
                     },
-                })
+                },
             }
-        })
+        }
     }
 
     async call(
@@ -111,7 +90,7 @@ class JSONRPCBackend {
         params: { [Key: string]: any },
         keyPair?: KeyPair,
         id?: string
-    ) {
+    ): Promise<RPCResponse> {
         let callParams
         if (keyPair !== undefined) {
             const dataToSign = {
@@ -128,21 +107,16 @@ class JSONRPCBackend {
             callParams = params
         }
 
-        try {
-            const result = await this.request({
-                url: `${this.apiUrl}`,
-                method: "POST",
-                json: {
-                    jsonrpc: "2.0",
-                    method: method,
-                    params: callParams,
-                    id: id,
-                },
-            })
-            return result.result
-        } catch (result) {
-            throw new RPCException(result as Result)
-        }
+        return await this.request({
+            url: `${this.apiUrl}`,
+            method: "POST",
+            json: {
+                jsonrpc: "2.0",
+                method: method,
+                params: callParams,
+                id: id,
+            },
+        })
     }
 }
 

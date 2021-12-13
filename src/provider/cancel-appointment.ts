@@ -2,7 +2,8 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Provider, Appointment } from "./"
+import { Provider } from "./"
+import { Appointment } from "../interfaces"
 
 export async function cancelAppointment(
     this: Provider,

@@ -3,7 +3,8 @@
 // README.md contains license information.
 
 import { randomBytes } from "../crypto"
-import { Provider, Appointment } from "./"
+import { Provider } from "./"
+import { Appointment } from "../interfaces"
 
 export function createSlot() {
     return {

@@ -19,7 +19,7 @@ import {
     Settings,
     QueueData,
     TokenData,
-    SignedAppointment,
+    ProviderAppointments,
 } from "../interfaces"
 import { Actor } from "../actor"
 
@@ -56,12 +56,12 @@ export class User extends Actor {
         this.set("tokenData", tokenData)
     }
 
-    public get verifiedAppointments(): SignedAppointment[] | null {
+    public get verifiedAppointments(): ProviderAppointments[] | null {
         return this.get("verifiedAppointments")
     }
 
     public set verifiedAppointments(
-        verifiedAppointments: SignedAppointment[] | null
+        verifiedAppointments: ProviderAppointments[] | null
     ) {
         this.set("verifiedAppointments", verifiedAppointments)
     }

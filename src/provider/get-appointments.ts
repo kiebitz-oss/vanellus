@@ -3,11 +3,23 @@
 // README.md contains license information.
 
 import { randomBytes, sign, verify, ecdhDecrypt } from "../crypto"
-import { Provider, Appointment, Slot } from "./"
+import {
+    Status,
+    Appointment,
+    Slot,
+    SignedAppointment,
+    Result,
+    Error,
+} from "../interfaces"
+import { Provider } from "./"
 
-export async function getAppointments(this: Provider) {
-    if (this.keyPairs === null) return
+interface GetAppointmentsResult extends Result {
+    appointments: Appointment[]
+}
 
+export async function getAppointments(
+    this: Provider
+): Promise<GetAppointmentsResult | Error> {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("getAppointments")
@@ -16,11 +28,10 @@ export async function getAppointments(this: Provider) {
     }
 
     const decryptBookings = async (bookings: any) => {
-        if (this.keyPairs === null) return
         for (const booking of bookings) {
             const decryptedData = await ecdhDecrypt(
                 booking.encryptedData,
-                this.keyPairs.encryption.privateKey
+                this.keyPairs!.encryption.privateKey
             )
             const dd = JSON.parse(decryptedData!)
             booking.data = dd
@@ -31,16 +42,22 @@ export async function getAppointments(this: Provider) {
     try {
         const openAppointments = this.openAppointments
 
-        const result = await this.backend.appointments.getAppointments(
+        const response = await this.backend.appointments.getAppointments(
             {},
-            this.keyPairs.signing
+            this.keyPairs!.signing
         )
+
+        if (!(response instanceof Array))
+            return {
+                status: Status.Failed,
+                error: response,
+            }
 
         const newAppointments: Appointment[] = []
 
-        for (const appointment of result) {
+        for (const appointment of response) {
             const verified = await verify(
-                [this.keyPairs.signing.publicKey],
+                [this.keyPairs!.signing.publicKey],
                 appointment
             )
             if (!verified) {
@@ -104,16 +121,18 @@ export async function getAppointments(this: Provider) {
             newAppointments.push(newAppointment)
         }
 
-        this.openAppointments = [...openAppointments, ...newAppointments]
+        const allAppointments = [...openAppointments, ...newAppointments]
+        this.openAppointments = allAppointments
 
         return {
-            status: "succeeded",
-            data: result,
+            status: Status.Succeeded,
+            appointments: allAppointments,
         }
     } catch (e) {
         console.error(e)
         return {
-            status: "failed",
+            status: Status.Failed,
+            error: e as any,
         }
     } finally {
         this.unlock("getAppointments")
