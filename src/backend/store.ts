@@ -35,7 +35,7 @@ export class PrefixStore implements Store {
     }
 }
 
-interface Storage {
+export interface Storage {
     getItem(key: string): any | null
     setItem(key: string, value: any): void
     removeItem(key: string): void
@@ -71,14 +71,22 @@ export class StorageStore implements Store {
     }
 }
 
-export class LocalStorageStore extends StorageStore {
-    constructor() {
-        super(localStorage)
-    }
-}
+export class InMemoryStorage implements Storage {
+    private _data: { [Key: string]: any }
 
-export class SessionStorageStore extends StorageStore {
     constructor() {
-        super(sessionStorage)
+        this._data = {}
+    }
+
+    getItem(key: string): any | null {
+        return this._data[key] || null
+    }
+
+    setItem(key: string, value: any): void {
+        this._data[key] = value
+    }
+
+    removeItem(key: string): void {
+        delete this._data[key]
     }
 }

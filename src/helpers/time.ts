@@ -2,9 +2,7 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import Settings, { Translations } from "../settings"
-
-export function getMonday(d: Date) {
+export function getMonday(d: string | Date) {
     d = new Date(d)
     const day = d.getDay(),
         diff = d.getDate() - day + (day == 0 ? -6 : 1) // adjust when day is sunday
@@ -12,7 +10,7 @@ export function getMonday(d: Date) {
 }
 
 // https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
-export function formatDate(date: string) {
+export function formatDate(date: string | Date) {
     let d = new Date(date),
         month = "" + (d.getMonth() + 1),
         day = "" + d.getDate(),
@@ -25,7 +23,7 @@ export function formatDate(date: string) {
 }
 
 // https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
-export function formatTime(date: string) {
+export function formatTime(date: string | Date) {
     let d = new Date(date),
         hours = "" + d.getHours(),
         minutes = "" + d.getMinutes()
@@ -34,21 +32,4 @@ export function formatTime(date: string) {
     if (minutes.length < 2) minutes = "0" + minutes
 
     return [hours, minutes].join(":")
-}
-
-export function formatDuration(
-    minutes: number,
-    settings: Settings,
-    t: Translations
-) {
-    if (minutes < 60)
-        return settings.t(t, "minute-string", { minutes: minutes })
-    const hours = Math.floor(minutes / 60)
-    const remainingMinutes = minutes % 60
-    if (remainingMinutes === 0)
-        return settings.t(t, "hour-string", { hours: hours })
-    return settings.t(t, "hour-minute-string", {
-        hours: hours,
-        minutes: remainingMinutes,
-    })
 }

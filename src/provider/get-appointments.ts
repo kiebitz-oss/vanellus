@@ -3,7 +3,6 @@
 // README.md contains license information.
 
 import { randomBytes, sign, verify, ecdhDecrypt } from "../crypto"
-import { formatDate, formatTime } from "../helpers/time"
 import { Provider, Appointment, Slot } from "./"
 
 export async function getAppointments(this: Provider) {

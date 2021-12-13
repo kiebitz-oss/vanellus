@@ -7,12 +7,12 @@ function timeout(ms: number) {
 }
 
 import { Store } from "./store"
-import Settings from "../settings"
+import { Settings } from "../settings"
 
 type Task = [string, Date, number]
 
 // The local backend
-export default class LocalBackend {
+export class LocalBackend {
     public store: Store
     public settings: Settings
 

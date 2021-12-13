@@ -2,15 +2,15 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import AppointmentsBackend from "./appointments"
 import { PrefixStore, Store } from "./store"
-import StorageBackend from "./storage"
-import LocalBackend from "./local"
-import Settings from "../settings"
+import { AppointmentsBackend } from "./appointments"
+import { StorageBackend } from "./storage"
+import { LocalBackend } from "./local"
+import { Settings } from "../settings"
 
 export * from "./store"
 
-export default class Backend {
+export class Backend {
     public local: LocalBackend
     public storage: StorageBackend
     public temporary: LocalBackend

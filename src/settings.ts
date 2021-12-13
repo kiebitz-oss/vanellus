@@ -1,17 +1,15 @@
 export interface Translations {}
 
-export default class Settings {
-    public appointmentProperties: { [Key: string]: any }
+export interface AppointmentSettings {
+    properties: { [Key: string]: any }
+}
 
-    constructor() {
-        this.appointmentProperties = {}
-    }
+export interface ApiUrls {
+    appointments: string
+    storage: string
+}
 
-    public apiUrl(key: string): string {
-        return ""
-    }
-
-    public t(t: Translations, key: string, ...args: any[]): string {
-        return ""
-    }
+export interface Settings {
+    apiUrls: ApiUrls
+    appointment: AppointmentSettings
 }

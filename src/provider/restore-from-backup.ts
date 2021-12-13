@@ -4,7 +4,6 @@
 
 import { aesDecrypt, deriveSecrets } from "../crypto"
 import { base322buf, b642buf } from "../helpers/conversion"
-import { localKeys, cloudKeys } from "./backup-data"
 import { Provider } from "./"
 
 export async function restoreFromBackup(
@@ -32,16 +31,6 @@ export async function restoreFromBackup(
                 },
             }
 
-        for (const key of localKeys) {
-            this.backend.local.set(`provider::${key}`, dd[key])
-        }
-
-        // if there's local data in the backup we restore it too...
-        for (const key of cloudKeys) {
-            if (dd[key] !== undefined)
-                this.backend.local.set(`provider::${key}`, dd[key])
-        }
-
         if (dd.keyPairs.sync !== undefined && localOnly !== true) {
             const derivedSecrets = await deriveSecrets(
                 b642buf(dd.keyPairs.sync),
@@ -57,11 +46,6 @@ export async function restoreFromBackup(
                 })
                 const decryptedData = await aesDecrypt(cloudData, b642buf(key))
                 const ddCloud = JSON.parse(decryptedData!)
-
-                for (const key of cloudKeys) {
-                    if (ddCloud[key] !== undefined && ddCloud[key] !== null)
-                        this.backend.local.set(`provider::${key}`, ddCloud[key])
-                }
             } catch (e) {
                 console.error(e)
             }

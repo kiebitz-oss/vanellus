@@ -2,12 +2,11 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
+import { Status, Result, Error } from "../structs"
 import { aesEncrypt, deriveSecrets } from "../crypto"
+import { KeyPair } from "../crypto/interfaces"
 import { base322buf, b642buf } from "../helpers/conversion"
-import { Provider } from "./"
-
-export const localKeys = ["keyPairs"]
-export const cloudKeys = ["data", "data::verified", "data::encryptionKeyPair"]
+import { Provider, KeyPairs, Data, VerifiedData } from "./"
 
 interface BackupData {
     createdAt: string
@@ -15,8 +14,27 @@ interface BackupData {
     [Key: string]: any
 }
 
+interface LocalBackupData extends BackupData {
+    keyPairs: KeyPairs | null
+}
+
+interface CloudBackupData extends BackupData {
+    verifiedData: VerifiedData | null
+    data: Data | null
+}
+
+interface BackupDataResult extends Result {
+    localData: LocalBackupData
+    cloudData: CloudBackupData
+}
+
+interface BackupDataError extends Error {}
+
 // make sure the signing and encryption key pairs exist
-export async function backupData(this: Provider, lockName: string) {
+export async function backupData(
+    this: Provider,
+    lockName: string
+): Promise<BackupDataResult | BackupDataError> {
     if (lockName === undefined) lockName = "backupData"
 
     try {
@@ -27,45 +45,49 @@ export async function backupData(this: Provider, lockName: string) {
     }
 
     try {
-        const data: BackupData = {
+        const localData: LocalBackupData = {
             version: "0.2",
+            keyPairs: this.keyPairs,
             createdAt: new Date().toISOString(),
         }
 
-        if (this.loggedOut) return
+        if (this.loggedOut)
+            return {
+                status: Status.Failed,
+                error: {
+                    error: "logged out",
+                },
+            }
 
-        for (const key of localKeys) {
-            data[key] = this.backend.local.get(`${key}`)
-        }
-
-        const cloudData: BackupData = {
+        const cloudData: CloudBackupData = {
             version: "0.2",
             createdAt: new Date().toISOString(),
-        }
-        for (const key of cloudKeys) {
-            const v = this.backend.local.get(`${key}`)
-            cloudData[key] = v
-            // we also store the data locally so that we can restore it from
-            // there in case something goes wrong with the cloud backup...
-            data[key] = v
+            data: this.data,
+            verifiedData: this.verifiedData,
         }
 
-        const referenceData = { local: { ...data }, cloud: { ...cloudData } }
+        const referenceData = {
+            local: { ...localData },
+            cloud: { ...cloudData },
+        }
+
         if (this.referenceData !== null) {
             if (
                 JSON.stringify(this.referenceData) ===
                 JSON.stringify(referenceData)
             ) {
                 return {
-                    status: "succeeded",
-                    ...this.referenceData,
+                    status: Status.Succeeded,
+                    referenceData: referenceData,
+                    localData: localData,
+                    cloudData: cloudData,
                 }
             }
         }
 
         // locally stored data
         const encryptedData = await aesEncrypt(
-            JSON.stringify(data),
+            JSON.stringify(localData),
             base322buf(this.secret)
         )
 
@@ -89,15 +111,17 @@ export async function backupData(this: Provider, lockName: string) {
         })
 
         return {
-            status: "succeeded",
-            data: encryptedData,
+            status: Status.Succeeded,
             referenceData: referenceData,
+            localData: localData,
+            cloudData: cloudData,
         }
     } catch (e) {
-        console.error(e)
         return {
-            status: "failed",
-            error: e,
+            status: Status.Failed,
+            error: {
+                error: e instanceof Error ? e.toString() : "unknown error",
+            },
         }
     } finally {
         if (lockName === "logout") {

@@ -7,29 +7,65 @@ import { acceptedInvitation } from "./accepted-invitation"
 import { confirmOffers } from "./confirm-offers"
 import { contactData } from "./contact-data"
 import { invitation } from "./invitation"
-import { tokenData } from "./token-data"
 import { getToken } from "./get-token"
 import { userSecret } from "./user-secret"
-import { queueData } from "./queue-data"
 import { backupData } from "./backup-data"
-import { appointments } from "./appointments"
 import { confirmDeletion } from "./confirm-deletion"
 import { cancelInvitation } from "./cancel-invitation"
 import { getAppointments } from "./get-appointments"
 
-class User {
+import { Backend } from "../backend"
+import { Settings } from "../settings"
+import { Actor } from "../actor"
+
+export interface QueueData {
+    zipCode: string
+}
+
+export interface TokenData {}
+
+export interface SignedAppointment {}
+
+export class User extends Actor {
     public restoreFromBackup = restoreFromBackup
     public acceptedInvitation = acceptedInvitation
     public confirmOffers = confirmOffers
     public contactData = contactData
     public invitation = invitation
-    public tokenData = tokenData
     public getToken = getToken
     public userSecret = userSecret
-    public queueData = queueData
     public backupData = backupData
-    public appointments = appointments
     public confirmDeletion = confirmDeletion
     public cancelInvitation = cancelInvitation
     public getAppointments = getAppointments
+
+    constructor(id: string, settings: Settings, backend: Backend) {
+        super("provider", id, settings, backend)
+    }
+
+    public get queueData(): QueueData | null {
+        return this.get("queueData")
+    }
+
+    public set queueData(queueData: QueueData | null) {
+        this.set("queueData", queueData)
+    }
+
+    public get tokenData(): TokenData | null {
+        return this.get("tokenData")
+    }
+
+    public set tokenData(tokenData: TokenData | null) {
+        this.set("tokenData", tokenData)
+    }
+
+    public get verifiedAppointments(): SignedAppointment[] | null {
+        return this.get("verifiedAppointments")
+    }
+
+    public set verifiedAppointments(
+        verifiedAppointments: SignedAppointment[] | null
+    ) {
+        this.set("verifiedAppointments", verifiedAppointments)
+    }
 }

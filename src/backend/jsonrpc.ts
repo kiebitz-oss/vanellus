@@ -4,8 +4,9 @@
 
 import { sign } from "../crypto"
 import { hash, urlEncode } from "../helpers/data"
-import Settings from "../settings"
+import { Settings } from "../settings"
 import { KeyPair } from "../crypto/interfaces"
+import fetch from "node-fetch"
 
 class RPCException {
     public error: any
@@ -28,7 +29,7 @@ interface Headers {
 interface Opts {
     headers?: Headers
     url: string
-    method: string
+    method?: string
     json?: { [Key: string]: any }
     data?: { [Key: string]: any }
     params?: { [Key: string]: any }
@@ -42,15 +43,15 @@ interface Result {
 
 class JSONRPCBackend {
     public settings: Settings
-    public urlKey: string
+    public urlKey: "storage" | "appointments"
 
-    constructor(settings: Settings, urlKey: string) {
+    constructor(settings: Settings, urlKey: "storage" | "appointments") {
         this.settings = settings
         this.urlKey = urlKey
     }
 
     get apiUrl(): string {
-        return this.settings.apiUrl(this.urlKey)
+        return this.settings.apiUrls[this.urlKey]
     }
 
     request(opts: Opts): Promise<Result> {
@@ -59,38 +60,39 @@ class JSONRPCBackend {
             return data
         }
 
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
+        return new Promise(async (resolve, reject) => {
             let params = ""
-            if (opts.params !== undefined) urlEncode(opts.params)
-            xhr.open(
-                opts.method,
-                opts.url + (params !== null ? "?" + params : "")
-            )
+            if (opts.params !== undefined) params = urlEncode(opts.params)!
 
-            xhr.onload = () => {
-                const contentType = (
-                    xhr.getResponseHeader("content-type") || ""
-                ).trim()
-                if (/^application\/json(;.*)?$/i.exec(contentType) === null)
-                    reject({
-                        status: xhr.status,
-                        message: "not a JSON response",
-                        errors: {},
-                    })
-                const data = normalize(JSON.parse(xhr.response))
-                data.status = xhr.status
-                // this is a non-cryptogaphic (!) hash, just used to e.g. decide whether we should
-                // rerender a given graph...
-                data.hash = hash(xhr.response)
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    // setTimeout( () => resolve(data), 1000); // uncomment to add a delay for debugging
+            const fetchOpts: { [Key: string]: any } = {
+                method: opts.method || "GET",
+                headers: opts.headers || {},
+            }
+
+            if (opts.data !== undefined) {
+                fetchOpts.headers["Content-Type"] =
+                    "application/x-www-form-urlencoded"
+                fetchOpts.body = urlEncode(opts.data)
+            } else if (opts.json !== undefined) {
+                fetchOpts.headers["Content-Type"] = "application/json"
+                fetchOpts.body = JSON.stringify(opts.json)
+            }
+
+            try {
+                const response = await fetch(
+                    opts.url + (params !== null ? "?" + params : ""),
+                    fetchOpts
+                )
+                const json = (await response.json()) as any
+                const data = normalize(json!)
+                data.hash = hash(JSON.stringify(json!))
+                data.status = response.status
+                if (response.status >= 200 && response.status < 300) {
                     resolve(data)
                 } else {
                     reject(data)
                 }
-            }
-            xhr.onerror = () => {
+            } catch (e) {
                 reject({
                     jsonrpc: "2.0",
                     id: "-1",
@@ -100,26 +102,6 @@ class JSONRPCBackend {
                         data: {},
                     },
                 })
-            }
-            if (opts.headers) {
-                Object.entries(opts.headers).forEach(([key, value]) => {
-                    xhr.setRequestHeader(key, value)
-                })
-            }
-            const data = opts.data
-            const json = opts.json
-
-            if (data !== undefined) {
-                xhr.setRequestHeader(
-                    "Content-Type",
-                    "application/x-www-form-urlencoded"
-                )
-                xhr.send(urlEncode(data))
-            } else if (json !== undefined) {
-                xhr.setRequestHeader("Content-Type", "application/json")
-                xhr.send(JSON.stringify(json))
-            } else {
-                xhr.send()
             }
         })
     }

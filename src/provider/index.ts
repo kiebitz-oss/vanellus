@@ -17,9 +17,9 @@ import { cancelAppointment } from "./cancel-appointment"
 import { publishAppointments } from "./publish-appointments"
 import { getAppointments } from "./get-appointments"
 
-import Backend from "../backend"
-import Settings from "../settings"
-
+import { Actor } from "../actor"
+import { Backend } from "../backend"
+import { Settings } from "../settings"
 import { KeyPair } from "../crypto/interfaces"
 
 export interface Slot {
@@ -43,7 +43,15 @@ export interface KeyPairs {
     sync: string
 }
 
-export class Provider {
+export interface ReferenceData {
+    [Key: string]: any
+}
+
+export interface VerifiedData {}
+
+export interface Data {}
+
+export class Provider extends Actor {
     public backupData = backupData
     public checkVerifiedProviderData = checkVerifiedProviderData
     public keys = keys
@@ -59,73 +67,59 @@ export class Provider {
     public getAppointments = getAppointments
     public generateKeyPairs = generateKeyPairs
 
-    public backend: Backend
-    public settings: Settings
-
-    // this will be replaced by persistent storage
-    private _loggedOut: boolean
-    private _openAppointments: Array<Appointment>
-    private _id: string
-    private _keyPairs: KeyPairs | null
-    private _verifiedData: any
-    private _secret: string
-    private _referenceData: { [Key: string]: any } | null
-
     constructor(id: string, settings: Settings, backend: Backend) {
-        // the ID will be used to address local storage so that e.g. we can
-        // manage multiple providers, users etc. if necessary...
-
-        this._id = id
-        this._referenceData = null
-        this._verifiedData = null
-        this._loggedOut = true
-        this._secret = ""
-        this._openAppointments = []
-        this._keyPairs = null
-
-        this.backend = backend
-        this.settings = settings
+        super("provider", id, settings, backend)
     }
 
     public get openAppointments(): Array<Appointment> {
-        return this._openAppointments
+        return this.get("openAppointments")
     }
 
     public set openAppointments(appointments: Array<Appointment>) {
-        this._openAppointments = appointments
+        this.set("openAppointments", appointments)
     }
 
     public get loggedOut(): boolean {
-        return this._loggedOut
+        return this.get("loggedOut")
     }
 
     public set loggedOut(loggedOut: boolean) {
-        this._loggedOut = loggedOut
+        this.set("loggedOut", loggedOut)
     }
 
     public get keyPairs(): KeyPairs | null {
-        return this._keyPairs
+        return this.get("keyPairs")
     }
 
-    public get referenceData() {
-        return this._referenceData
+    public set keyPairs(keyPairs: KeyPairs | null) {
+        this.set("keyPairs", keyPairs)
     }
 
-    public get verifiedData(): any {
-        return this._verifiedData
+    public get referenceData(): ReferenceData | null {
+        return this.get("referenceData")
     }
 
-    public set verifiedData(value: any) {
-        this._verifiedData = value
+    public get data(): Data | null {
+        return this.get("verifiedData")
+    }
+
+    public set data(data: Data | null) {
+        this.set("data", data)
+    }
+
+    public get verifiedData(): VerifiedData | null {
+        return this.get("verifiedData")
+    }
+
+    public set verifiedData(verifiedData: any) {
+        this.set("verifiedData", verifiedData)
     }
 
     public get secret(): string {
-        return this._secret
+        return this.get("secret")
     }
 
-    public unlock(key: string) {}
-
-    public clearLocks() {}
-
-    public lock(key: string) {}
+    public set secret(secret: string) {
+        this.set("secret", secret)
+    }
 }

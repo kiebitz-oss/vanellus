@@ -15,14 +15,14 @@ import {
 } from "../crypto"
 
 import { KeyPair, ECDHData, SignedData } from "../crypto/interfaces"
-import Settings from "../settings"
+import { Settings } from "../settings"
 
 import JSONRPCBackend from "./jsonrpc"
 
 // The appointments backend
-export default class AppointmentsBackend extends JSONRPCBackend {
+export class AppointmentsBackend extends JSONRPCBackend {
     constructor(settings: Settings) {
-        super(settings, "appointmentsApi")
+        super(settings, "appointments")
     }
 
     async confirmProvider(
@@ -50,9 +50,19 @@ export default class AppointmentsBackend extends JSONRPCBackend {
 
     // public endpoints
 
-    async getAppointmentsByZipCode({ zipCode }: { zipCode: string }) {
+    async getAppointmentsByZipCode({
+        zipCode,
+        from,
+        to,
+    }: {
+        zipCode: string
+        from: string
+        to: string
+    }) {
         return await this.call("getAppointmentsByZipCode", {
             zipCode,
+            from,
+            to,
         })
     }
 
