@@ -2,7 +2,7 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Status } from "../structs"
+import { Status, Result, Error, SignedAppointment } from "../interfaces"
 import { verify } from "../crypto"
 import { User } from "./"
 
@@ -41,10 +41,16 @@ async function verifyProviderData(item: any) {
     return JSON.parse(item.provider.data)
 }
 
+interface GetAppointmentsResult extends Result {
+    appointments: SignedAppointment[]
+}
+
+interface GetAppointmentsError extends Error {}
+
 export async function getAppointments(
     this: User,
     { from, to }: { from: string; to: string }
-) {
+): Promise<GetAppointmentsResult | GetAppointmentsError> {
     try {
         // we lock the local backend to make sure we don't have any data races
         await this.lock("getAppointments")
@@ -95,13 +101,13 @@ export async function getAppointments(
 
             this.verifiedAppointments = verifiedAppointments
             return {
-                data: verifiedAppointments,
+                appointments: verifiedAppointments,
                 status: Status.Succeeded,
             }
         } catch (e) {
             return {
                 status: Status.Failed,
-                error: e,
+                error: e as any,
             }
         }
     } finally {

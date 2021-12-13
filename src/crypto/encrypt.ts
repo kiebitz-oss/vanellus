@@ -4,9 +4,9 @@
 
 import { generateECDHKeyPair } from "./generate-key"
 import { b642buf, buf2b64, str2ab, ab2str } from "../helpers/conversion"
-import { Data } from "./interfaces"
+import { Data } from "../interfaces"
 import { salt } from "./token"
-import { KeyPair, ECDHData } from "./interfaces"
+import { KeyPair, ECDHData } from "../interfaces"
 
 export async function aesEncrypt(rawData: string, secret: ArrayBuffer) {
     const data = str2ab(rawData)

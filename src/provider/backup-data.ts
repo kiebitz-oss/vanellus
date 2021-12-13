@@ -2,9 +2,9 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Status, Result, Error } from "../structs"
+import { Status, Result, Error } from "../interfaces"
 import { aesEncrypt, deriveSecrets } from "../crypto"
-import { KeyPair } from "../crypto/interfaces"
+import { KeyPair } from "../interfaces"
 import { base322buf, b642buf } from "../helpers/conversion"
 import { Provider, KeyPairs, Data, VerifiedData } from "./"
 

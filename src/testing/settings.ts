@@ -2,14 +2,8 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Settings } from "../settings"
-import {
-    Backend,
-    InMemoryStorage,
-    StorageStore,
-    Store,
-    Storage,
-} from "../backend"
+import { Settings, Store } from "../interfaces"
+import { Backend, InMemoryStorage, StorageStore } from "../backend"
 
 import fetch from "node-fetch"
 

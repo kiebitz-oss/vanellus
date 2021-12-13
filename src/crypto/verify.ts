@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { b642buf, str2ab } from "../helpers/conversion"
-import { SignedData } from "./interfaces"
+import { SignedData } from "../interfaces"
 
 export async function verify(keys: Array<string>, signedData: SignedData) {
     const signature = b642buf(signedData.signature)

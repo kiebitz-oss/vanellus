@@ -19,8 +19,8 @@ import { getAppointments } from "./get-appointments"
 
 import { Actor } from "../actor"
 import { Backend } from "../backend"
-import { Settings } from "../settings"
-import { KeyPair } from "../crypto/interfaces"
+import { Settings } from "../interfaces"
+import { KeyPair } from "../interfaces"
 
 export interface Slot {
     id: string

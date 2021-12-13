@@ -6,8 +6,7 @@ function timeout(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-import { Store } from "./store"
-import { Settings } from "../settings"
+import { Settings, Store } from "../interfaces"
 
 type Task = [string, Date, number]
 

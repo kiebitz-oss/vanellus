@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import JSONRPCBackend from "./jsonrpc"
-import { Settings } from "../settings"
+import { Settings } from "../interfaces"
 
 // The storage backend
 export class StorageBackend extends JSONRPCBackend {

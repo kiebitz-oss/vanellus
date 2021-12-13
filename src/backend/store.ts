@@ -2,12 +2,7 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-export interface Store {
-    get(key: string, defaultValue?: any): any
-    set(key: string, value: any): void
-    delete(key: string): void
-    deleteAll(prefix: string): void
-}
+import { Store, Storage } from "../interfaces"
 
 export class PrefixStore implements Store {
     public prefix: string
@@ -33,12 +28,6 @@ export class PrefixStore implements Store {
     deleteAll(prefix: string) {
         this.store.deleteAll(`${this.prefix}::${prefix}`)
     }
-}
-
-export interface Storage {
-    getItem(key: string): any | null
-    setItem(key: string, value: any): void
-    removeItem(key: string): void
 }
 
 export class StorageStore implements Store {

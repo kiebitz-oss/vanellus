@@ -15,16 +15,13 @@ import { cancelInvitation } from "./cancel-invitation"
 import { getAppointments } from "./get-appointments"
 
 import { Backend } from "../backend"
-import { Settings } from "../settings"
+import {
+    Settings,
+    QueueData,
+    TokenData,
+    SignedAppointment,
+} from "../interfaces"
 import { Actor } from "../actor"
-
-export interface QueueData {
-    zipCode: string
-}
-
-export interface TokenData {}
-
-export interface SignedAppointment {}
 
 export class User extends Actor {
     public restoreFromBackup = restoreFromBackup

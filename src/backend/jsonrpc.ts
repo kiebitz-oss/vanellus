@@ -4,13 +4,14 @@
 
 import { sign } from "../crypto"
 import { hash, urlEncode } from "../helpers/data"
-import { Settings } from "../settings"
-import { KeyPair } from "../crypto/interfaces"
+import { Settings } from "../interfaces"
+import { KeyPair } from "../interfaces"
 
 class RPCException {
     public error: any
     public name: string
     public result: Result
+
     constructor(result: Result) {
         this.name = "RPCException"
         this.result = result

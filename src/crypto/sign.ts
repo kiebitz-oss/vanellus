@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { b642buf, buf2b64, str2ab } from "../helpers/conversion"
-import { SignedData } from "./interfaces"
+import { SignedData } from "../interfaces"
 
 export async function sign(
     keyData: JsonWebKey,

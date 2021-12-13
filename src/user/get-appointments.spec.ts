@@ -2,7 +2,7 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Status } from "../structs"
+import { Status } from "../interfaces"
 import { equal } from "assert"
 import { formatDate } from "../helpers/time"
 import { settings, backend } from "../testing/settings"
@@ -16,13 +16,13 @@ beforeEach(function () {
 })
 
 describe("get appointments test", function () {
-    it("should be able to derive secrets", async function () {
+    it("should be able to fetch appointments", async function () {
         const today = formatDate(new Date())
         const result = await this.user.getAppointments({
             from: today,
             to: today,
         })
         equal(result.status, Status.Succeeded)
-        equal(result.data.length, 0)
+        equal(result.appointments.length, 0)
     })
 })

@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { randomBytes, sign } from "../crypto"
-import { SignedData } from "../crypto/interfaces"
+import { SignedData } from "../interfaces"
 import { Provider } from "./"
 
 export async function publishAppointments(this: Provider) {

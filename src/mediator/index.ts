@@ -8,7 +8,7 @@ import { pendingProviders, verifiedProviders } from "./providers"
 import { getStats } from "./get-stats"
 import { validKeyPairs } from "./valid-key-pairs"
 import { reconfirmProviders } from "./reconfirm-providers"
-import { KeyPair } from "../crypto/interfaces"
+import { KeyPair } from "../interfaces"
 
 export interface KeyPairs {
     signing: KeyPair

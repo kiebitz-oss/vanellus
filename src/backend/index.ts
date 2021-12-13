@@ -2,11 +2,11 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { PrefixStore, Store } from "./store"
+import { PrefixStore } from "./store"
 import { AppointmentsBackend } from "./appointments"
 import { StorageBackend } from "./storage"
 import { LocalBackend } from "./local"
-import { Settings } from "../settings"
+import { Settings, Store } from "../interfaces"
 
 export * from "./store"
 

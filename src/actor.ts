@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { Backend } from "./backend"
-import { Settings } from "./settings"
+import { Settings } from "./interfaces"
 
 export class Actor {
     public backend: Backend

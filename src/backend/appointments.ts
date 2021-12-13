@@ -14,8 +14,7 @@ import {
     randomBytes,
 } from "../crypto"
 
-import { KeyPair, ECDHData, SignedData } from "../crypto/interfaces"
-import { Settings } from "../settings"
+import { Settings, KeyPair, ECDHData, SignedData } from "../interfaces"
 
 import JSONRPCBackend from "./jsonrpc"
 
