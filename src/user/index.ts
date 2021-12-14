@@ -10,7 +10,8 @@ import { getToken } from "./get-token"
 import { backupData } from "./backup-data"
 import { cancelInvitation } from "./cancel-invitation"
 import { getAppointments } from "./get-appointments"
-
+import { randomBytes } from "../crypto"
+import { buf2base32, b642buf } from "../helpers/conversion"
 import { Backend } from "../backend"
 import {
     Settings,
@@ -30,7 +31,10 @@ export class User extends Actor {
     public backupData = backupData
     public cancelInvitation = cancelInvitation
     public getAppointments = getAppointments
-    private generateUserSecret = generateUserSecret
+
+    private generateUserSecret(): string {
+        return buf2base32(b642buf(randomBytes(10)))
+    }
 
     constructor(id: string, settings: Settings, backend: Backend) {
         super("provider", id, settings, backend)
