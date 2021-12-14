@@ -28,8 +28,7 @@ async function hashContactData(data: ContactData) {
 
 export async function getToken(
     this: User,
-    contactData: ContactData,
-    code?: string
+    { code }: { code?: string }
 ): Promise<GetTokenResult | Error> {
     // we hash the user data to prove it didn't change later...
     const [dataHash, nonce] = await hashContactData(this.contactData!)
@@ -68,7 +67,7 @@ export async function getToken(
     this.tokenData = tokenData
 
     return {
-        data: tokenData,
+        tokenData: tokenData,
         status: Status.Succeeded,
     }
 }

@@ -3,6 +3,7 @@
 // README.md contains license information.
 
 import { restoreFromBackup } from "./restore-from-backup"
+import { generateUserSecret } from "./generate-user-secret"
 import { confirmOffers } from "./confirm-offers"
 import { invitation } from "./invitation"
 import { getToken } from "./get-token"
@@ -29,9 +30,14 @@ export class User extends Actor {
     public backupData = backupData
     public cancelInvitation = cancelInvitation
     public getAppointments = getAppointments
+    private generateUserSecret = generateUserSecret
 
     constructor(id: string, settings: Settings, backend: Backend) {
         super("provider", id, settings, backend)
+    }
+
+    public initialize() {
+        this.userSecret = this.generateUserSecret()
     }
 
     public get queueData(): QueueData | null {
