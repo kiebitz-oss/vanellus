@@ -21,6 +21,7 @@ import {
     KeyPair,
     ECDHData,
     SignedData,
+    SignedToken,
     SignedAppointment,
     ProviderAppointments,
 } from "../interfaces"
@@ -152,27 +153,20 @@ export class AppointmentsBackend extends JSONRPCBackend {
     // get a token for a given queue
     async getToken({
         hash,
-        encryptedData,
         publicKey,
         code,
-        queueData,
-        signedTokenData,
     }: {
         hash: string
-        encryptedData: ECDHData
         publicKey: string
         code?: string
-        queueData?: { [Key: string]: any }
-        signedTokenData: SignedData
-    }) {
-        return await this.call("getToken", {
-            hash: hash,
-            code: code,
-            publicKey: publicKey,
-            encryptedData: encryptedData,
-            queueData: queueData,
-            signedTokenData: signedTokenData,
-        })
+    }): Promise<SignedToken | RPCError> {
+        return e<SignedToken>(
+            this.call("getToken", {
+                hash: hash,
+                code: code,
+                publicKey: publicKey,
+            })
+        )
     }
 
     // provider-only endpoints

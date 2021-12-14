@@ -10,11 +10,14 @@ interface ConfirmOffersResult extends Result {
     acceptedInvitation: AcceptedInvitation
 }
 
-export async function confirmOffers(this: User, offers: any, invitation: any): Promise<ConfirmOffersResult | Error > {
+export async function confirmOffers(
+    this: User,
+    offers: any,
+    invitation: any
+): Promise<ConfirmOffersResult | Error> {
     const providerData = {
         signedToken: this.tokenData!.signedToken,
-        tokenData: this.tokenData!.tokenData,
-        contactData: this.tokenData!.encryptedContactData,
+        userToken: this.tokenData!.userToken,
     }
 
     const encryptedProviderData = await ecdhEncrypt(
@@ -24,7 +27,6 @@ export async function confirmOffers(this: User, offers: any, invitation: any): P
     )
 
     for (const offer of offers) {
-
         const encryptedDataAndPublicKey = await ephemeralECDHEncrypt(
             JSON.stringify(providerData),
             offer.publicKey
@@ -61,7 +63,6 @@ export async function confirmOffers(this: User, offers: any, invitation: any): P
             status: Status.Succeeded,
             acceptedInvitation: acceptedInvitation,
         }
-   
     }
     return {
         status: Status.Failed,

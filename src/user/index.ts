@@ -6,7 +6,6 @@ import { restoreFromBackup } from "./restore-from-backup"
 import { confirmOffers } from "./confirm-offers"
 import { invitation } from "./invitation"
 import { getToken } from "./get-token"
-import { userSecret } from "./user-secret"
 import { backupData } from "./backup-data"
 import { cancelInvitation } from "./cancel-invitation"
 import { getAppointments } from "./get-appointments"
@@ -27,7 +26,6 @@ export class User extends Actor {
     public confirmOffers = confirmOffers
     public invitation = invitation
     public getToken = getToken
-    public userSecret = userSecret
     public backupData = backupData
     public cancelInvitation = cancelInvitation
     public getAppointments = getAppointments
@@ -42,6 +40,14 @@ export class User extends Actor {
 
     public set queueData(queueData: QueueData | null) {
         this.set("queueData", queueData)
+    }
+
+    public get userSecret(): string | null {
+        return this.get("userSecret")
+    }
+
+    public set userSecret(userSecret: string | null) {
+        this.set("userSecret", userSecret)
     }
 
     public get tokenData(): TokenData | null {

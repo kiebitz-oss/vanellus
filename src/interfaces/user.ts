@@ -6,18 +6,15 @@ export interface QueueData {
 
 export interface SignedToken extends SignedData {}
 
-export interface TokenData {
-    [Key: string]: any
+export interface ContactData {
+    name?: string
 }
 
-export interface ContactData {
-    
-}
+export interface UserToken {}
 
 export interface TokenData {
     keyPair: KeyPair
-    tokenData: TokenData
     signingKeyPair: KeyPair
     signedToken: SignedToken
-    encryptedContactData: ECDHData
+    userToken: UserToken
 }

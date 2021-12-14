@@ -10,10 +10,14 @@ import {
     hashString,
 } from "../crypto"
 
-async function hashContactData(data: any) {
+import { User } from "./"
+import { Result, Error, ContactData, Status } from "../interfaces"
+
+interface GetTokenResult extends Result {}
+
+async function hashContactData(data: ContactData) {
     const hashData = {
         name: data.name,
-        grantSeed: data.grantSeed,
         nonce: randomBytes(32),
     }
 
@@ -23,67 +27,49 @@ async function hashContactData(data: any) {
 }
 
 export async function getToken(
-    state: any,
-    keyStore: any,
-    settings: any,
-    contactData: any,
-    userSecret: any
-) {
-    const backend = settings.get("backend")
+    this: User,
+    contactData: ContactData,
+    code?: string
+): Promise<GetTokenResult | Error> {
+    // we hash the user data to prove it didn't change later...
+    const [dataHash, nonce] = await hashContactData(this.contactData!)
+    const signingKeyPair = await generateECDSAKeyPair()
+    const encryptionKeyPair = await generateECDHKeyPair()
 
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await backend.local.lock("getToken")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
+    const userToken = {
+        version: "0.3",
+        code: this.userSecret!.slice(0, 4),
+        createdAt: new Date().toISOString(),
+        publicKey: signingKeyPair!.publicKey, // the signing key to control the ID
+        encryptionPublicKey: encryptionKeyPair!.publicKey,
     }
 
-    try {
-        keyStore.set({ status: "submitting" })
-        try {
-            // we hash the user data to prove it didn't change later...
-            const [dataHash, nonce] = await hashContactData(contactData)
-            const signingKeyPair = await generateECDSAKeyPair()
-            const encryptionKeyPair = await generateECDHKeyPair()
+    const signedToken = await this.backend.appointments.getToken({
+        hash: dataHash,
+        publicKey: signingKeyPair!.publicKey,
+        code: code,
+    })
 
-            const userToken = {
-                // we use the user secrets first 4 digits as a code
-                // this weakens the key a bit but the provider has access to all
-                // of the user's appointment data anyway...
-                code: userSecret.slice(0, 4),
-                version: "0.3",
-                createdAt: new Date().toISOString(),
-                publicKey: signingKeyPair!.publicKey, // the signing key to control the ID
-                encryptionPublicKey: encryptionKeyPair!.publicKey,
-                id: randomBytes(32), // the ID where we want to receive data
-            }
-
-            const signedToken = await backend.appointments.getToken({
-                hash: dataHash,
-                publicKey: signingKeyPair!.publicKey,
-                code: contactData.code,
-            })
-
-            const tokenData = {
-                createdAt: new Date().toISOString(),
-                signedToken: signedToken,
-                signingKeyPair: signingKeyPair,
-                keyPair: encryptionKeyPair,
-                hashNonce: nonce,
-                dataHash: dataHash,
-                tokenData: userToken,
-            }
-
-            backend.local.set("user::tokenData", tokenData)
-            return {
-                data: tokenData,
-                status: "succeeded",
-            }
-        } catch (e) {
-            return { status: "failed", error: e }
+    if ("code" in signedToken)
+        return {
+            status: Status.Failed,
         }
-    } finally {
-        backend.local.unlock("getToken")
+
+    const tokenData = {
+        createdAt: new Date().toISOString(),
+        signedToken: signedToken,
+        signingKeyPair: signingKeyPair!,
+        keyPair: encryptionKeyPair!,
+        hashNonce: nonce,
+        dataHash: dataHash,
+        userToken: userToken,
+    }
+
+    this.tokenData = tokenData
+
+    return {
+        data: tokenData,
+        status: Status.Succeeded,
     }
 }
 
