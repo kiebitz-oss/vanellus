@@ -3,7 +3,6 @@
 // README.md contains license information.
 
 import { restoreFromBackup } from "./restore-from-backup"
-import { generateUserSecret } from "./generate-user-secret"
 import { confirmOffers } from "./confirm-offers"
 import { invitation } from "./invitation"
 import { getToken } from "./get-token"
