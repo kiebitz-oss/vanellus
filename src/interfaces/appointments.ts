@@ -8,6 +8,13 @@ export interface BookedSlot {
 
 export interface Slot {
     id: string
+    open: boolean
+}
+
+export interface AcceptedInvitation {
+    invitation: ProviderAppointments
+    offer: SignedAppointment
+    booking: Booking
 }
 
 export interface Appointment {
@@ -25,8 +32,8 @@ export interface SignedAppointment {
     updatedAt: string
     signature: string
     publicKey: string
-    bookedSlots: BookedSlot[]
-    bookings: Booking[]
+    bookedSlots?: BookedSlot[]
+    bookings?: Booking[]
     json?: Appointment
 }
 

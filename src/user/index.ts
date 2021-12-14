@@ -3,14 +3,11 @@
 // README.md contains license information.
 
 import { restoreFromBackup } from "./restore-from-backup"
-import { acceptedInvitation } from "./accepted-invitation"
 import { confirmOffers } from "./confirm-offers"
-import { contactData } from "./contact-data"
 import { invitation } from "./invitation"
 import { getToken } from "./get-token"
 import { userSecret } from "./user-secret"
 import { backupData } from "./backup-data"
-import { confirmDeletion } from "./confirm-deletion"
 import { cancelInvitation } from "./cancel-invitation"
 import { getAppointments } from "./get-appointments"
 
@@ -19,20 +16,19 @@ import {
     Settings,
     QueueData,
     TokenData,
+    ContactData,
+    AcceptedInvitation,
     ProviderAppointments,
 } from "../interfaces"
 import { Actor } from "../actor"
 
 export class User extends Actor {
     public restoreFromBackup = restoreFromBackup
-    public acceptedInvitation = acceptedInvitation
     public confirmOffers = confirmOffers
-    public contactData = contactData
     public invitation = invitation
     public getToken = getToken
     public userSecret = userSecret
     public backupData = backupData
-    public confirmDeletion = confirmDeletion
     public cancelInvitation = cancelInvitation
     public getAppointments = getAppointments
 
@@ -56,6 +52,14 @@ export class User extends Actor {
         this.set("tokenData", tokenData)
     }
 
+    public get contactData(): ContactData | null {
+        return this.get("contactData")
+    }
+
+    public set contactData(contactData: ContactData | null) {
+        this.set("contactData", contactData)
+    }
+
     public get verifiedAppointments(): ProviderAppointments[] | null {
         return this.get("verifiedAppointments")
     }
@@ -64,5 +68,15 @@ export class User extends Actor {
         verifiedAppointments: ProviderAppointments[] | null
     ) {
         this.set("verifiedAppointments", verifiedAppointments)
+    }
+
+    public get acceptedInvitation(): AcceptedInvitation | null {
+        return this.get("acceptedInvitation")
+    }
+
+    public set acceptedInvitation(
+        acceptedInvitation: AcceptedInvitation | null
+    ) {
+        this.set("acceptedInvitation", acceptedInvitation)
     }
 }

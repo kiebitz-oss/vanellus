@@ -147,7 +147,7 @@ export async function ecdhEncrypt(
 export async function ephemeralECDHEncrypt(
     rawData: string,
     publicKeyData: string
-) {
+): Promise<[ECDHData, JsonWebKey] | null> {
     const data = str2ab(rawData)
 
     try {

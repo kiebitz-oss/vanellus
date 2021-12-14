@@ -3,6 +3,7 @@
 // README.md contains license information.
 
 import { b642buf, buf2b64, str2ab } from "../helpers/conversion"
+import { KeyPair } from "../interfaces"
 
 export async function generateSymmetricKey() {
     try {
@@ -39,7 +40,7 @@ export async function generateECDSAKeyPair() {
     return null
 }
 
-export async function generateECDHKeyPair() {
+export async function generateECDHKeyPair(): Promise<KeyPair | null> {
     try {
         const key = await crypto.subtle.generateKey(
             { name: "ECDH", namedCurve: "P-256" },

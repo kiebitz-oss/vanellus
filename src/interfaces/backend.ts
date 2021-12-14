@@ -24,5 +24,5 @@ export interface Result {
 
 export interface Error {
     status: Status.Failed
-    error: { [key: string]: any }
+    error?: { [key: string]: any }
 }

@@ -15,6 +15,7 @@ import {
 } from "../crypto"
 
 import {
+    Booking,
     RPCError,
     Settings,
     KeyPair,
@@ -138,11 +139,13 @@ export class AppointmentsBackend extends JSONRPCBackend {
             signedTokenData: SignedData
         },
         keyPair: KeyPair
-    ) {
-        return await this.call(
-            "bookAppointment",
-            { providerID, id, encryptedData, signedTokenData },
-            keyPair
+    ): Promise<Booking | RPCError> {
+        return e<Booking>(
+            this.call(
+                "bookAppointment",
+                { providerID, id, encryptedData, signedTokenData },
+                keyPair
+            )
         )
     }
 
