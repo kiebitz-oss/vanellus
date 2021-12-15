@@ -12,8 +12,8 @@ export interface Slot {
 }
 
 export interface AcceptedInvitation {
-    invitation: ProviderAppointments
-    offer: SignedAppointment
+    appointment: SignedAppointment
+    provider: SignedProviderData
     booking: Booking
 }
 
@@ -25,6 +25,7 @@ export interface Appointment {
     duration: number
     properties: { [Key: string]: any }
     id: string
+    publicKey: string
     slotData: Slot[]
 }
 export interface SignedAppointment {
@@ -41,6 +42,7 @@ export interface SignedProviderData {
     data: string
     signature: string
     publicKey: string
+    id: string
     json?: PublicProviderData
 }
 

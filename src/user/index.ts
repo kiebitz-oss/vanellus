@@ -3,15 +3,15 @@
 // README.md contains license information.
 
 import { restoreFromBackup } from "./restore-from-backup"
-import { confirmOffers } from "./confirm-offers"
-import { invitation } from "./invitation"
 import { getToken } from "./get-token"
 import { backupData } from "./backup-data"
-import { cancelInvitation } from "./cancel-invitation"
+import { bookAppointment } from "./book-appointment"
+import { cancelAppointment } from "./cancel-appointment"
 import { getAppointments } from "./get-appointments"
-import { randomBytes } from "../crypto"
 import { buf2base32, b642buf } from "../helpers/conversion"
+import { randomBytes } from "../crypto"
 import { Backend } from "../backend"
+
 import {
     Settings,
     QueueData,
@@ -20,16 +20,16 @@ import {
     AcceptedInvitation,
     ProviderAppointments,
 } from "../interfaces"
+
 import { Actor } from "../actor"
 
 export class User extends Actor {
     public restoreFromBackup = restoreFromBackup
-    public confirmOffers = confirmOffers
-    public invitation = invitation
-    public getToken = getToken
-    public backupData = backupData
-    public cancelInvitation = cancelInvitation
+    public cancelAppointment = cancelAppointment
+    public bookAppointment = bookAppointment
     public getAppointments = getAppointments
+    public backupData = backupData
+    public getToken = getToken
 
     private generateUserSecret(): string {
         return buf2base32(b642buf(randomBytes(10)))
