@@ -3,23 +3,23 @@
 // README.md contains license information.
 
 import { Settings, Store } from "../interfaces"
-import { Backend, InMemoryStorage, StorageStore } from "../backend"
 
 import fetch from "node-fetch"
 
 // @ts-ignore
 global.fetch = fetch
 
+export const settingsPath =
+    process.env.KIEBITZ_SETTINGS || "../services/settings/test"
+export const appointmentsPort = process.env.KIEBITZ_APPOINTMENTS_PORT || "22222"
+export const storagePort = process.env.KIEBITZ_STORAGE_PORT || "11111"
+
 export const settings: Settings = {
     appointment: {
         properties: {},
     },
     apiUrls: {
-        appointments: "http://localhost:8888/jsonrpc",
-        storage: "http://localhost:8888/jsonrpc",
+        appointments: `http://localhost:${appointmentsPort}/jsonrpc`,
+        storage: `http://localhost:${storagePort}/jsonrpc`,
     },
 }
-
-export const store: Store = new StorageStore(new InMemoryStorage())
-export const temporaryStore: Store = new StorageStore(new InMemoryStorage())
-export const backend: Backend = new Backend(settings, store, temporaryStore)

@@ -3,103 +3,89 @@
 // README.md contains license information.
 
 import { verify, ecdhDecrypt } from "../crypto"
+import {
+    Error,
+    Result,
+    Status,
+    EncryptedProviderData,
+    KeyPair,
+    ProviderData,
+} from "../interfaces"
+import { Mediator } from "./"
 
-export async function verifiedProviders(
-    state: any,
-    keyStore: any,
-    settings: any,
-    keyPairs: any
-) {
-    const backend = settings.get("backend")
-
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await backend.local.lock("verifiedProviders")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
-    }
-
-    try {
-        return await providers(
-            state,
-            keyStore,
-            settings,
-            keyPairs,
-            (...args: any[]) =>
-                backend.appointments.getVerifiedProviderData(...args)
-        )
-    } finally {
-        backend.local.unlock("verifiedProviders")
-    }
+interface ProvidersResult extends Result {
+    providers: EncryptedProviderData[]
 }
-
-verifiedProviders.actionName = "verifiedProviders"
 
 export async function pendingProviders(
-    state: any,
-    keyStore: any,
-    settings: any,
-    keyPairs: any
-) {
-    const backend = settings.get("backend")
+    this: Mediator
+): Promise<ProvidersResult | Error> {
+    const providerData = await this.backend.appointments.getPendingProviderData(
+        {},
+        this.keyPairs!.signing
+    )
 
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await backend.local.lock("pendingProviders")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
+    if ("code" in providerData)
+        return {
+            status: Status.Failed,
+            error: providerData,
+        }
+
+    for (const pd of providerData) {
+        const decryptedData = await ecdhDecrypt(
+            pd.encryptedData,
+            this.keyPairs!.provider.privateKey
+        )
+        if (decryptedData === null)
+            return {
+                status: Status.Failed,
+                error: pd,
+            }
+
+        // to do: verify provider data!
+
+        pd.data = JSON.parse(decryptedData) as ProviderData
     }
 
-    try {
-        return await providers(
-            state,
-            keyStore,
-            settings,
-            keyPairs,
-            (...args: any[]) =>
-                backend.appointments.getPendingProviderData(...args)
-        )
-    } finally {
-        backend.local.unlock("pendingProviders")
+    return {
+        status: Status.Succeeded,
+        providers: providerData,
     }
 }
 
-pendingProviders.actionName = "pendingProviders"
+export async function verifiedProviders(
+    this: Mediator
+): Promise<ProvidersResult | Error> {
+    const providerData =
+        await this.backend.appointments.getVerifiedProviderData(
+            {},
+            this.keyPairs!.signing
+        )
 
-async function providers(
-    state: any,
-    keyStore: any,
-    settings: any,
-    keyPairs: any,
-    loader: any
-) {
-    try {
-        const providersList = await loader({ n: 10 }, keyPairs.signing)
-        const invalidEntries = []
-        const decryptedProviderList = []
-        for (const entry of providersList) {
-            try {
-                const decryptedJSONData = await ecdhDecrypt(
-                    entry.encryptedData,
-                    keyPairs.provider.privateKey
-                )
-                const decryptedData = JSON.parse(decryptedJSONData!)
-                decryptedData.entry = entry
-                decryptedProviderList.push(decryptedData)
-            } catch (e) {
-                invalidEntries.push({
-                    entry: entry,
-                    error: e,
-                })
-            }
-        }
+    if ("code" in providerData)
         return {
-            data: decryptedProviderList,
-            invalidEntries: invalidEntries,
-            status: "loaded",
+            status: Status.Failed,
+            error: providerData,
         }
-    } catch (e) {
-        console.error(e)
-        return { status: "failed", error: e }
+
+    for (const pd of providerData) {
+        const decryptedData = await ecdhDecrypt(
+            pd.encryptedData,
+            this.keyPairs!.provider.privateKey
+        )
+        if (decryptedData === null)
+            return {
+                status: Status.Failed,
+                error: pd,
+            }
+
+        // to do: verify provider data!
+
+        pd.data = JSON.parse(decryptedData) as ProviderData
+    }
+
+    return {
+        status: Status.Succeeded,
+        providers: providerData,
     }
 }

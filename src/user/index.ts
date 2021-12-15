@@ -13,7 +13,6 @@ import { randomBytes } from "../crypto"
 import { Backend } from "../backend"
 
 import {
-    Settings,
     QueueData,
     TokenData,
     ContactData,
@@ -35,8 +34,8 @@ export class User extends Actor {
         return buf2base32(b642buf(randomBytes(10)))
     }
 
-    constructor(id: string, settings: Settings, backend: Backend) {
-        super("provider", id, settings, backend)
+    constructor(id: string, backend: Backend) {
+        super("provider", id, backend)
     }
 
     public initialize() {

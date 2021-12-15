@@ -5,11 +5,12 @@
 import { Status } from "../interfaces"
 import { equal } from "assert"
 import { formatDate } from "../helpers/time"
-import { settings, backend } from "../testing/settings"
+import { backend } from "../testing/fixtures"
 import { User } from "./"
 
 beforeEach(function () {
-    this.user = new User("main", settings, backend)
+    this.backend = backend()
+    this.user = new User("main", this.backend)
     // we generate a secret etc.
     this.user.initialize()
     // we set the queue data

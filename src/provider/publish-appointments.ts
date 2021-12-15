@@ -45,7 +45,7 @@ export async function publishAppointments(this: Provider) {
                 }
 
                 for (const [k, v] of Object.entries(
-                    this.settings.appointment.properties
+                    this.backend.settings.appointment.properties
                 )) {
                     for (const [kk] of Object.entries(v.values)) {
                         if (appointment[kk] === true)

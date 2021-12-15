@@ -8,8 +8,6 @@ import { salt } from "./token"
 
 export async function deriveSecrets(key: ArrayBuffer, len: number, n: number) {
     try {
-        console.log("deriving secrets...")
-
         const baseKey = await crypto.subtle.importKey(
             "raw",
             key,

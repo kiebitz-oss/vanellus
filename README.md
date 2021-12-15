@@ -31,3 +31,13 @@ To continuously build files and watch for changes, simply run
 ```bash
 make watch
 ```
+
+# Testing
+
+To run the unit & integration tests
+
+```bash
+make test
+```
+
+These tests require a running Kiebitz test instance with appointments and storage services, as well as a readable `002_admin.json` key file in the Kiebitz settings directory. The default directory is `../services/settings/test`. You can change the directory and service ports by setting the `KIEBITZ_SETTINGS`, `KIEBITZ_APPOINTMENTS_PORT` and `KIEBITZ_STORAGE_PORT` environment variables.

@@ -3,25 +3,27 @@
 // README.md contains license information.
 
 import { confirmProvider } from "./confirm-provider"
-import { keyPairs } from "./key-pairs"
 import { pendingProviders, verifiedProviders } from "./providers"
 import { getStats } from "./get-stats"
-import { validKeyPairs } from "./valid-key-pairs"
-import { reconfirmProviders } from "./reconfirm-providers"
-import { KeyPair } from "../interfaces"
+import { MediatorKeyPairs } from "../interfaces"
+import { Actor } from "../actor"
+import { Backend } from "../backend"
 
-export interface KeyPairs {
-    signing: KeyPair
-    encryption: KeyPair
-    sync: string
-}
-
-class Mediator {
+export class Mediator extends Actor {
     public confirmProvider = confirmProvider
-    public keyPairs = keyPairs
     public pendingProviders = pendingProviders
     public verifiedProviders = verifiedProviders
     public getStats = getStats
-    public validKeyPairs = validKeyPairs
-    public reconfirmProviders = reconfirmProviders
+
+    constructor(id: string, backend: Backend) {
+        super("mediator", id, backend)
+    }
+
+    public get keyPairs(): MediatorKeyPairs | null {
+        return this.get("keyPairs")
+    }
+
+    public set keyPairs(keyPairs: MediatorKeyPairs | null) {
+        this.set("keyPairs", keyPairs)
+    }
 }
