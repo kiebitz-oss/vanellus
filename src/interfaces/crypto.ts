@@ -7,11 +7,6 @@ export interface KeyPair {
     privateKey: JsonWebKey // JWK (due to Firefox not supporting PKCS8)
 }
 
-export interface AdminKeyPair {
-    publicKey: string // SPKI
-    privateKey: string // PKCS8
-}
-
 export interface Data {
     iv: string
     data: string

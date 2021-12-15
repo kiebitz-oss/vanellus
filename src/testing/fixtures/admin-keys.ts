@@ -1,28 +1,43 @@
 import fs from "fs"
 
-import { AdminKeyPair } from "../../interfaces"
+import { generateECDSAKeyPair } from "../../crypto"
+import { KeyPair } from "../../interfaces"
+import { b642buf, buf2b64 } from "../../helpers/conversion"
 
 export interface AdminKeys {
-    root: AdminKeyPair
-    provider: AdminKeyPair
-    token: AdminKeyPair
+    root: KeyPair
+    provider: KeyPair
+    token: KeyPair
 }
 
-export function adminKeys(path: string): AdminKeys {
+export async function adminKeys(path: string): Promise<AdminKeys> {
     const keys = fs.readFileSync(path, "ascii")
     const json = JSON.parse(keys)
-    const extractKey = (name: string): AdminKeyPair => {
+    const extractKey = async (name: string): Promise<KeyPair> => {
         const keyData: { [Key: string]: string } = json.admin.signing.keys.find(
             (key: any) => key.name === name
         )
+
+        // this will not work in Firefox, but that's ok as it's only for testing...
+        const importedKey = await crypto.subtle.importKey(
+            "pkcs8",
+            b642buf(keyData.privateKey),
+            { name: "ECDSA", namedCurve: "P-256" },
+            true,
+            ["sign"]
+        )
+
+        // we reexport as JWK as that's the format that the library expects...
+        let privateKey = await crypto.subtle.exportKey("jwk", importedKey)
+
         return {
-            publicKey: keyData.public_key,
-            privateKey: keyData.private_key,
+            publicKey: keyData.publicKey,
+            privateKey: privateKey,
         }
     }
     return {
-        root: extractKey("root"),
-        token: extractKey("token"),
-        provider: extractKey("provider"),
+        root: await extractKey("root"),
+        token: await extractKey("token"),
+        provider: await extractKey("provider"),
     }
 }

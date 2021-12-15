@@ -103,11 +103,12 @@ export function buf2b64(buffer: ArrayBuffer) {
 
 // https://stackoverflow.com/questions/21797299/convert-base64-string-to-arraybuffer
 export function b642buf(base64: string) {
-    const bs = Buffer.from(base64, "base64").toString()
-    const len = bs.length
+    const bs = Buffer.from(base64, "base64")
+    const ss = bs.toString()
+    const len = bs.byteLength
     const bytes = new Uint8Array(len)
     for (let i = 0; i < len; i++) {
-        bytes[i] = bs.charCodeAt(i)
+        bytes[i] = bs[i]
     }
     return bytes.buffer
 }

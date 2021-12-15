@@ -4,6 +4,10 @@ the Kiebitz API and data models.
 
 **This is still a work in progress.**
 
+# Requirements
+
+To run this library in the browser you'll need the `buffer` package, which implement the `Buffer` object from Node.js.
+
 # Building
 
 To build the distribution files, simply run
