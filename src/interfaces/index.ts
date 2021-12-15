@@ -1,6 +1,7 @@
 export * from "./appointments"
 export * from "./settings"
 export * from "./provider"
+export * from "./mediator"
 export * from "./backend"
 export * from "./crypto"
 export * from "./user"

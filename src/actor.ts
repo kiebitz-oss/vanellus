@@ -3,27 +3,19 @@
 // README.md contains license information.
 
 import { Backend } from "./backend"
-import { Settings } from "./interfaces"
 
 export class Actor {
     public backend: Backend
-    public settings: Settings
     public actor: string
     public id: string
 
-    constructor(
-        actor: string,
-        id: string,
-        settings: Settings,
-        backend: Backend
-    ) {
+    constructor(actor: string, id: string, backend: Backend) {
         // the ID will be used to address local storage so that e.g. we can
         // manage multiple providers, users etc. if necessary...
 
         this.actor = actor
         this.id = id
         this.backend = backend
-        this.settings = settings
     }
 
     protected get(key: string): any {

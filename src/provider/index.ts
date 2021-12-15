@@ -25,7 +25,6 @@ import {
     VerifiedProviderData,
     KeyPair,
     KeyPairs,
-    Settings,
     Appointment,
 } from "../interfaces"
 
@@ -45,8 +44,8 @@ export class Provider extends Actor {
     public getAppointments = getAppointments
     public generateKeyPairs = generateKeyPairs
 
-    constructor(id: string, settings: Settings, backend: Backend) {
-        super("provider", id, settings, backend)
+    constructor(id: string, backend: Backend) {
+        super("provider", id, backend)
     }
 
     public get openAppointments(): Appointment[] {

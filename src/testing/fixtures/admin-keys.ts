@@ -1,6 +1,7 @@
 import fs from "fs"
 
 import { generateECDSAKeyPair } from "../../crypto"
+import { settingsPath } from "../settings"
 import { KeyPair } from "../../interfaces"
 import { b642buf, buf2b64 } from "../../helpers/conversion"
 
@@ -10,8 +11,8 @@ export interface AdminKeys {
     token: KeyPair
 }
 
-export async function adminKeys(path: string): Promise<AdminKeys> {
-    const keys = fs.readFileSync(path, "ascii")
+export async function adminKeys(): Promise<AdminKeys> {
+    const keys = fs.readFileSync(`${settingsPath}/002_admin.json`, "ascii")
     const json = JSON.parse(keys)
     const extractKey = async (name: string): Promise<KeyPair> => {
         const keyData: { [Key: string]: string } = json.admin.signing.keys.find(
@@ -22,9 +23,12 @@ export async function adminKeys(path: string): Promise<AdminKeys> {
         const importedKey = await crypto.subtle.importKey(
             "pkcs8",
             b642buf(keyData.privateKey),
-            { name: "ECDSA", namedCurve: "P-256" },
+            {
+                name: keyData.type === "ecdh" ? "ECDH" : "ECDSA",
+                namedCurve: "P-256",
+            },
             true,
-            ["sign"]
+            keyData.type === "ecdh" ? ["deriveKey"] : ["sign"]
         )
 
         // we reexport as JWK as that's the format that the library expects...

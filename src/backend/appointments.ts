@@ -15,6 +15,7 @@ import {
 } from "../crypto"
 
 import {
+    OK,
     Booking,
     RPCError,
     Settings,
@@ -23,6 +24,8 @@ import {
     SignedData,
     SignedToken,
     SignedAppointment,
+    SignedMediatorKeyData,
+    EncryptedProviderData,
     ProviderAppointments,
 } from "../interfaces"
 import { e } from "./helpers"
@@ -40,7 +43,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
             publicProviderData,
             signedKeyData,
         }: {
-            encryptedProviderData: ECDHData
+            encryptedProviderData: SignedData
             publicProviderData: SignedData
             signedKeyData: SignedData
         },
@@ -108,6 +111,22 @@ export class AppointmentsBackend extends JSONRPCBackend {
     // return all public keys present in the system
     async getKeys() {
         return await this.call("getKeys", {})
+    }
+
+    // root endpoints
+
+    // only works for test deployments
+    async resetDB({}: {}, keyPair: KeyPair) {
+        return await this.call("resetDB", {}, keyPair)
+    }
+
+    async addMediatorPublicKeys(
+        { signedKeyData }: { signedKeyData: SignedMediatorKeyData },
+        keyPair: KeyPair
+    ): Promise<OK | RPCError> {
+        return e<OK>(
+            this.call("addMediatorPublicKeys", { signedKeyData }, keyPair)
+        )
     }
 
     // user endpoints
@@ -201,11 +220,9 @@ export class AppointmentsBackend extends JSONRPCBackend {
     async storeProviderData(
         { encryptedData, code }: { encryptedData: ECDHData; code?: string },
         keyPair: KeyPair
-    ) {
-        return await this.call(
-            "storeProviderData",
-            { encryptedData, code },
-            keyPair
+    ): Promise<OK | RPCError> {
+        return e<OK>(
+            this.call("storeProviderData", { encryptedData, code }, keyPair)
         )
     }
 
@@ -216,16 +233,20 @@ export class AppointmentsBackend extends JSONRPCBackend {
     // mediator-only endpoint
 
     async getPendingProviderData(
-        { limit }: { limit: number },
+        { limit }: { limit?: number },
         keyPair: KeyPair
-    ) {
-        return await this.call("getPendingProviderData", { limit }, keyPair)
+    ): Promise<EncryptedProviderData[] | RPCError> {
+        return e<EncryptedProviderData[]>(
+            this.call("getPendingProviderData", { limit }, keyPair)
+        )
     }
 
     async getVerifiedProviderData(
-        { limit }: { limit: number },
+        { limit }: { limit?: number },
         keyPair: KeyPair
-    ) {
-        return await this.call("getVerifiedProviderData", { limit }, keyPair)
+    ): Promise<EncryptedProviderData[] | RPCError> {
+        return e<EncryptedProviderData[]>(
+            this.call("getVerifiedProviderData", { limit }, keyPair)
+        )
     }
 }

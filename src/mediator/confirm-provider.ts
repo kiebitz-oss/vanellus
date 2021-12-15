@@ -3,58 +3,56 @@
 // README.md contains license information.
 
 import { sign, ecdhDecrypt, ephemeralECDHEncrypt } from "../crypto"
+import { EncryptedProviderData, Result, Error, Status } from "../interfaces"
+import { Mediator } from "./"
 
-import { KeyPairs } from "./"
+export async function confirmProvider(
+    this: Mediator,
+    providerData: EncryptedProviderData
+): Promise<Result | Error> {
+    const data = providerData.data!
 
-export async function confirmSingleProvider(
-    providerData: any,
-    keyPairs: KeyPairs,
-    backend: any
-) {
     const keyHashesData = {
-        signing: providerData.publicKeys.signing,
-        encryption: providerData.publicKeys.encryption,
+        signing: data.publicKeys.signing,
+        encryption: data.publicKeys.encryption,
         queueData: {
-            zipCode: providerData.data.zipCode,
-            accessible: providerData.data.accessible,
+            zipCode: data.zipCode,
+            accessible: data.accessible,
         },
     }
 
     const keysJSONData = JSON.stringify(keyHashesData)
 
-    // we remove the 'code' field from the provider
-    if (providerData.data.code !== undefined) delete providerData.data.code
-
     const publicProviderData = {
-        name: providerData.data.name,
-        street: providerData.data.street,
-        city: providerData.data.city,
-        zipCode: providerData.data.zipCode,
-        website: providerData.data.website,
-        description: providerData.data.description,
+        name: data.name,
+        street: data.street,
+        city: data.city,
+        zipCode: data.zipCode,
+        website: data.website,
+        description: data.description,
     }
 
     const publicProviderJSONData = JSON.stringify(publicProviderData)
-    const providerJSONData = JSON.stringify(providerData.data)
+    const providerJSONData = JSON.stringify(data)
 
     const signedKeyData = await sign(
-        keyPairs.signing.privateKey,
+        this.keyPairs!.signing.privateKey,
         keysJSONData,
-        keyPairs.signing.publicKey
+        this.keyPairs!.signing.publicKey
     )
 
     // this will be stored for the provider, so we add the public key data
     const signedProviderData = await sign(
-        keyPairs.signing.privateKey,
+        this.keyPairs!.signing.privateKey,
         providerJSONData,
-        keyPairs.signing.publicKey
+        this.keyPairs!.signing.publicKey
     )
 
     // this will be stored for the general public
     const signedPublicProviderData = await sign(
-        keyPairs.signing.privateKey,
+        this.keyPairs!.signing.privateKey,
         publicProviderJSONData,
-        keyPairs.signing.publicKey
+        this.keyPairs!.signing.publicKey
     )
 
     const fullData = {
@@ -62,60 +60,30 @@ export async function confirmSingleProvider(
         signedPublicData: signedPublicProviderData,
     }
 
-    const encryptedData = await ephemeralECDHEncrypt(
-        JSON.stringify(fullData),
-        providerData.entry.encryptedData.publicKey
-    )
-
     // we encrypt the data with the public key supplied by the provider
-    const [encryptedProviderData, _] = encryptedData!
+    const [encryptedProviderData] = (await ephemeralECDHEncrypt(
+        JSON.stringify(fullData),
+        providerData.encryptedData.publicKey
+    ))!
+
+    const encryptedProviderDataJSON = JSON.stringify(encryptedProviderData)
 
     const signedEncryptedProviderData = await sign(
-        keyPairs.signing.privateKey,
-        JSON.stringify(encryptedProviderData),
-        keyPairs.signing.publicKey
+        this.keyPairs!.signing.privateKey,
+        encryptedProviderDataJSON,
+        this.keyPairs!.signing.publicKey
     )
 
-    const result = await backend.appointments.confirmProvider(
+    const result = await this.backend.appointments.confirmProvider(
         {
-            encryptedProviderData: signedEncryptedProviderData,
-            publicProviderData: signedPublicProviderData,
-            signedKeyData: signedKeyData,
+            encryptedProviderData: signedEncryptedProviderData!,
+            publicProviderData: signedPublicProviderData!,
+            signedKeyData: signedKeyData!,
         },
-        keyPairs.signing
+        this.keyPairs!.signing
     )
-}
 
-export async function confirmProvider(
-    state: any,
-    keyStore: any,
-    settings: any,
-    providerData: any,
-    keyPairs: any
-) {
-    const backend = settings.get("backend")
-
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await backend.local.lock("confirmProvider")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
-    }
-
-    try {
-        const result = await confirmSingleProvider(
-            providerData,
-            keyPairs,
-            backend
-        )
-
-        return {
-            status: "suceeded",
-            data: result,
-        }
-    } finally {
-        backend.local.unlock("confirmProvider")
+    return {
+        status: Status.Succeeded,
     }
 }
-
-confirmProvider.actionName = "confirmProvider"
