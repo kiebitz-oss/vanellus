@@ -4,6 +4,9 @@ copyright:
 prettier:
 	npx prettier --write .
 
+eslint:
+	npx eslint . --ext .ts
+
 test:
 	npx mocha
 

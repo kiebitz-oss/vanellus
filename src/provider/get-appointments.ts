@@ -112,6 +112,7 @@ export async function getAppointments(
                 timestamp: appData.timestamp,
                 duration: appData.duration,
                 slotData: appData.slotData,
+                publicKey: appData.publicKey,
                 properties: appData.properties,
                 bookings: await decryptBookings(appointment.bookings || []),
                 modified: false,

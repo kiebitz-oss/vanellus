@@ -3,8 +3,13 @@
 // README.md contains license information.
 
 export interface KeyPair {
-    publicKey: string
-    privateKey: JsonWebKey
+    publicKey: string // SPKI
+    privateKey: JsonWebKey // JWK (due to Firefox not supporting PKCS8)
+}
+
+export interface AdminKeyPair {
+    publicKey: string // SPKI
+    privateKey: string // PKCS8
 }
 
 export interface Data {
