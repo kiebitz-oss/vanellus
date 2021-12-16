@@ -1,4 +1,4 @@
-import { ECDHData } from "./"
+import { ECDHData, KeyPair } from "./"
 
 export interface ProviderBackupReferenceData {
     [Key: string]: any
@@ -26,4 +26,11 @@ export interface ProviderData {
     accessible?: boolean
     website?: string
     publicKeys: ProviderPublicKeys
+}
+
+export interface ProviderKeyPairs {
+    signing: KeyPair
+    encryption: KeyPair
+    data: KeyPair
+    sync: string
 }

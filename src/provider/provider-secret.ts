@@ -7,28 +7,15 @@ import { randomBytes } from "../crypto"
 import { Provider } from "./"
 
 export async function providerSecret(this: Provider, data: any, lockName: any) {
-    if (lockName === undefined) lockName = "providerSecret"
-
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await this.lock(lockName)
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
-    }
-
-    try {
-        if (data !== undefined) this.backend.local.set("secret", data)
-        data = this.backend.local.get("secret")
-        if (data === null)
-            return {
-                status: "failed",
-            }
+    if (data !== undefined) this.backend.local.set("secret", data)
+    data = this.backend.local.get("secret")
+    if (data === null)
         return {
-            status: "loaded",
-            data: data,
+            status: "failed",
         }
-    } finally {
-        this.unlock(lockName)
+    return {
+        status: "loaded",
+        data: data,
     }
 }
 

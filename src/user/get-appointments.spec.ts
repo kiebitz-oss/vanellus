@@ -15,8 +15,8 @@ beforeEach(function () {
     }
 })
 
-describe("get appointments test", function () {
-    it("should be able to fetch appointments", async function () {
+describe("User.getAppointments()", function () {
+    it("we should be able to fetch appointments", async function () {
         const today = formatDate(new Date())
         const result = await this.user.getAppointments({
             from: today,

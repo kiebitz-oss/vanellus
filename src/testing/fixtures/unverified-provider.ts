@@ -1,27 +1,16 @@
 import { AdminKeys } from "./"
-import {
-    generateECDSAKeyPair,
-    generateECDHKeyPair,
-    ecdhEncrypt,
-    ecdhDecrypt,
-} from "../../crypto"
+import { ecdhEncrypt, ecdhDecrypt } from "../../crypto"
 import { Backend } from "../../backend"
+import { Provider } from "../../provider"
 import { ProviderData, RPCError, KeyPair } from "../../interfaces"
-
-export interface Provider {
-    dataKeyPair: KeyPair
-    signingKeyPair: KeyPair
-    encryptionKeyPair: KeyPair
-    data: ProviderData
-}
 
 export async function unverifiedProvider(
     backend: Backend,
     adminKeys: AdminKeys
 ): Promise<Provider | RPCError> {
-    const dataKeyPair = await generateECDHKeyPair()
-    const signingKeyPair = await generateECDSAKeyPair()
-    const encryptionKeyPair = await generateECDHKeyPair()
+    const provider = new Provider("provider", backend)
+
+    await provider.generateKeyPairs()
 
     const providerData: ProviderData = {
         name: "Max Mustermann",
@@ -31,30 +20,27 @@ export async function unverifiedProvider(
         description: "",
         email: "max@mustermann.de",
         publicKeys: {
-            encryption: encryptionKeyPair!.publicKey,
-            signing: signingKeyPair!.publicKey,
+            encryption: provider.keyPairs!.encryption.publicKey,
+            signing: provider.keyPairs!.signing.publicKey,
         },
     }
+
+    provider.data = providerData
 
     const jsonData = JSON.stringify(providerData)
 
     const encryptedData = await ecdhEncrypt(
         jsonData,
-        dataKeyPair!,
+        provider.keyPairs!.data,
         adminKeys.provider.publicKey
     )
 
     const response = await backend.appointments.storeProviderData(
         { encryptedData: encryptedData! },
-        signingKeyPair!
+        provider.keyPairs!.signing
     )
 
     if (response != "ok") return response // this is an error
 
-    return {
-        dataKeyPair: dataKeyPair!,
-        signingKeyPair: signingKeyPair!,
-        encryptionKeyPair: encryptionKeyPair!,
-        data: providerData,
-    }
+    return provider
 }

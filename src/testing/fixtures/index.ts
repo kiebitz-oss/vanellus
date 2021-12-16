@@ -1,4 +1,5 @@
 export * from "./unverified-provider"
+export * from "./verified-provider"
 export * from "./admin-keys"
 export * from "./mediator"
 export * from "./backend"

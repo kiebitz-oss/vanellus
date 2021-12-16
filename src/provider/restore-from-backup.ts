@@ -12,62 +12,44 @@ export async function restoreFromBackup(
     data: any,
     localOnly: any // if true, only local data will be imported
 ) {
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await this.lock("restoreFromBackup")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
-    }
+    const decryptedData = await aesDecrypt(data, base322buf(secret))
+    const dd = JSON.parse(decryptedData!)
 
-    try {
-        const decryptedData = await aesDecrypt(data, base322buf(secret))
-        const dd = JSON.parse(decryptedData!)
-
-        if (dd === null)
-            return {
-                status: "failed",
-                error: {
-                    message: "decryption failed",
-                },
-            }
-
-        if (dd.keyPairs.sync !== undefined && localOnly !== true) {
-            const derivedSecrets = await deriveSecrets(
-                b642buf(dd.keyPairs.sync),
-                32,
-                2
-            )
-
-            const [id, key] = derivedSecrets!
-
-            try {
-                const response = await this.backend.storage.getSettings({
-                    id: id,
-                })
-                const decryptedData = await aesDecrypt(
-                    response.result,
-                    b642buf(key)
-                )
-                const ddCloud = JSON.parse(decryptedData!)
-            } catch (e) {
-                console.error(e)
-            }
-        }
-
-        this.backend.local.set("provider::secret", secret)
-
-        return {
-            status: "succeeded",
-            data: dd,
-        }
-    } catch (e) {
-        console.error(e)
+    if (dd === null)
         return {
             status: "failed",
-            error: e,
+            error: {
+                message: "decryption failed",
+            },
         }
-    } finally {
-        this.backend.local.set("provider::loggedOut", false)
-        this.unlock("restoreFromBackup")
+
+    if (dd.keyPairs.sync !== undefined && localOnly !== true) {
+        const derivedSecrets = await deriveSecrets(
+            b642buf(dd.keyPairs.sync),
+            32,
+            2
+        )
+
+        const [id, key] = derivedSecrets!
+
+        try {
+            const response = await this.backend.storage.getSettings({
+                id: id,
+            })
+            const decryptedData = await aesDecrypt(
+                response.result,
+                b642buf(key)
+            )
+            const ddCloud = JSON.parse(decryptedData!)
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    this.backend.local.set("provider::secret", secret)
+
+    return {
+        status: "succeeded",
+        data: dd,
     }
 }
