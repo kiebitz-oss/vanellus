@@ -3,21 +3,8 @@
 // README.md contains license information.
 
 import {
-    hash,
-    sign,
-    verify,
-    deriveToken,
-    generateECDSAKeyPair,
-    ephemeralECDHEncrypt,
-    ecdhDecrypt,
-    generateECDHKeyPair,
-    randomBytes,
-} from "../crypto"
-
-import {
     OK,
     Booking,
-    RPCError,
     Settings,
     KeyPair,
     ECDHData,
@@ -29,7 +16,6 @@ import {
     EncryptedProviderData,
     ProviderAppointments,
 } from "../interfaces"
-import { e } from "./helpers"
 import JSONRPCBackend from "./jsonrpc"
 
 // The appointments backend
@@ -71,14 +57,12 @@ export class AppointmentsBackend extends JSONRPCBackend {
         zipCode: string
         from: string
         to: string
-    }): Promise<ProviderAppointments[] | RPCError> {
-        return e<ProviderAppointments[]>(
-            this.call("getAppointmentsByZipCode", {
-                zipCode,
-                from,
-                to,
-            })
-        )
+    }) {
+        return this.call<ProviderAppointments[]>("getAppointmentsByZipCode", {
+            zipCode,
+            from,
+            to,
+        })
     }
 
     async getStats({
@@ -110,8 +94,8 @@ export class AppointmentsBackend extends JSONRPCBackend {
     }
 
     // return all public keys present in the system
-    async getKeys(): Promise<PublicKeys | RPCError> {
-        return e<PublicKeys>(this.call("getKeys", {}))
+    async getKeys() {
+        return this.call<PublicKeys>("getKeys", {})
     }
 
     // root endpoints
@@ -124,10 +108,9 @@ export class AppointmentsBackend extends JSONRPCBackend {
     async addMediatorPublicKeys(
         { signedKeyData }: { signedKeyData: SignedMediatorKeyData },
         keyPair: KeyPair
-    ): Promise<OK | RPCError> {
-        return e<OK>(
-            this.call("addMediatorPublicKeys", { signedKeyData }, keyPair)
-        )
+    ) {
+        return this.call<OK>("addMediatorPublicKeys", { signedKeyData }, keyPair)
+        
     }
 
     // user endpoints
@@ -139,12 +122,12 @@ export class AppointmentsBackend extends JSONRPCBackend {
             signedTokenData,
         }: { providerID: string; id: string; signedTokenData: SignedData },
         keyPair: KeyPair
-    ): Promise<OK | RPCError> {
-        return e<OK>(this.call(
+    ) {
+        return this.call<OK>(
             "cancelAppointment",
             { providerID, id, signedTokenData },
             keyPair
-        ))
+        )
     }
 
     async bookAppointment(
@@ -160,13 +143,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
             signedTokenData: SignedData
         },
         keyPair: KeyPair
-    ): Promise<Booking | RPCError> {
-        return e<Booking>(
-            this.call(
-                "bookAppointment",
-                { providerID, id, encryptedData, signedTokenData },
-                keyPair
-            )
+    ) {
+        return this.call<Booking>(
+            "bookAppointment",
+            { providerID, id, encryptedData, signedTokenData },
+            keyPair
         )
     }
 
@@ -179,14 +160,12 @@ export class AppointmentsBackend extends JSONRPCBackend {
         hash: string
         publicKey: string
         code?: string
-    }): Promise<SignedToken | RPCError> {
-        return e<SignedToken>(
-            this.call("getToken", {
-                hash: hash,
-                code: code,
-                publicKey: publicKey,
-            })
-        )
+    }) {
+        return this.call<SignedToken>("getToken", {
+            hash: hash,
+            code: code,
+            publicKey: publicKey,
+        })
     }
 
     // provider-only endpoints
@@ -195,10 +174,8 @@ export class AppointmentsBackend extends JSONRPCBackend {
     async getAppointments(
         { from, to }: { from: string; to: string },
         keyPair: KeyPair
-    ): Promise<SignedAppointment[] | RPCError> {
-        return e<SignedAppointment[]>(
-            this.call("getProviderAppointments", { from, to }, keyPair)
-        )
+    ) {
+        return this.call<SignedAppointment[]>("getProviderAppointments", { from, to }, keyPair)
     }
 
     // publish all local appointments to the backend
@@ -217,10 +194,8 @@ export class AppointmentsBackend extends JSONRPCBackend {
     async storeProviderData(
         { encryptedData, code }: { encryptedData: ECDHData; code?: string },
         keyPair: KeyPair
-    ): Promise<OK | RPCError> {
-        return e<OK>(
-            this.call("storeProviderData", { encryptedData, code }, keyPair)
-        )
+    ) {
+        return this.call<OK>("storeProviderData", { encryptedData, code }, keyPair)
     }
 
     async checkProviderData({}, keyPair: KeyPair) {
@@ -232,18 +207,14 @@ export class AppointmentsBackend extends JSONRPCBackend {
     async getPendingProviderData(
         { limit }: { limit?: number },
         keyPair: KeyPair
-    ): Promise<EncryptedProviderData[] | RPCError> {
-        return e<EncryptedProviderData[]>(
-            this.call("getPendingProviderData", { limit }, keyPair)
-        )
+    ) {
+        return this.call<EncryptedProviderData[]>("getPendingProviderData", { limit }, keyPair)
     }
 
     async getVerifiedProviderData(
         { limit }: { limit?: number },
         keyPair: KeyPair
-    ): Promise<EncryptedProviderData[] | RPCError> {
-        return e<EncryptedProviderData[]>(
-            this.call("getVerifiedProviderData", { limit }, keyPair)
-        )
+    ) {
+        return this.call("getVerifiedProviderData", { limit }, keyPair)
     }
 }
