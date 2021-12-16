@@ -7,29 +7,18 @@ import { Provider } from "./"
 
 // generate and return the (local) provider data
 export async function providerData(this: Provider, data: any) {
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await this.lock("providerData")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
+    let providerData = this.backend.local.get("provider::data")
+    if (providerData === null) {
+        providerData = {
+            data: {},
+        }
     }
-
-    try {
-        let providerData = this.backend.local.get("provider::data")
-        if (providerData === null) {
-            providerData = {
-                data: {},
-            }
-        }
-        if (data !== undefined) {
-            providerData.data = data
-        }
-        this.backend.local.set("provider::data", providerData)
-        return {
-            status: "loaded",
-            data: providerData,
-        }
-    } finally {
-        this.unlock("providerData")
+    if (data !== undefined) {
+        providerData.data = data
+    }
+    this.backend.local.set("provider::data", providerData)
+    return {
+        status: "loaded",
+        data: providerData,
     }
 }

@@ -24,7 +24,7 @@ import {
     ProviderData,
     VerifiedProviderData,
     KeyPair,
-    KeyPairs,
+    ProviderKeyPairs,
     Appointment,
 } from "../interfaces"
 
@@ -64,11 +64,11 @@ export class Provider extends Actor {
         this.set("loggedOut", loggedOut)
     }
 
-    public get keyPairs(): KeyPairs | null {
+    public get keyPairs(): ProviderKeyPairs | null {
         return this.get("keyPairs")
     }
 
-    public set keyPairs(keyPairs: KeyPairs | null) {
+    public set keyPairs(keyPairs: ProviderKeyPairs | null) {
         this.set("keyPairs", keyPairs)
     }
 
@@ -83,7 +83,7 @@ export class Provider extends Actor {
     }
 
     public get data(): ProviderData | null {
-        return this.get("verifiedData")
+        return this.get("data")
     }
 
     public set data(data: ProviderData | null) {

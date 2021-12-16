@@ -23,8 +23,8 @@ beforeEach(function () {
     }
 })
 
-describe("getToken()", function () {
-    it("should be able to get a token", async function () {
+describe("User.getToken()", function () {
+    it("we should be able to get a token", async function () {
         const today = formatDate(new Date())
         const result = await this.user.getToken({})
         equal(result.status, Status.Succeeded)

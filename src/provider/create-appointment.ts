@@ -19,22 +19,11 @@ export async function createAppointment(
     this: Provider,
     appointment: Appointment
 ) {
-    try {
-        // we lock the local backend to make sure we don't have any data races
-        await this.lock("createAppointment")
-    } catch (e) {
-        throw null // we throw a null exception (which won't affect the store state)
-    }
-
-    try {
-        const openAppointments = this.openAppointments
-        openAppointments.push(appointment)
-        this.openAppointments = openAppointments
-        return {
-            status: "loaded",
-            data: openAppointments,
-        }
-    } finally {
-        this.unlock("createAppointment")
+    const openAppointments = this.openAppointments
+    openAppointments.push(appointment)
+    this.openAppointments = openAppointments
+    return {
+        status: "loaded",
+        data: openAppointments,
     }
 }

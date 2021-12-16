@@ -192,11 +192,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
 
     // get all published appointments from the backend
     async getAppointments(
-        {},
+        { from, to }: { from: string; to: string },
         keyPair: KeyPair
     ): Promise<SignedAppointment[] | RPCError> {
         return e<SignedAppointment[]>(
-            this.call("getProviderAppointments", {}, keyPair)
+            this.call("getProviderAppointments", { from, to }, keyPair)
         )
     }
 

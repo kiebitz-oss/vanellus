@@ -111,6 +111,8 @@ export async function backupData(
             data: encryptedCloudData,
         })
 
+        this.referenceData = referenceData
+
         return {
             status: Status.Succeeded,
             referenceData: referenceData,
