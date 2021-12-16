@@ -19,7 +19,7 @@ export const settings: Settings = {
         properties: {},
     },
     apiUrls: {
-        appointments: `http://localhost:${appointmentsPort}/jsonrpc`,
-        storage: `http://localhost:${storagePort}/jsonrpc`,
+        appointments: `http://127.0.0.1:${appointmentsPort}/jsonrpc`,
+        storage: `http://127.0.0.1:${storagePort}/jsonrpc`,
     },
 }
