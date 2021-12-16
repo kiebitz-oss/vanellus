@@ -3,9 +3,8 @@
 // README.md contains license information.
 
 import { Actor } from "../actor"
-import { PublicKeys, RPCError } from "../interfaces"
 
-export async function getKeys(this: Actor): Promise<PublicKeys> {
+export async function getKeys(this: Actor) {
       const result = await this.backend.appointments.getKeys()
 
       if ("rootKey" in result) {
