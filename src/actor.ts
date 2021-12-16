@@ -2,12 +2,15 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
+import { getKeys } from "./anonymous/getKeys"
 import { Backend } from "./backend"
 
 export class Actor {
     public backend: Backend
     public actor: string
     public id: string
+
+    public getKeys = getKeys
 
     constructor(actor: string, id: string, backend: Backend) {
         // the ID will be used to address local storage so that e.g. we can

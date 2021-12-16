@@ -5,7 +5,6 @@
 import { backupData } from "./backup-data"
 import { checkVerifiedProviderData } from "./check-verified-provider-data"
 import { generateKeyPairs } from "./generate-key-pairs"
-import { keys } from "./keys"
 import { providerData } from "./provider-data"
 import { submitProviderData } from "./submit-provider-data"
 import { createAppointment } from "./create-appointment"
@@ -31,7 +30,6 @@ import {
 export class Provider extends Actor {
     public backupData = backupData
     public checkVerifiedProviderData = checkVerifiedProviderData
-    public keys = keys
     public providerData = providerData
     public submitProviderData = submitProviderData
     public createAppointment = createAppointment
