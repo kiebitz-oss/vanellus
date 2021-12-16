@@ -22,7 +22,7 @@ export async function adminKeys(): Promise<AdminKeys> {
         // this will not work in Firefox, but that's ok as it's only for testing...
         const importedKey = await crypto.subtle.importKey(
             "pkcs8",
-            b642buf(keyData.private_key),
+            b642buf(keyData.privateKey),
             {
                 name: keyData.type === "ecdh" ? "ECDH" : "ECDSA",
                 namedCurve: "P-256",
@@ -35,7 +35,7 @@ export async function adminKeys(): Promise<AdminKeys> {
         let privateKey = await crypto.subtle.exportKey("jwk", importedKey)
 
         return {
-            publicKey: keyData.public_key,
+            publicKey: keyData.publicKey,
             privateKey: privateKey,
         }
     }
