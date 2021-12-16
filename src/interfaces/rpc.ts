@@ -1,8 +1,8 @@
-export interface RPCResponse {
+export interface RPCResponse<Result = any> {
     jsonrpc: string
     id: string
     error?: RPCError
-    result?: any
+    result?: Result
 }
 
 export type OK = "ok"
