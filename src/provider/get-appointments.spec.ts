@@ -29,8 +29,6 @@ describe("Provider.getAppointments()", function () {
         const today = formatDate(new Date())
         const result = await vp.getAppointments({ from: today, to: today })
 
-        console.log(result)
-
         if ("error" in result) throw new Error("cannot get appointments")
     })
 })

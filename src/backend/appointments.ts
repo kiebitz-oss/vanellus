@@ -21,6 +21,7 @@ import {
     Settings,
     KeyPair,
     ECDHData,
+    PublicKeys,
     SignedData,
     SignedToken,
     SignedAppointment,
@@ -109,8 +110,8 @@ export class AppointmentsBackend extends JSONRPCBackend {
     }
 
     // return all public keys present in the system
-    async getKeys() {
-        return await this.call("getKeys", {})
+    async getKeys(): Promise<PublicKeys | RPCError> {
+        return e<PublicKeys>(this.call("getKeys", {}))
     }
 
     // root endpoints
@@ -138,12 +139,12 @@ export class AppointmentsBackend extends JSONRPCBackend {
             signedTokenData,
         }: { providerID: string; id: string; signedTokenData: SignedData },
         keyPair: KeyPair
-    ) {
-        return await this.call(
+    ): Promise<OK | RPCError> {
+        return e<OK>(this.call(
             "cancelAppointment",
             { providerID, id, signedTokenData },
             keyPair
-        )
+        ))
     }
 
     async bookAppointment(
@@ -206,10 +207,6 @@ export class AppointmentsBackend extends JSONRPCBackend {
         keyPair: KeyPair
     ) {
         return await this.call("publishAppointments", { offers }, keyPair)
-    }
-
-    async cancelBooking({ id }: { id: string }, keyPair: KeyPair) {
-        return await this.call("cancelBooking", { id }, keyPair)
     }
 
     // get n tokens from the given queue IDs

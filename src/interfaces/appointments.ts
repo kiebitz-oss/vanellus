@@ -54,6 +54,12 @@ export interface PublicProviderData {
     description: string
 }
 
+export interface PublicKeys {
+    providerData: string
+    tokenKey: string
+    rootKey: string
+}
+
 export interface KeyChain {
     provider: ActorKey
     mediator: ActorKey
