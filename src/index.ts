@@ -5,6 +5,7 @@
 export { b642buf } from "./helpers/conversion"
 export { deriveSecrets, randomBytes } from "./crypto"
 
+export * from "./backend"
 export * from "./mediator"
 export * from "./provider"
 export * from "./user"
