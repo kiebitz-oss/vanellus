@@ -30,11 +30,11 @@ jobs:
       run: npm run build
 
     - name: Compress Artifacts
-      run: tar -cvzf apps.tar.gz -C dist .
+      run: npm pack
 
     - name: Upload binaries to release page
       uses: softprops/action-gh-release@v1
       with:
-        files: apps.tar.gz
+        files: vanellus-0.0.1.tgz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
