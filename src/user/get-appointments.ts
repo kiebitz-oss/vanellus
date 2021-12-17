@@ -2,9 +2,9 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Status, Result, Error, ProviderAppointments } from "../interfaces"
-import { verify } from "../crypto"
+import { Status, Error, ProviderAppointments } from "../interfaces"
 import { User } from "./"
+import { formatDate } from "../helpers/time"
 
 async function verifyOffer(offer: any, item: any) {
     // to do: verify based on key chain
@@ -41,20 +41,21 @@ async function verifyProviderData(item: any) {
     return JSON.parse(item.provider.data)
 }
 
-interface GetAppointmentsResult extends Result {
-    appointments: ProviderAppointments[]
-}
-
 export async function getAppointments(
     this: User,
-    { from, to }: { from: string; to: string }
-): Promise<GetAppointmentsResult | Error> {
+    zipCode: number,
+    fromDate?: Date,
+    toDate?: Date
+) {
     try {
+        const from = formatDate(fromDate || new Date())
+        const to = formatDate(toDate || new Date())
+
         const response =
             await this.backend.appointments.getAppointmentsByZipCode({
-                zipCode: this.queueData!.zipCode,
-                from: from,
-                to: to,
+                zipCode,
+                from,
+                to,
             })
 
         if (!(response instanceof Array))
@@ -69,17 +70,26 @@ export async function getAppointments(
             try {
                 item.provider.json = await verifyProviderData(item)
                 const verifiedOffers = []
+
                 for (const offer of item.offers) {
                     const verifiedOffer = await verifyOffer(offer, item)
+
                     for (const slot of verifiedOffer.slotData) {
                         if (
-                            offer.bookedSlots!.some((id: any) => id === slot.id)
-                        )
+                            offer.bookedSlots &&
+                            offer.bookedSlots.some(
+                                (bookedSlot) => bookedSlot.id === slot.id
+                            )
+                        ) {
                             slot.open = false
-                        else slot.open = true
+                        } else {
+                            slot.open = true
+                        }
                     }
+
                     verifiedOffers.push(verifiedOffer)
                 }
+
                 item.offers = verifiedOffers
                 verifiedAppointments.push(item)
             } catch (e) {
@@ -88,10 +98,15 @@ export async function getAppointments(
         }
 
         verifiedAppointments.sort((a, b) =>
-            a.provider.json!.name > b.provider.json!.name ? 1 : -1
+            b.provider.json?.name &&
+            a.provider.json?.name &&
+            a.provider.json.name > b.provider.json.name
+                ? 1
+                : -1
         )
 
         this.verifiedAppointments = verifiedAppointments
+
         return {
             appointments: verifiedAppointments,
             status: Status.Succeeded,
@@ -99,7 +114,7 @@ export async function getAppointments(
     } catch (e) {
         return {
             status: Status.Failed,
-            error: e as any,
-        }
+            error: e,
+        } as Error
     }
 }

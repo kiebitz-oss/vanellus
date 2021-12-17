@@ -54,12 +54,12 @@ export class AppointmentsBackend extends JSONRPCBackend {
         from,
         to,
     }: {
-        zipCode: string
+        zipCode: number | string
         from: string
         to: string
     }) {
         return this.call<ProviderAppointments[]>("getAppointmentsByZipCode", {
-            zipCode,
+            zipCode: zipCode.toString(),
             from,
             to,
         })

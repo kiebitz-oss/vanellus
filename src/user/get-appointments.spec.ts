@@ -4,24 +4,28 @@
 
 import { Status } from "../interfaces"
 import { equal } from "assert"
-import { formatDate } from "../helpers/time"
 import { backend } from "../testing/fixtures"
 import { User } from "./"
 
 beforeEach(function () {
     this.user = new User("main", backend())
-    this.user.queueData = {
-        zipCode: "10707",
-    }
 })
 
 describe("User.getAppointments()", function () {
-    it("we should be able to fetch appointments", async function () {
-        const today = formatDate(new Date())
-        const result = await this.user.getAppointments({
-            from: today,
-            to: today,
-        })
+    it("we should be able to fetch appointments without a given date", async function () {
+        const result = await this.user.getAppointments(10707)
+
+        equal(result.status, Status.Succeeded)
+        equal(result.appointments.length, 0)
+    })
+
+    it("we should be able to fetch appointments with a given date", async function () {
+        const result = await this.user.getAppointments(
+            10707,
+            new Date(),
+            new Date(),
+        )
+
         equal(result.status, Status.Succeeded)
         equal(result.appointments.length, 0)
     })
