@@ -26,8 +26,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Test
+      run: npm run test
+
     - name: Build
-      run: npm run make
+      run: npm run build
 
     - name: Compress Artifacts
       run: tar -cvzf apps.tar.gz -C dist .
