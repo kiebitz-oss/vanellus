@@ -29,11 +29,8 @@ jobs:
     - name: Build
       run: npm run make
 
-    - name: Remove Settings
-      run: rm -rf build/*.json
-    
     - name: Compress Artifacts
-      run: tar -cvzf apps.tar.gz -C build .
+      run: tar -cvzf apps.tar.gz -C dist .
 
     - name: Upload binaries to release page
       uses: softprops/action-gh-release@v1

@@ -11,6 +11,10 @@
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc --build",
+        "test": "mocha"
+    },
     "devDependencies": {
         "@types/mocha": "^9.0.0",
         "@types/node-fetch": "^2.5.12",
