@@ -3,8 +3,7 @@
 // README.md contains license information.
 
 import { randomBytes } from "../crypto"
-import { Provider } from "./"
-import { Appointment } from "../interfaces"
+import { Appointment, Slot } from "../interfaces"
 
 export function createSlot() {
     return {
@@ -15,15 +14,34 @@ export function createSlot() {
     }
 }
 
+interface CreateAppointmentParams {
+    duration: number,  // minutes
+    vaccine: string,   // name of vaccine
+    slotN: number,     // number of slots
+    timestamp: string, // starting time of appointment
+}
+
 export async function createAppointment(
-    this: Provider,
-    appointment: Appointment
+    { duration, vaccine, slotN, timestamp }: CreateAppointmentParams
 ) {
-    const openAppointments = this.openAppointments
-    openAppointments.push(appointment)
-    this.openAppointments = openAppointments
+    var slots : Slot[] = [];
+    for (var i = 0; i < slotN; i++) {
+        slots[i] = {
+            "id": randomBytes(32),
+            "open": true,
+        }
+    }
+    const now = new Date().toISOString()
+
     return {
-        status: "loaded",
-        data: openAppointments,
+        bookings: [],
+        updatedAt: now,
+        modified: true,
+        timestamp: timestamp,
+        duration: duration,
+        properties: {"vaccine": vaccine},
+        id: randomBytes(32),
+        publicKey: "",
+        slotData: slots,
     }
 }

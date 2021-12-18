@@ -57,7 +57,7 @@ class JSONRPCBackend {
                         params: callParams,
                         id: id,
                     }),
-                    
+
                 }
             );
 
@@ -69,7 +69,7 @@ class JSONRPCBackend {
                         error: response.statusText,
                     },
                 } as RPCError;
-            }    
+            }
 
             return response.json().then((data) => data.result as R);
         } catch (e) {
@@ -81,7 +81,7 @@ class JSONRPCBackend {
                 },
             } as RPCError
         }
-        
+
     }
 }
 

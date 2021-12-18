@@ -110,7 +110,6 @@ export class AppointmentsBackend extends JSONRPCBackend {
         keyPair: KeyPair
     ) {
         return this.call<OK>("addMediatorPublicKeys", { signedKeyData }, keyPair)
-        
     }
 
     // user endpoints

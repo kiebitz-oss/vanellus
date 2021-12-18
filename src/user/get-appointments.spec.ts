@@ -5,22 +5,21 @@
 import { Status } from "../interfaces"
 import { equal } from "assert"
 import { formatDate } from "../helpers/time"
-import { backend } from "../testing/fixtures"
+import { adminKeys, backend, resetDB } from "../testing/fixtures"
 import { User } from "./"
-
-beforeEach(function () {
-    this.user = new User("main", backend())
-    this.user.queueData = {
-        zipCode: "10707",
-    }
-})
 
 describe("User.getAppointments()", function () {
     it("we should be able to fetch appointments", async function () {
+        this.user = new User("main", backend())
+
+        const keys = await adminKeys()
+        await resetDB(backend(), keys)
+
         const today = formatDate(new Date())
         const result = await this.user.getAppointments({
             from: today,
             to: today,
+            zipCode: "10707"
         })
         equal(result.status, Status.Succeeded)
         equal(result.appointments.length, 0)

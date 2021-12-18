@@ -1,5 +1,4 @@
 import { equal } from "assert"
-import { ecdhDecrypt } from "../crypto"
 import { Status } from "../interfaces"
 import {
     adminKeys,

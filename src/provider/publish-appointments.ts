@@ -3,17 +3,13 @@
 // README.md contains license information.
 
 import { randomBytes, sign } from "../crypto"
-import { SignedData } from "../interfaces"
+import { Appointment, SignedData } from "../interfaces"
 import { Provider } from "./"
 
-export async function publishAppointments(this: Provider) {
-    const openAppointments = this.backend.local.get(
-        "provider::appointments::open",
-        []
-    )
+export async function publishAppointments(this: Provider, apps: Appointment[]) {
 
     const signedAppointments: SignedData[] = []
-    const relevantAppointments = openAppointments.filter(
+    const relevantAppointments = apps.filter(
         (oa: any) =>
             new Date(oa.timestamp) >
                 new Date(new Date().getTime() - 1000 * 60 * 60 * 4) &&
@@ -22,18 +18,18 @@ export async function publishAppointments(this: Provider) {
 
     for (const appointment of relevantAppointments) {
         try {
-            const properties: { [Key: string]: any } = {}
             const convertedAppointment = {
                 id: appointment.id,
                 duration: appointment.duration,
                 timestamp: appointment.timestamp,
                 publicKey: this.keyPairs!.encryption.publicKey,
-                properties: properties,
+                properties: appointment.properties,
                 slotData: appointment.slotData.map((sl: any) => ({
                     id: sl.id,
                 })),
             }
 
+            /* WTF?
             for (const [k, v] of Object.entries(
                 this.backend.settings.appointment.properties
             )) {
@@ -42,6 +38,8 @@ export async function publishAppointments(this: Provider) {
                         convertedAppointment.properties[k] = kk
                 }
             }
+            */
+
             // we sign each appointment individually so that the client can
             // verify that they've been posted by a valid provider
             const signedAppointment = await sign(
@@ -59,11 +57,7 @@ export async function publishAppointments(this: Provider) {
         }
     }
 
-    if (signedAppointments.length === 0)
-        return {
-            status: "aborted",
-            data: null,
-        }
+    if (signedAppointments.length === 0) throw new Error("no appointments to publish")
 
     const result = await this.backend.appointments.publishAppointments(
         {
@@ -72,16 +66,5 @@ export async function publishAppointments(this: Provider) {
         this.keyPairs!.signing
     )
 
-    for (const appointment of relevantAppointments) {
-        // we remove the 'modified' tag so that it won't be published
-        // again...
-        delete appointment.modified
-    }
-
-    this.backend.local.set("appointments::open", openAppointments)
-
-    return {
-        status: "succeeded",
-        data: result,
-    }
+    return result;
 }
