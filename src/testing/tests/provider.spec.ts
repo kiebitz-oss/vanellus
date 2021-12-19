@@ -98,5 +98,20 @@ describe("Provider lifecycle", function () {
         })
 
         equal(result.appointments[0].offers[0].duration, 30)
+
+        // provider cancels appointment
+
+        app.slotData = []
+        result = await provider.publishAppointments( [app] );
+        equal(result, 'ok')
+
+        result = await this.user.getAppointments({
+            from: formatDate(nextWeek),
+            to: formatDate(nextWeek),
+            zipCode: "10707"
+        })
+
+        equal(result.appointments.length, 0)
+
     })
 })
