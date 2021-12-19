@@ -38,13 +38,14 @@ describe("Provider lifecycle", function () {
         result = await med.confirmProvider(pendingProviders.providers[0])
         if ("error" in result) throw new Error("confirmation failed")
 
+        // provider publishes appointments
         const tomorrow = new Date( new Date().getTime() + (1000 * 60 * 60 * 24))
         var appTime = new Date( tomorrow.getTime() )
         appTime.setHours(8)
         appTime.setMinutes(0)
         appTime.setSeconds(0)
         for (var i = 0; i < 5; i++) {
-          const app = await provider.createAppointment({
+          var app = await provider.createAppointment({
               duration: 15,
               vaccine: "moderna",
               slotN: 5,
@@ -65,5 +66,37 @@ describe("Provider lifecycle", function () {
         })
         equal(result.status, Status.Succeeded)
         equal(result.appointments[0].offers.length, 5)
+
+        // provider changes appointment
+        const nextWeek = new Date( new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
+        var app = await provider.createAppointment({
+          duration: 15,
+          vaccine: "moderna",
+          slotN: 5,
+          timestamp: nextWeek.toISOString()
+        })
+
+        result = await provider.publishAppointments( [app] );
+        equal(result, 'ok')
+
+        result = await this.user.getAppointments({
+            from: formatDate(nextWeek),
+            to: formatDate(nextWeek),
+            zipCode: "10707"
+        })
+
+        equal(result.appointments[0].offers[0].duration, 15)
+
+        app.duration = 30
+        result = await provider.publishAppointments( [app] );
+        equal(result, 'ok')
+
+        result = await this.user.getAppointments({
+            from: formatDate(nextWeek),
+            to: formatDate(nextWeek),
+            zipCode: "10707"
+        })
+
+        equal(result.appointments[0].offers[0].duration, 30)
     })
 })
