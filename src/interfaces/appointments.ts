@@ -35,7 +35,7 @@ export interface SignedAppointment {
     publicKey: string
     bookedSlots?: BookedSlot[]
     bookings?: Booking[]
-    json?: Appointment
+    json: Appointment
 }
 
 export interface SignedProviderData {

@@ -41,10 +41,6 @@ async function verifyProviderData(item: any) {
     return JSON.parse(item.provider.data)
 }
 
-interface GetAppointmentsResult extends Result {
-    appointments: ProviderAppointments[]
-}
-
 interface GetAppointmentsParams {
   from: string,
   to: string,
@@ -67,35 +63,27 @@ export async function getAppointments(
 
     const verifiedAppointments = []
 
-    for (const item of response as ProviderAppointments[]) {
-        try {
-            item.provider.json = await verifyProviderData(item)
-            const verifiedOffers = []
-            for (const offer of item.offers) {
-                const verifiedOffer = await verifyOffer(offer, item)
-                for (const slot of verifiedOffer.slotData) {
-                    if (
-                        offer.bookedSlots!.some((id: any) => id === slot.id)
-                    )
-                        slot.open = false
-                    else slot.open = true
-                }
-                verifiedOffers.push(verifiedOffer)
+    for (const item of response) {
+        item.provider.json = await verifyProviderData(item)
+        const verifiedOffers = []
+        for (const offer of item.offers) {
+            const verifiedOffer = await verifyOffer(offer, item)
+            for (const slot of verifiedOffer.slotData) {
+                if (
+                    offer.bookedSlots!.some((id: any) => id === slot.id)
+                )
+                    slot.open = false
+                else slot.open = true
             }
-            item.offers = verifiedOffers
-            verifiedAppointments.push(item)
-        } catch (e) {
-            continue
+            verifiedOffers.push(verifiedOffer)
         }
+        item.offers = verifiedOffers
+        verifiedAppointments.push(item)
     }
 
     verifiedAppointments.sort((a, b) =>
-        a.provider.json!.name > b.provider.json!.name ? 1 : -1
+        a.provider.json.name > b.provider.json.name ? 1 : -1
     )
 
-    this.verifiedAppointments = verifiedAppointments
-    return {
-        appointments: verifiedAppointments,
-        status: Status.Succeeded,
-    }
+    return verifiedAppointments
 }

@@ -19,14 +19,15 @@ export async function providerSecret(this: Provider, data: any, lockName: any) {
     }
 }
 
-export function init(this: Provider) {
+export function initSecret(this: Provider) {
     let data = this.backend.local.get("secret")
     if (data === null) {
-        data = buf2base32(b642buf(randomBytes(15)))
+        data = createSecret()
         this.backend.local.set("secret", data)
     }
-    return {
-        status: "loaded",
-        data: data,
-    }
+    return data
+}
+
+export function createSecret() {
+    return buf2base32(b642buf(randomBytes(15)))
 }

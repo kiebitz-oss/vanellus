@@ -2,14 +2,14 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { backupData } from "./backup-data"
+import { backupData, generateKeyFile, uploadData} from "./backup-data"
 import { checkVerifiedProviderData } from "./check-verified-provider-data"
 import { generateKeyPairs } from "./generate-key-pairs"
 import { providerData } from "./provider-data"
 import { submitProviderData } from "./submit-provider-data"
 import { createAppointment } from "./create-appointment"
 import { verifiedProviderData } from "./verified-provider-data"
-import { providerSecret } from "./provider-secret"
+import { providerSecret, initSecret } from "./provider-secret"
 import { restoreFromBackup } from "./restore-from-backup"
 import { updateAppointment } from "./update-appointment"
 import { cancelAppointment } from "./cancel-appointment"
@@ -29,12 +29,15 @@ import {
 
 export class Provider extends Actor {
     public backupData = backupData
+    public generateKeyFile = generateKeyFile
+    public uploadData = uploadData
     public checkVerifiedProviderData = checkVerifiedProviderData
     public providerData = providerData
     public submitProviderData = submitProviderData
     public createAppointment = createAppointment
     public verifiedProviderData = verifiedProviderData
     public providerSecret = providerSecret
+    public initSecret = initSecret
     public restoreFromBackup = restoreFromBackup
     public updateAppointment = updateAppointment
     public cancelAppointment = cancelAppointment

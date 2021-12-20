@@ -13,14 +13,10 @@ import {
 } from "../interfaces"
 import { Provider } from "./"
 
-interface GetAppointmentsResult extends Result {
-    appointments: Appointment[]
-}
-
 export async function getAppointments(
     this: Provider,
     { from, to }: { from: string; to: string }
-): Promise<GetAppointmentsResult | Error> {
+) {
     const decryptBookings = async (bookings: any) => {
         for (const booking of bookings) {
             const decryptedData = await ecdhDecrypt(
@@ -33,18 +29,13 @@ export async function getAppointments(
         return bookings
     }
 
-    const openAppointments = this.openAppointments || []
-
     const response = await this.backend.appointments.getAppointments(
         { from: from, to: to },
         this.keyPairs!.signing
     )
 
     if (!(response instanceof Array))
-        return {
-            status: Status.Failed,
-            error: response,
-        }
+      throw new Error("fetching appointments failed")
 
     const newAppointments: Appointment[] = []
 
@@ -63,6 +54,7 @@ export async function getAppointments(
             continue
         }
 
+        /*
         const existingAppointment = openAppointments.find(
             (app) => app.id === appData.id
         )
@@ -99,6 +91,7 @@ export async function getAppointments(
             )
             continue
         }
+        */
 
         const newAppointment: Appointment = {
             updatedAt: appData.updatedAt,
@@ -115,11 +108,10 @@ export async function getAppointments(
         newAppointments.push(newAppointment)
     }
 
+    /*
     const allAppointments = [...openAppointments, ...newAppointments]
     this.openAppointments = allAppointments
+    */
 
-    return {
-        status: Status.Succeeded,
-        appointments: allAppointments,
-    }
+    return newAppointments
 }

@@ -58,7 +58,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
         from: string
         to: string
     }) {
-        return this.call<ProviderAppointments[]>("getAppointmentsByZipCode", {
+        return this.call("getAppointmentsByZipCode", {
             zipCode,
             from,
             to,
