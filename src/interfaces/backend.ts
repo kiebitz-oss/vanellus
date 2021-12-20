@@ -8,6 +8,7 @@ export interface Store {
 export interface Storage {
     getItem(key: string): any | null
     setItem(key: string, value: any): void
+    getKeys(): string[]
     removeItem(key: string): void
 }
 
