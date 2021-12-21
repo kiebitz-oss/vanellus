@@ -5,7 +5,6 @@
 import { equal } from "assert"
 import { Status } from "../../interfaces"
 import { User } from "../../user"
-import { formatDate } from "../../helpers/time"
 import {
     adminKeys,
     backend,
@@ -17,8 +16,14 @@ import {
 import { aesDecrypt, aesEncrypt, deriveSecrets } from "../../crypto"
 import { base322buf, b642buf } from "../../helpers/conversion"
 
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
 describe("Provider lifecycle", function () {
     it ("create and authenticate a provider and work with appointments", async function () {
+
+        // set up utc timezone so tests work reliably
+        dayjs.extend(utc)
 
         const be = backend()
         const keys = await adminKeys()
@@ -74,11 +79,8 @@ describe("Provider lifecycle", function () {
 
 
         // provider publishes appointments
-        const tomorrow = new Date( new Date().getTime() + (1000 * 60 * 60 * 24))
-        var appTime = new Date( tomorrow.getTime() )
-        appTime.setHours(8)
-        appTime.setMinutes(0)
-        appTime.setSeconds(0)
+        const tomorrow = dayjs().utc().add(1, 'day')
+        var appTime = dayjs().utc().add(1, 'day').hour(8).minute(0).second(0)
         var appointments = []
 
         for (var i = 0; i < 5; i++) {
@@ -90,8 +92,7 @@ describe("Provider lifecycle", function () {
             });
 
             appointments.push(app)
-
-            appTime = new Date(appTime.getTime() + 1000 * 60 * 3)
+            appTime = appTime.add(5, 'minute')
         }
 
         // publish multiple appointments in single request
@@ -99,15 +100,14 @@ describe("Provider lifecycle", function () {
         equal(result, 'ok')
 
         result = await provider.getAppointments({
-            from: formatDate(tomorrow),
-            to: formatDate(tomorrow),
+            from: tomorrow.format('YYYY-MM-DD'),
+            to: tomorrow.format('YYYY-MM-DD')
         })
         equal(result.length, 5)
 
 
         // provider changes appointment
-        const nextWeek = new Date( new Date().getTime() + (1000 * 60 * 60 * 24 * 7))
-        nextWeek.setHours(8)
+        const nextWeek = dayjs().utc().add(1, 'week').hour(8)
         var app = await provider.createAppointment({
           duration: 15,
           vaccine: "moderna",
@@ -120,8 +120,8 @@ describe("Provider lifecycle", function () {
 
         const user = new User("testUser", backend())
         result = await user.getAppointments({
-            from: formatDate(nextWeek),
-            to: formatDate(nextWeek),
+            from: nextWeek.format('YYYY-MM-DD'),
+            to: nextWeek.format('YYYY-MM-DD'),
             zipCode: "10707"
         })
 
@@ -132,8 +132,8 @@ describe("Provider lifecycle", function () {
         equal(result, 'ok')
 
         result = await user.getAppointments({
-            from: formatDate(nextWeek),
-            to: formatDate(nextWeek),
+            from: nextWeek.format('YYYY-MM-DD'),
+            to: nextWeek.format('YYYY-MM-DD'),
             zipCode: "10707"
         })
 
@@ -146,8 +146,8 @@ describe("Provider lifecycle", function () {
         equal(result, 'ok')
 
         result = await user.getAppointments({
-            from: formatDate(nextWeek),
-            to: formatDate(nextWeek),
+            from: nextWeek.format('YYYY-MM-DD'),
+            to: nextWeek.format('YYYY-MM-DD'),
             zipCode: "10707"
         })
 

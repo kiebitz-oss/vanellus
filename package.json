@@ -29,5 +29,8 @@
     },
     "peer-dependencies": {
         "buffer": "^6"
+    },
+    "dependencies": {
+        "dayjs": "^1.10.7"
     }
 }
