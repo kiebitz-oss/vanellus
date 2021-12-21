@@ -1,18 +1,9 @@
 import { AdminKeys } from "./"
-import {
-    generateECDSAKeyPair,
-    generateECDHKeyPair,
-    ecdhEncrypt,
-    ecdhDecrypt,
-} from "../../crypto"
 import { Backend } from "../../backend"
 import { Mediator } from "../../mediator"
 import { Provider } from "../../provider"
 import { unverifiedProvider } from "./unverified-provider"
 import {
-    ProviderData,
-    RPCError,
-    KeyPair,
     EncryptedProviderData,
     Status,
 } from "../../interfaces"
@@ -21,7 +12,7 @@ export async function verifiedProvider(
     backend: Backend,
     adminKeys: AdminKeys,
     mediator: Mediator
-): Promise<Provider | RPCError> {
+) {
     const provider = await unverifiedProvider(backend, adminKeys)
 
     let pendingProviders = await mediator.pendingProviders()
