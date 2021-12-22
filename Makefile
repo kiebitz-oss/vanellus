@@ -13,6 +13,9 @@ test:
 build:
 	npx tsc --build
 
+documentation:
+	npx typedoc --out ./docs src
+
 watch:
 	npx tsc -w
 

@@ -14,15 +14,16 @@ export function createSlot() {
     }
 }
 
-interface CreateAppointmentParams {
-    duration: number,  // minutes
-    vaccine: string,   // name of vaccine
-    slotN: number,     // number of slots
-    timestamp: string, // starting time of appointment
-}
+/**
+ * creates an initial Appointment object
+ * @param duration defines the length of the appointment in minues
+ * @param vaccine defines the vaccine offered at the appointment
+ * @param slotN defines the number of people that can be vaccinated
+ * @param timestamp defines the time of the appointment
+ */
 
 export async function createAppointment(
-    { duration, vaccine, slotN, timestamp }: CreateAppointmentParams
+    duration: number, vaccine: string, slotN: number, timestamp: string
 ) {
     var slots : Slot[] = [];
     for (var i = 0; i < slotN; i++) {

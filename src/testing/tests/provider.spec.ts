@@ -84,12 +84,12 @@ describe("Provider lifecycle", function () {
         var appointments = []
 
         for (var i = 0; i < 5; i++) {
-            var app = await provider.createAppointment({
-                duration: 15,
-                vaccine: "moderna",
-                slotN: 5,
-                timestamp: appTime.toISOString()
-            });
+            var app = await provider.createAppointment(
+                15,
+                "moderna",
+                5,
+                appTime.toISOString()
+            );
 
             appointments.push(app)
             appTime = appTime.add(5, 'minute')
@@ -108,12 +108,12 @@ describe("Provider lifecycle", function () {
 
         // provider changes appointment
         const nextWeek = dayjs().utc().add(1, 'week').hour(8)
-        var app = await provider.createAppointment({
-          duration: 15,
-          vaccine: "moderna",
-          slotN: 5,
-          timestamp: nextWeek.toISOString()
-        })
+        var app = await provider.createAppointment(
+          15,
+          "moderna",
+          5,
+          nextWeek.toISOString()
+        )
 
         result = await provider.publishAppointments( [app] );
         equal(result, 'ok')

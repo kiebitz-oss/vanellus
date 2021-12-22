@@ -19,6 +19,12 @@ export async function providerSecret(this: Provider, data: any, lockName: any) {
     }
 }
 
+  /**
+   * Initializes and returns a secret 24 character alpahnumeric code. If the
+   * provider object already has a secret associated with it, the existing one
+   * is preserved and returned
+   */
+
 export function initSecret(this: Provider) {
     let data = this.backend.local.get("secret")
     if (data === null) {

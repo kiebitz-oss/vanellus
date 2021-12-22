@@ -26,13 +26,22 @@ interface CloudBackupData extends BackupData {
 
 interface BackupDataError extends Error {}
 
-// upload to backend and generate key file
+  /**
+   * combines generateKeyFile() and uploadData() into a single step
+   * @param secret the 24 character alphanumeric secret from the provider
+   */
+
 export async function backupData(this: Provider, secret: string) {
     this.uploadData()
     return this.generateKeyFile(secret)
 }
 
-// encrypt keys for file storage
+  /**
+   * encrypt keys for file storage. Returns the contents of the key file for
+   * the user which together with the secret can be used to log in the provider
+   * @param secret the 24 character alphanumeric secret from the provider
+   */
+
 export async function generateKeyFile(this: Provider, secret: string) {
     const localData: LocalBackupData = {
         version: "0.2",
@@ -48,7 +57,10 @@ export async function generateKeyFile(this: Provider, secret: string) {
     return encryptedData
 }
 
-// upload metadata to the backend
+/**
+ * upload encrypted metadata to the backend for later restore
+ */
+
 export async function uploadData(this: Provider) {
     const cloudData: CloudBackupData = {
         version: "0.2",
