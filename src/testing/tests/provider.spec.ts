@@ -167,8 +167,7 @@ describe("Provider lifecycle", function () {
 
 
         // provider cancels appointment
-        app.slotData = []
-        result = await provider.publishAppointments( [app] );
+        result = await provider.cancelAppointment(app)
         equal(result, 'ok')
 
         result = await user.getAppointments({

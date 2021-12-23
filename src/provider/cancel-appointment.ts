@@ -5,37 +5,17 @@
 import { Provider } from "./"
 import { Appointment } from "../interfaces"
 
+/**
+ * Cancles an appointment by emptying the slots of the appointment and uploading
+ * to server
+ * @param appointment The appointment to be cancled
+ */
+
 export async function cancelAppointment(
     this: Provider,
     appointment: Appointment
 ) {
-    const openAppointments = this.openAppointments
-
-    // we select the appointment from the "official" list as the given appointment might
-    // contain enrichment data and e.g. cyclic data structures...
-    const canceledAppointment = openAppointments.find(
-        (ap) => ap.id === appointment.id
-    )
-
-    if (canceledAppointment === undefined)
-        return {
-            status: "failed",
-        }
-
-    const otherAppointments = openAppointments.filter(
-        (ap) => ap.id !== appointment.id
-    )
-
-    // we simply remove all slots
-    canceledAppointment.slotData = []
-    canceledAppointment.modified = true
-
-    // we push the modified appointment
-    otherAppointments.push(canceledAppointment)
-    this.openAppointments = otherAppointments
-
-    return {
-        status: "suceeded",
-        data: otherAppointments,
-    }
+    appointment.slotData = []
+    const result = await this.publishAppointments( [appointment] )
+    return result
 }
