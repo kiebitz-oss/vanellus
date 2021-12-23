@@ -4,6 +4,10 @@
 
 import { Actor } from "../actor"
 
+/**
+ * Fetch public keys from the server
+ */
+
 export async function getKeys(this: Actor) {
       const result = await this.backend.appointments.getKeys()
 
