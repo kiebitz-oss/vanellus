@@ -44,7 +44,7 @@ export async function restoreFromBackup(
 
     this.data = ddCloud.data;
     this.keyPairs = dd.keyPairs
-    this.backend.local.set("provider::secret", secret)
+    this.secret = secret
 
     return ddCloud.data
 }

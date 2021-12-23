@@ -76,6 +76,7 @@ describe("Provider lifecycle", function () {
         await provider.restoreFromBackup( providerSecret, encryptedKeyFile)
         if (provider.data === null) throw new Error("data should not be empty after restore")
         equal(provider.data.name, "Max Mustermann")
+        equal(provider.secret, providerSecret)
 
         // confirm provider
         const pendingProviders = await med.pendingProviders()
@@ -87,16 +88,20 @@ describe("Provider lifecycle", function () {
 
 
         // provider changes metadata
-        if (provider.data === null) throw new Error("data should not be empty after change")
+        if (provider.data === null) throw new Error("data should not be empty after confirm")
         const providerMetaData = provider.data
         providerMetaData.name = "John Doe"
         provider.data = providerMetaData
 
         await provider.uploadData()
-        await provider.backend.local.deleteAll("provider") // delete local storage
+
+        // delete local provider data
+        await provider.backend.local.deleteAll("provider")
+        provider = new Provider("new provider", be)
+
         await provider.restoreFromBackup( providerSecret, encryptedKeyFile)
 
-        equal(provider.data.name, "John Doe")
+        equal(provider.data?.name, "John Doe")
 
 
         // provider publishes appointments

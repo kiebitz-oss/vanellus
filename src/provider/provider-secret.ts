@@ -7,8 +7,8 @@ import { randomBytes } from "../crypto"
 import { Provider } from "./"
 
 export async function providerSecret(this: Provider, data: any, lockName: any) {
-    if (data !== undefined) this.backend.local.set("secret", data)
-    data = this.backend.local.get("secret")
+    if (data !== undefined) this.secret = data
+    data = this.secret
     if (data === null)
         return {
             status: "failed",
@@ -26,10 +26,10 @@ export async function providerSecret(this: Provider, data: any, lockName: any) {
    */
 
 export function initSecret(this: Provider) {
-    let data = this.backend.local.get("secret")
+    let data = this.secret
     if (data === null) {
         data = createSecret()
-        this.backend.local.set("secret", data)
+        this.secret = data
     }
     return data
 }
