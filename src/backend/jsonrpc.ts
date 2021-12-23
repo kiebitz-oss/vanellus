@@ -6,9 +6,31 @@ import { sign } from "../crypto"
 import { Settings, Error, RPCResponse, RPCError } from "../interfaces"
 import { KeyPair } from "../interfaces"
 
+enum JSONRPCMethods {
+    addMediatorPublicKeys = "addMediatorPublicKeys",
+    bookAppointment = "bookAppointment",
+    cancelAppointment = "cancelAppointment",
+    checkProviderData = "checkProviderData",
+    confirmProvider = "confirmProvider",
+    getAppointmentsByZipCode = "getAppointmentsByZipCode",
+    getBookedAppointments = "getBookedAppointments",
+    getKeys = "getKeys",
+    getPendingProviderData = "getPendingProviderData",
+    getProviderAppointments = "getProviderAppointments",
+    getSettings = "getSettings",
+    getStats = "getStats",
+    getToken = "getToken",
+    getVerifiedProviderData = "getVerifiedProviderData",
+    publishAppointments = "publishAppointments",
+    resetDB = "resetDB",
+    storeProviderData = "storeProviderData",
+    storeSettings = "storeSettings",
+}
+
 class JSONRPCBackend {
     public settings: Settings
     public urlKey: "storage" | "appointments"
+    public readonly methods = JSONRPCMethods
 
     constructor(settings: Settings, urlKey: "storage" | "appointments") {
         this.settings = settings
@@ -20,11 +42,11 @@ class JSONRPCBackend {
     }
 
     async call<R = any>(
-        method: string,
+        method: JSONRPCMethods,
         params: Record<string, unknown>,
         keyPair?: KeyPair,
         id?: string,
-    ) {
+    ): Promise<R | RPCError> {
         let callParams
 
         if (typeof keyPair === "object") {

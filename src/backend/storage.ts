@@ -12,10 +12,10 @@ export class StorageBackend extends JSONRPCBackend {
     }
 
     async storeSettings({ id, data }: { id: string; data: any }) {
-        return await this.call("storeSettings", { id, data })
+        return await this.call(this.methods.storeSettings, { id, data })
     }
 
     async getSettings({ id }: { id: string }) {
-        return await this.call("getSettings", { id })
+        return await this.call(this.methods.getSettings, { id })
     }
 }
