@@ -5,6 +5,7 @@
 import { equal } from "assert"
 import { Status } from "../../interfaces"
 import { User } from "../../user"
+import { Provider } from "../../provider"
 import {
     adminKeys,
     backend,
@@ -38,8 +39,22 @@ describe("Provider lifecycle", function () {
 
 
         //create provider
-        const provider = await unverifiedProvider(be, keys)
-        if ("code" in provider) throw new Error("creating provider failed")
+        var provider = await Provider.init(
+            "provider",
+            be,
+            {
+                name: "Max Mustermann",
+                street: "Musterstr. 23",
+                city: "Berlin",
+                zipCode: "10707",
+                description: "",
+                email: "max@mustermann.de",
+                publicKeys: {
+                    encryption: "",
+                    signing: "",
+                },
+            }
+        )
 
 
         // provider backup and recovery
@@ -53,8 +68,14 @@ describe("Provider lifecycle", function () {
 
         const encryptedKeyFile = await provider.backupData(providerSecret)
 
-        await provider.backend.local.deleteAll("provider") // delete local storage
+        // delete local provider data
+        await provider.backend.local.deleteAll("provider")
+        provider = new Provider("new provider", be)
+
+        // and attpemt restore
         await provider.restoreFromBackup( providerSecret, encryptedKeyFile)
+        if (provider.data === null) throw new Error("data should not be empty after restore")
+        equal(provider.data.name, "Max Mustermann")
 
         // confirm provider
         const pendingProviders = await med.pendingProviders()
@@ -66,7 +87,7 @@ describe("Provider lifecycle", function () {
 
 
         // provider changes metadata
-        if (provider.data === null) throw new Error("data should not be empty")
+        if (provider.data === null) throw new Error("data should not be empty after change")
         const providerMetaData = provider.data
         providerMetaData.name = "John Doe"
         provider.data = providerMetaData
