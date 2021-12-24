@@ -27,7 +27,9 @@ export async function restoreFromBackup(
         const [id, key] = secrets!
         const data = await backend.storage.getSettings({ id: id })
         const decryptedData = await aesDecrypt(data, b642buf(key))
-        const dd = JSON.parse(decryptedData!)
+        if (decryptedData == null) throw new Error("Decryption failed")
+
+        const dd = JSON.parse(decryptedData)
 
         for (const key of backupKeys) {
             backend.local.set(`user::${key}`, dd[key])

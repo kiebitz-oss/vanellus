@@ -46,32 +46,38 @@ export async function aesEncrypt(rawData: string, secret: ArrayBuffer) {
 }
 
 export async function aesDecrypt(data: Data, secret: ArrayBuffer) {
-    const secretKey = await crypto.subtle.importKey(
-        "raw",
-        secret,
-        "PBKDF2",
-        false,
-        ["deriveKey"]
-    )
-
-    const symmetricKey = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: 100000 },
-        secretKey,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["encrypt", "decrypt"]
-    )
-
-    const decryptedData = await crypto.subtle.decrypt(
-        {
-            name: "AES-GCM",
-            tagLength: 128,
-            iv: b642buf(data.iv),
-        },
-        symmetricKey,
-        b642buf(data.data)
-    )
-    return ab2str(decryptedData)
+    try {
+        const secretKey = await crypto.subtle.importKey(
+            "raw",
+            secret,
+            "PBKDF2",
+            false,
+            ["deriveKey"]
+        )
+    
+        const symmetricKey = await crypto.subtle.deriveKey(
+            { name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: 100000 },
+            secretKey,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["encrypt", "decrypt"]
+        )
+    
+        const decryptedData = await crypto.subtle.decrypt(
+            {
+                name: "AES-GCM",
+                tagLength: 128,
+                iv: b642buf(data.iv),
+            },
+            symmetricKey,
+            b642buf(data.data)
+        )
+        return ab2str(decryptedData)
+    } catch(e) {
+        console.error(e)
+        return null
+    }
+    
 }
 
 export async function ecdhEncrypt(
@@ -130,6 +136,7 @@ export async function ecdhEncrypt(
             publicKey: keyPair.publicKey,
         }
     } catch (e) {
+        console.error(e)
         return null
     }
 }
@@ -196,6 +203,7 @@ export async function ephemeralECDHEncrypt(
             ephemeralKeyPair!.privateKey,
         ]
     } catch (e) {
+        console.error(e)
         return null
     }
 }
@@ -243,6 +251,7 @@ export async function ecdhDecrypt(data: ECDHData, privateKeyData: JsonWebKey) {
         )
         return ab2str(decryptedData)
     } catch (e) {
+        console.error(e)
         return null
     }
 }

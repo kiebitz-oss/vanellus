@@ -20,9 +20,9 @@ export async function restoreFromBackup(
     data: Data
 ) {
     const decryptedKeyData = await aesDecrypt(data, base322buf(secret))
-    const dd = JSON.parse(decryptedKeyData)
+    if (decryptedKeyData === null) throw new Error("decryption failed")
 
-    if (dd === null) throw new Error("decryption failed")
+    const dd = JSON.parse(decryptedKeyData)
     if (!dd.keyPairs.sync) throw new Error("sync key missing")
 
     const derivedSecrets = await deriveSecrets(
@@ -40,6 +40,7 @@ export async function restoreFromBackup(
         response,
         b642buf(key)
     )
+    if (decryptedData == null) throw new Error("Decryption failed")
     const ddCloud = JSON.parse(decryptedData)
 
     this.data = ddCloud.data;
