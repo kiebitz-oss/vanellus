@@ -19,18 +19,9 @@ describe("Provider.backupData()", function () {
     it("we should be able to backup data", async function () {
         const be = backend()
         const keys = await adminKeys()
-        // we reset the database
         await resetDB(be, keys)
-        // we create a mediator
         const med = await mediator(be, keys)
-
-        if ("code" in med) throw new Error("creating mediator failed")
-
-        // we create an unverified provider
         const vp = await verifiedProvider(be, keys, med)
-
-        if ("code" in vp) throw new Error("creating provider failed")
-
         const backupResult = await vp.backupData()
 
         if (backupResult.status === Status.Failed)

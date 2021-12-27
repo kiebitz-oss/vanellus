@@ -18,9 +18,7 @@ describe("Provider.checkData()", function () {
     it("we should be able to retrieve confirmed provider data", async function () {
         const be = backend()
         const keys = await adminKeys()
-        // we reset the database
         await resetDB(be, keys)
-        // we create a mediator
         const med = await mediator(be, keys)
         const vp = await verifiedProvider(be, keys, med)
         const result = await vp.checkData({})
