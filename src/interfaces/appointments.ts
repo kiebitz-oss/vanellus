@@ -84,6 +84,6 @@ export interface ActorKeyData {
 
 export interface ProviderAppointments {
     provider: SignedProviderData
-    offers: SignedAppointment[]
+    appointments: SignedAppointment[]
     keyChain: KeyChain
 }

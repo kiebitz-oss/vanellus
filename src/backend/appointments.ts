@@ -188,10 +188,10 @@ export class AppointmentsBackend extends JSONRPCBackend {
 
     // publish all local appointments to the backend
     async publishAppointments(
-        { offers }: { offers: SignedData[] },
+        { appointments }: { appointments: SignedData[] },
         keyPair: KeyPair
     ) {
-        return await this.call("publishAppointments", { offers }, keyPair)
+        return await this.call("publishAppointments", { appointments }, keyPair)
     }
 
     // get n tokens from the given queue IDs
