@@ -55,7 +55,7 @@ export async function publishAppointments(
 
     const result = await this.backend.appointments.publishAppointments(
         {
-            offers: signedAppointments,
+            appointments: signedAppointments,
         },
         this.keyPairs!.signing
     )

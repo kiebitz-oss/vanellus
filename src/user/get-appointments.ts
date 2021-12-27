@@ -6,21 +6,21 @@ import { Status, Result, Error, ProviderAppointments } from "../interfaces"
 import { verify } from "../crypto"
 import { User } from "./"
 
-async function verifyOffer(offer: any, item: any) {
+async function verifyAppointment(appointment: any, item: any) {
     // to do: verify based on key chain
     /*
     let found = false;
     for (const providerKeys of keys.lists.providers) {
-        if (providerKeys.json.signing === offer.publicKey) {
+        if (providerKeys.json.signing === appointment.publicKey) {
             found = true;
             break;
         }
     }
     if (!found) throw 'invalid key';
-    const result = await verify([offer.publicKey], offer);
+    const result = await verify([appointment.publicKey], appointment);
     if (!result) throw 'invalid signature';
     */
-    return JSON.parse(offer.data)
+    return JSON.parse(appointment.data)
 }
 
 async function verifyProviderData(item: any) {
@@ -71,17 +71,20 @@ export async function getAppointments(
 
     for (const item of response) {
         item.provider.json = await verifyProviderData(item)
-        const verifiedOffers = []
-        for (const offer of item.offers) {
-            const verifiedOffer = await verifyOffer(offer, item)
-            for (const slot of verifiedOffer.slotData) {
-                if (offer.bookedSlots!.some((id: any) => id === slot.id))
+        const verifiedAppointments = []
+        for (const appointment of item.appointments) {
+            const verifiedAppointment = await verifyAppointment(
+                appointment,
+                item
+            )
+            for (const slot of verifiedAppointment.slotData) {
+                if (appointment.bookedSlots!.some((id: any) => id === slot.id))
                     slot.open = false
                 else slot.open = true
             }
-            verifiedOffers.push(verifiedOffer)
+            verifiedAppointments.push(verifiedAppointment)
         }
-        item.offers = verifiedOffers
+        item.appointments = verifiedAppointments
         verifiedAppointments.push(item)
     }
 
