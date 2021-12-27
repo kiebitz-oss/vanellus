@@ -10,16 +10,20 @@ export async function cancelAppointment(
     this: User,
     acceptedAppointment: AcceptedAppointment
 ): Promise<Result | Error> {
-    const id = acceptedAppointment.appointment.id
-
     const result = await this.backend.appointments.cancelAppointment(
         {
-            id: id,
+            id: acceptedAppointment.appointment.id,
             signedTokenData: this.tokenData!.signedToken,
             providerID: acceptedAppointment.provider.id,
         },
         this.tokenData!.keyPairs.signing
     )
+
+    if (result !== "ok")
+        return {
+            status: Status.Failed,
+            error: result,
+        }
 
     return {
         status: Status.Succeeded,

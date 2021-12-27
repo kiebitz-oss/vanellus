@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { equal } from "assert"
-import { formatDate } from "../helpers/time"
+import { formatDatetime } from "../helpers/time"
 import { ecdhDecrypt } from "../crypto"
 import { Status } from "../interfaces"
 import {
@@ -24,8 +24,12 @@ describe("Provider.getAppointments()", function () {
         const med = await mediator(be, keys)
         // we create an unverified provider
         const vp = await verifiedProvider(be, keys, med)
-        const today = formatDate(new Date())
-        const result = await vp.getAppointments({ from: today, to: today })
+        const fromDate = new Date()
+        const toDate = new Date(fromDate.getTime() + 60 * 60 * 24 * 1000)
+        const result = await vp.getAppointments({
+            from: formatDatetime(fromDate),
+            to: formatDatetime(toDate),
+        })
         equal(result.status, Status.Succeeded)
     })
 })

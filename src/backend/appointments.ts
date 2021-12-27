@@ -148,7 +148,6 @@ export class AppointmentsBackend extends JSONRPCBackend {
         },
         keyPair: KeyPair
     ) {
-        console.log(signedTokenData)
         return this.call<Booking>(
             "bookAppointment",
             { providerID, id, encryptedData, signedTokenData },

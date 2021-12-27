@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { equal } from "assert"
-import { formatDate } from "../helpers/time"
+import { formatDatetime } from "../helpers/time"
 import { ecdhDecrypt } from "../crypto"
 import { Status } from "../interfaces"
 import {
@@ -55,12 +55,13 @@ describe("Provider.publishAppointments()", function () {
         if (publishResult.status !== Status.Succeeded)
             throw new Error("cannot publish appointments")
 
-        const tomorrow = new Date()
-        tomorrow.setDate(tomorrow.getDate() + 1)
+        const fromDate = new Date()
+        const toDate = new Date(fromDate.getTime())
+        toDate.setDate(toDate.getDate() + 1)
 
         const getResult = await vp.getAppointments({
-            from: formatDate(tomorrow),
-            to: formatDate(tomorrow),
+            from: formatDatetime(fromDate),
+            to: formatDatetime(toDate),
         })
 
         if (getResult.status !== Status.Succeeded)
