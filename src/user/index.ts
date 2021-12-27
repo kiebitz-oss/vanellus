@@ -8,6 +8,7 @@ import { backupData } from "./backup-data"
 import { generateKeyPairs } from "./generate-key-pairs"
 import { bookAppointment } from "./book-appointment"
 import { cancelAppointment } from "./cancel-appointment"
+import { getAppointment } from "./get-appointment"
 import { getAppointments } from "./get-appointments"
 import { buf2base32, b642buf } from "../helpers/conversion"
 import { randomBytes } from "../crypto"
@@ -30,6 +31,7 @@ export class User extends Actor {
     public generateKeyPairs = generateKeyPairs
     public bookAppointment = bookAppointment
     public getAppointments = getAppointments
+    public getAppointment = getAppointment
     public backupData = backupData
     public getToken = getToken
 

@@ -78,7 +78,7 @@ export async function getAppointments(
     for (const item of response) {
         item.provider.json = await verifyProviderData(item)
         // we copy the ID for convenience
-        item.provider.json.id = item.provider.id
+        item.provider.json!.id = item.provider.id
         const verifiedProviderAppointments: Appointment[] = []
         for (const signedAppointment of item.appointments) {
             const appointment: Appointment = await verifyAppointment(
@@ -96,7 +96,6 @@ export async function getAppointments(
             }
             verifiedProviderAppointments.push(appointment)
         }
-        item.appointments = verifiedProviderAppointments
         verifiedAppointments.push({
             provider: item.provider.json,
             appointments: verifiedProviderAppointments,

@@ -50,6 +50,18 @@ export class AppointmentsBackend extends JSONRPCBackend {
 
     // public endpoints
 
+    async getAppointment({
+        id,
+        providerID,
+    }: {
+        id: string
+        providerID: string
+    }) {
+        return this.call<ProviderAppointments>("getAppointment", {
+            id,
+            providerID,
+        })
+    }
     async getAppointmentsByZipCode({
         zipCode,
         from,
@@ -59,7 +71,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
         from: string
         to: string
     }) {
-        return this.call("getAppointmentsByZipCode", {
+        return this.call<ProviderAppointments[]>("getAppointmentsByZipCode", {
             zipCode,
             from,
             to,
