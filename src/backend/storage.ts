@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import JSONRPCBackend from "./jsonrpc"
-import { Settings, KeyPair } from "../interfaces"
+import { Settings, KeyPair, OK, AESData } from "../interfaces"
 
 // The storage backend
 export class StorageBackend extends JSONRPCBackend {
@@ -11,16 +11,16 @@ export class StorageBackend extends JSONRPCBackend {
         super(settings, "storage")
     }
 
-    async storeSettings({ id, data }: { id: string; data: any }) {
-        return await this.call("storeSettings", { id, data })
+    async storeSettings({ id, data }: { id: string, data: AESData }) {
+        return await this.call<OK>("storeSettings", { id, data })
     }
 
     async getSettings({ id }: { id: string }) {
-        return await this.call("getSettings", { id })
+        return await this.call<AESData>("getSettings", { id })
     }
 
     // only works for test deployments
     async resetDB({}: {}, keyPair: KeyPair) {
-        return await this.call("resetDB", {}, keyPair)
+        return await this.call<OK>("resetDB", {}, keyPair)
     }
 }

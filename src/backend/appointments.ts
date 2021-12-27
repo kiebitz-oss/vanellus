@@ -37,7 +37,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
         },
         keyPair: KeyPair
     ) {
-        return await this.call(
+        return await this.call<OK>(
             "confirmProvider",
             {
                 confirmedProviderData,
@@ -115,7 +115,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
 
     // only works for test deployments
     async resetDB({}: {}, keyPair: KeyPair) {
-        return await this.call("resetDB", {}, keyPair)
+        return await this.call<OK>("resetDB", {}, keyPair)
     }
 
     async addMediatorPublicKeys(
@@ -203,12 +203,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { appointments }: { appointments: SignedData[] },
         keyPair: KeyPair
     ) {
-        return await this.call("publishAppointments", { appointments }, keyPair)
-    }
-
-    // get n tokens from the given queue IDs
-    async getBookedAppointments({}, keyPair: KeyPair) {
-        return await this.call("getBookedAppointments", {}, keyPair)
+        return await this.call<OK>("publishAppointments", { appointments }, keyPair)
     }
 
     async storeProviderData(
