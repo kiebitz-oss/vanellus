@@ -76,8 +76,6 @@ export async function getAppointments(
         newAppointments.push(newAppointment)
     }
 
-    this.openAppointments = newAppointments
-
     return {
         status: Status.Succeeded,
         appointments: newAppointments,

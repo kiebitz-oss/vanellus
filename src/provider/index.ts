@@ -58,14 +58,6 @@ export class Provider extends Actor {
         return buf2base32(b642buf(randomBytes(10)))
     }
 
-    public get openAppointments(): Appointment[] {
-        return this.get("openAppointments")
-    }
-
-    public set openAppointments(appointments: Appointment[]) {
-        this.set("openAppointments", appointments)
-    }
-
     public get loggedOut(): boolean {
         return this.get("loggedOut")
     }

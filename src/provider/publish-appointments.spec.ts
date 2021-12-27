@@ -68,10 +68,7 @@ describe("Provider.publishAppointments()", function () {
         if (getResult.appointments.length != 5)
             throw new Error("expected 5 appointments")
 
-        if (vp.openAppointments.length != 5)
-            throw new Error("new appointments should be saved")
-
-        for (const app of vp.openAppointments) {
+        for (const app of getResult.appointments) {
             equal(app.properties.vaccine, "moderna")
             equal(app.duration, 15)
             equal(app.slotData.length, 5)
