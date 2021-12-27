@@ -12,6 +12,7 @@ import {
     SignedData,
     SignedToken,
     SignedAppointment,
+    ConfirmedProviderData,
     SignedMediatorKeyData,
     EncryptedProviderData,
     ProviderAppointments,
@@ -26,11 +27,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
 
     async confirmProvider(
         {
-            encryptedProviderData,
+            confirmedProviderData,
             publicProviderData,
             signedKeyData,
         }: {
-            encryptedProviderData: SignedData
+            confirmedProviderData: SignedData
             publicProviderData: SignedData
             signedKeyData: SignedData
         },
@@ -39,7 +40,7 @@ export class AppointmentsBackend extends JSONRPCBackend {
         return await this.call(
             "confirmProvider",
             {
-                encryptedProviderData,
+                confirmedProviderData,
                 publicProviderData,
                 signedKeyData,
             },
@@ -109,7 +110,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { signedKeyData }: { signedKeyData: SignedMediatorKeyData },
         keyPair: KeyPair
     ) {
-        return this.call<OK>("addMediatorPublicKeys", { signedKeyData }, keyPair)
+        return this.call<OK>(
+            "addMediatorPublicKeys",
+            { signedKeyData },
+            keyPair
+        )
     }
 
     // user endpoints
@@ -174,7 +179,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { from, to }: { from: string; to: string },
         keyPair: KeyPair
     ) {
-        return this.call<SignedAppointment[]>("getProviderAppointments", { from, to }, keyPair)
+        return this.call<SignedAppointment[]>(
+            "getProviderAppointments",
+            { from, to },
+            keyPair
+        )
     }
 
     // publish all local appointments to the backend
@@ -194,11 +203,19 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { encryptedData, code }: { encryptedData: ECDHData; code?: string },
         keyPair: KeyPair
     ) {
-        return this.call<OK>("storeProviderData", { encryptedData, code }, keyPair)
+        return this.call<OK>(
+            "storeProviderData",
+            { encryptedData, code },
+            keyPair
+        )
     }
 
     async checkProviderData({}, keyPair: KeyPair) {
-        return await this.call("checkProviderData", {}, keyPair)
+        return await this.call<ConfirmedProviderData>(
+            "checkProviderData",
+            {},
+            keyPair
+        )
     }
 
     // mediator-only endpoint
@@ -207,7 +224,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { limit }: { limit?: number },
         keyPair: KeyPair
     ) {
-        return this.call<EncryptedProviderData[]>("getPendingProviderData", { limit }, keyPair)
+        return this.call<EncryptedProviderData[]>(
+            "getPendingProviderData",
+            { limit },
+            keyPair
+        )
     }
 
     async getVerifiedProviderData(

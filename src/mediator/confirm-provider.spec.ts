@@ -1,3 +1,7 @@
+// Kiebitz - Privacy-Friendly Appointments
+// Copyright (C) 2021-2021 The Kiebitz Authors
+// README.md contains license information.
+
 import { equal } from "assert"
 import { Status } from "../interfaces"
 import {
@@ -16,14 +20,8 @@ describe("Mediator.confirmProvider()", function () {
         await resetDB(be, keys)
         // we create a mediator
         const med = await mediator(be, keys)
-
-        if ("code" in med) throw new Error("creating mediator failed")
-
         // we create an unverified provider
         const up = await unverifiedProvider(be, keys)
-
-        if ("code" in up) throw new Error("creating provider failed")
-
         let pendingProviders = await med.pendingProviders()
 
         if (pendingProviders.status == Status.Failed) {

@@ -16,7 +16,7 @@ import {
     QueueData,
     TokenData,
     ContactData,
-    AcceptedInvitation,
+    AcceptedAppointment,
     ProviderAppointments,
 } from "../interfaces"
 
@@ -30,7 +30,7 @@ export class User extends Actor {
     public backupData = backupData
     public getToken = getToken
 
-    private generateUserSecret(): string {
+    private generateSecret(): string {
         return buf2base32(b642buf(randomBytes(10)))
     }
 
@@ -39,7 +39,7 @@ export class User extends Actor {
     }
 
     public initialize() {
-        this.userSecret = this.generateUserSecret()
+        this.secret = this.generateSecret()
     }
 
     public get queueData(): QueueData | null {
@@ -50,12 +50,12 @@ export class User extends Actor {
         this.set("queueData", queueData)
     }
 
-    public get userSecret(): string | null {
-        return this.get("userSecret")
+    public get secret(): string | null {
+        return this.get("secret")
     }
 
-    public set userSecret(userSecret: string | null) {
-        this.set("userSecret", userSecret)
+    public set secret(secret: string | null) {
+        this.set("secret", secret)
     }
 
     public get tokenData(): TokenData | null {
@@ -84,13 +84,13 @@ export class User extends Actor {
         this.set("verifiedAppointments", verifiedAppointments)
     }
 
-    public get acceptedInvitation(): AcceptedInvitation | null {
-        return this.get("acceptedInvitation")
+    public get acceptedAppointment(): AcceptedAppointment | null {
+        return this.get("acceptedAppointment")
     }
 
-    public set acceptedInvitation(
-        acceptedInvitation: AcceptedInvitation | null
+    public set acceptedAppointment(
+        acceptedAppointment: AcceptedAppointment | null
     ) {
-        this.set("acceptedInvitation", acceptedInvitation)
+        this.set("acceptedAppointment", acceptedAppointment)
     }
 }

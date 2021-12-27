@@ -5,28 +5,25 @@
 import { aesDecrypt, deriveSecrets } from "../crypto"
 import { base322buf, b642buf } from "../helpers/conversion"
 import { Provider } from "./"
-import { Data } from "../interfaces"
+import { LocalBackupData, CloudBackupData } from "./backup-data"
+import { AESData } from "../interfaces"
 
-  /**
-   * Restores the data of a provider by decrypting the provider keys and
-   * subsequently downloading the provider metadata from the server
-   * @param secret the 24 character alphanumeric secret from the provider
-   * @param data the encrypted keys from the provider backup file
-   */
+/**
+ * Restores the data of a provider by decrypting the provider keys and
+ * subsequently downloading the provider metadata from the server
+ * @param secret the 24 character alphanumeric secret from the provider
+ * @param data the encrypted keys from the provider backup file
+ */
 
-export async function restoreFromBackup(
-    this: Provider,
-    secret: string,
-    data: Data
-) {
-    const decryptedKeyData = await aesDecrypt(data, base322buf(secret))
-    const dd = JSON.parse(decryptedKeyData)
+export async function restoreFromBackup(this: Provider, data: AESData) {
+    const decryptedKeyData = await aesDecrypt(data, base322buf(this.secret!))
+    const dd: LocalBackupData = JSON.parse(decryptedKeyData!)
 
     if (dd === null) throw new Error("decryption failed")
-    if (!dd.keyPairs.sync) throw new Error("sync key missing")
+    if (!dd.keyPairs!.sync) throw new Error("sync key missing")
 
     const derivedSecrets = await deriveSecrets(
-        b642buf(dd.keyPairs.sync),
+        b642buf(dd.keyPairs!.sync),
         32,
         2
     )
@@ -36,15 +33,12 @@ export async function restoreFromBackup(
     const response = await this.backend.storage.getSettings({
         id: id,
     })
-    const decryptedData = await aesDecrypt(
-        response,
-        b642buf(key)
-    )
-    const ddCloud = JSON.parse(decryptedData)
+    const decryptedData = await aesDecrypt(response, b642buf(key))
+    const ddCloud: CloudBackupData = JSON.parse(decryptedData!)
 
-    this.data = ddCloud.data;
     this.keyPairs = dd.keyPairs
-    this.secret = secret
+    this.data = ddCloud.data
+    this.verifiedData = ddCloud.verifiedData
 
     return ddCloud.data
 }

@@ -4,11 +4,14 @@
 
 import { generateECDHKeyPair } from "./generate-key"
 import { b642buf, buf2b64, str2ab, ab2str } from "../helpers/conversion"
-import { Data } from "../interfaces"
+import { AESData } from "../interfaces"
 import { salt } from "./token"
 import { KeyPair, ECDHData } from "../interfaces"
 
-export async function aesEncrypt(rawData: string, secret: ArrayBuffer) {
+export async function aesEncrypt(
+    rawData: string,
+    secret: ArrayBuffer
+): Promise<AESData | null> {
     const data = str2ab(rawData)
 
     const secretKey = await crypto.subtle.importKey(
@@ -45,7 +48,10 @@ export async function aesEncrypt(rawData: string, secret: ArrayBuffer) {
     }
 }
 
-export async function aesDecrypt(data: Data, secret: ArrayBuffer) {
+export async function aesDecrypt(
+    data: AESData,
+    secret: ArrayBuffer
+): Promise<string | null> {
     const secretKey = await crypto.subtle.importKey(
         "raw",
         secret,
@@ -78,7 +84,7 @@ export async function ecdhEncrypt(
     rawData: string,
     keyPair: KeyPair,
     publicKeyData: string
-) {
+): Promise<ECDHData | null> {
     const data = str2ab(rawData)
 
     try {

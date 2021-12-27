@@ -23,8 +23,8 @@ class JSONRPCBackend {
         method: string,
         params: Record<string, unknown>,
         keyPair?: KeyPair,
-        id?: string,
-    ) {
+        id?: string
+    ): Promise<R | RPCError> {
         let callParams
 
         if (typeof keyPair === "object") {
@@ -44,22 +44,18 @@ class JSONRPCBackend {
         }
 
         try {
-            const response = await fetch(
-                this.apiUrl,
-                {
-                    method: "POST",
-                    headers: {
-                        ["Content-Type"]: "application/json"
-                    },
-                    body: JSON.stringify({
-                        jsonrpc: "2.0",
-                        method: method,
-                        params: callParams,
-                        id: id,
-                    }),
-
-                }
-            );
+            const response = await fetch(this.apiUrl, {
+                method: "POST",
+                headers: {
+                    ["Content-Type"]: "application/json",
+                },
+                body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: method,
+                    params: callParams,
+                    id: id,
+                }),
+            })
 
             if (!response.ok) {
                 return {
@@ -68,10 +64,10 @@ class JSONRPCBackend {
                     data: {
                         error: response.statusText,
                     },
-                } as RPCError;
+                } as RPCError
             }
 
-            return response.json().then((data) => data.result as R);
+            return response.json().then((data) => data.result as R)
         } catch (e) {
             return {
                 code: -1,
@@ -81,7 +77,6 @@ class JSONRPCBackend {
                 },
             } as RPCError
         }
-
     }
 }
 

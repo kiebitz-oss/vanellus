@@ -41,27 +41,33 @@ async function verifyProviderData(item: any) {
     return JSON.parse(item.provider.data)
 }
 
+interface GetAppointmentsResult extends Result {
+    appointments: ProviderAppointments[]
+}
+
 interface GetAppointmentsParams {
-  from: string,
-  to: string,
-  zipCode: string,
+    from: string
+    to: string
+    zipCode: string
 }
 
 export async function getAppointments(
     this: User,
     { from, to, zipCode }: GetAppointmentsParams
-) {
-    const response =
-        await this.backend.appointments.getAppointmentsByZipCode({
-            zipCode: zipCode,
-            from: from,
-            to: to,
-        })
+): Promise<GetAppointmentsResult | Error> {
+    const response = await this.backend.appointments.getAppointmentsByZipCode({
+        zipCode: zipCode,
+        from: from,
+        to: to,
+    })
 
     if (!(response instanceof Array))
-        throw new Error ("fetch appointmentsByZipCode failed")
+        return {
+            status: Status.Failed,
+            error: response,
+        }
 
-    const verifiedAppointments = []
+    const verifiedAppointments: ProviderAppointments[] = []
 
     for (const item of response) {
         item.provider.json = await verifyProviderData(item)
@@ -69,9 +75,7 @@ export async function getAppointments(
         for (const offer of item.offers) {
             const verifiedOffer = await verifyOffer(offer, item)
             for (const slot of verifiedOffer.slotData) {
-                if (
-                    offer.bookedSlots!.some((id: any) => id === slot.id)
-                )
+                if (offer.bookedSlots!.some((id: any) => id === slot.id))
                     slot.open = false
                 else slot.open = true
             }
@@ -82,8 +86,11 @@ export async function getAppointments(
     }
 
     verifiedAppointments.sort((a, b) =>
-        a.provider.json.name > b.provider.json.name ? 1 : -1
+        a.provider.json!.name > b.provider.json!.name ? 1 : -1
     )
 
-    return verifiedAppointments
+    return {
+        status: Status.Succeeded,
+        appointments: verifiedAppointments,
+    }
 }
