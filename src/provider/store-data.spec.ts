@@ -11,21 +11,23 @@ import {
     resetDB,
     mediator,
     backend,
-    verifiedProvider,
+    unverifiedProvider,
 } from "../testing/fixtures"
 
-describe("Provider.checkData()", function () {
-    it("we should be able to retrieve confirmed provider data", async function () {
+describe("Provider.storeData()", function () {
+    it("we should be able to store provider data", async function () {
         const be = backend()
         const keys = await adminKeys()
         // we reset the database
         await resetDB(be, keys)
         // we create a mediator
         const med = await mediator(be, keys)
-        const vp = await verifiedProvider(be, keys, med)
-        const result = await vp.checkData({})
+        const up = await unverifiedProvider(be, keys)
+
+        const result = await up.storeData()
 
         if (result.status === Status.Failed)
-            throw new Error("cannot get confirmed data")
+            throw new Error("cannot store provider data")
+
     })
 })
