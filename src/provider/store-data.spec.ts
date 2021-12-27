@@ -28,6 +28,5 @@ describe("Provider.storeData()", function () {
 
         if (result.status === Status.Failed)
             throw new Error("cannot store provider data")
-
     })
 })

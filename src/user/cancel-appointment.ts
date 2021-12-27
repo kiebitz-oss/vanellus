@@ -15,7 +15,7 @@ export async function cancelAppointment(this: User): Promise<Result | Error> {
             signedTokenData: this.tokenData!.signedToken,
             providerID: this.acceptedAppointment!.provider.id,
         },
-        this.tokenData!.signingKeyPair
+        this.tokenData!.keyPairs.signing
     )
 
     return {

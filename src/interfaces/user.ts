@@ -17,8 +17,7 @@ export interface ContactData {
 export interface UserToken {}
 
 export interface TokenData {
-    keyPair: KeyPair
-    signingKeyPair: KeyPair
+    keyPairs: UserKeyPairs
     signedToken: SignedToken
     userToken: UserToken
 }

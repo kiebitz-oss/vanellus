@@ -63,11 +63,12 @@ class JSONRPCBackend {
                     message: "request failed",
                     data: {
                         error: response.statusText,
+                        data: await response.json(),
                     },
                 } as RPCError
             }
 
-            return response.json().then((data) => data.result as R)
+            return (await response.json()).result as R
         } catch (e) {
             return {
                 code: -1,

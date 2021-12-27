@@ -71,7 +71,7 @@ export async function getAppointments(
 
     for (const item of response) {
         item.provider.json = await verifyProviderData(item)
-        const verifiedAppointments = []
+        const verifiedProviderAppointments = []
         for (const appointment of item.appointments) {
             const verifiedAppointment = await verifyAppointment(
                 appointment,
@@ -82,9 +82,9 @@ export async function getAppointments(
                     slot.open = false
                 else slot.open = true
             }
-            verifiedAppointments.push(verifiedAppointment)
+            verifiedProviderAppointments.push(verifiedAppointment)
         }
-        item.appointments = verifiedAppointments
+        item.appointments = verifiedProviderAppointments
         verifiedAppointments.push(item)
     }
 

@@ -45,7 +45,7 @@ export async function bookAppointment(
             encryptedData: encryptedData,
             signedTokenData: this.tokenData!.signedToken,
         },
-        this.tokenData!.signingKeyPair
+        this.tokenData!.keyPairs.signing
     )
 
     if ("code" in response)
