@@ -22,3 +22,8 @@ export interface TokenData {
     signedToken: SignedToken
     userToken: UserToken
 }
+
+export interface UserKeyPairs {
+    signing: KeyPair
+    encryption: KeyPair
+}

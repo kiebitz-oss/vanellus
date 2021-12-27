@@ -235,6 +235,10 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { limit }: { limit?: number },
         keyPair: KeyPair
     ) {
-        return this.call("getVerifiedProviderData", { limit }, keyPair)
+        return this.call<EncryptedProviderData[]>(
+            "getVerifiedProviderData",
+            { limit },
+            keyPair
+        )
     }
 }

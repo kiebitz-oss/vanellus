@@ -50,12 +50,12 @@ export class Provider extends Actor {
     }
 
     public async initialize() {
-        this.secret = this.generateSecret()
-        this.keyPairs = await this.generateKeyPairs()
+        this.generateSecret()
+        await this.generateKeyPairs()
     }
 
-    private generateSecret(): string {
-        return buf2base32(b642buf(randomBytes(10)))
+    private generateSecret() {
+        this.secret = buf2base32(b642buf(randomBytes(10)))
     }
 
     public get loggedOut(): boolean {
