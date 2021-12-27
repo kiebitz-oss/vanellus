@@ -14,7 +14,7 @@ export async function unverifiedProvider(
 ): Promise<Provider> {
     const provider = new Provider("provider", backend)
 
-    await provider.generateKeyPairs()
+    await provider.initialize()
 
     const providerData: ProviderData = {
         name: "Max Mustermann",

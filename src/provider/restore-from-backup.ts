@@ -6,7 +6,11 @@ import { aesDecrypt, deriveSecrets } from "../crypto"
 import { base322buf, b642buf } from "../helpers/conversion"
 import { Provider } from "./"
 import { LocalBackupData, CloudBackupData } from "./backup-data"
-import { AESData } from "../interfaces"
+import { AESData, Result, Error, Status } from "../interfaces"
+
+interface RestoreFromBackupResult extends Result {
+    data: { [Key: string]: any } | null
+}
 
 /**
  * Restores the data of a provider by decrypting the provider keys and
@@ -15,12 +19,17 @@ import { AESData } from "../interfaces"
  * @param data the encrypted keys from the provider backup file
  */
 
-export async function restoreFromBackup(this: Provider, data: AESData) {
+export async function restoreFromBackup(
+    this: Provider,
+    data: AESData
+): Promise<RestoreFromBackupResult | Error> {
     const decryptedKeyData = await aesDecrypt(data, base322buf(this.secret!))
     const dd: LocalBackupData = JSON.parse(decryptedKeyData!)
 
-    if (dd === null) throw new Error("decryption failed")
-    if (!dd.keyPairs!.sync) throw new Error("sync key missing")
+    if (dd === null)
+        return {
+            status: Status.Failed,
+        }
 
     const derivedSecrets = await deriveSecrets(
         b642buf(dd.keyPairs!.sync),
@@ -40,5 +49,8 @@ export async function restoreFromBackup(this: Provider, data: AESData) {
     this.data = ddCloud.data
     this.verifiedData = ddCloud.verifiedData
 
-    return ddCloud.data
+    return {
+        status: Status.Succeeded,
+        data: ddCloud.data,
+    }
 }
