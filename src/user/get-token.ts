@@ -57,8 +57,10 @@ export async function getToken(
     const tokenData = {
         createdAt: new Date().toISOString(),
         signedToken: signedToken,
-        signingKeyPair: signingKeyPair!,
-        keyPair: encryptionKeyPair!,
+        keyPairs: {
+            signing: signingKeyPair!,
+            encryption: encryptionKeyPair!,
+        },
         hashNonce: nonce,
         dataHash: dataHash,
         userToken: userToken,

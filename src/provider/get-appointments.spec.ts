@@ -24,10 +24,8 @@ describe("Provider.getAppointments()", function () {
         const med = await mediator(be, keys)
         // we create an unverified provider
         const vp = await verifiedProvider(be, keys, med)
-
         const today = formatDate(new Date())
         const result = await vp.getAppointments({ from: today, to: today })
-
-        if ("error" in result) throw new Error("cannot get appointments")
+        equal(result.status, Status.Succeeded)
     })
 })
