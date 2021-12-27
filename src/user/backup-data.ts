@@ -55,7 +55,16 @@ export async function backupData(
         b642buf(key)
     )
 
-    await this.backend.storage.storeSettings({ id: id, data: encryptedData })
+    const response = await this.backend.storage.storeSettings({
+        id: id,
+        data: encryptedData,
+    })
+
+    if (response !== "ok")
+        return {
+            status: Status.Failed,
+            error: response,
+        }
 
     return {
         status: Status.Succeeded,

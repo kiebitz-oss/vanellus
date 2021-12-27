@@ -18,8 +18,15 @@ export async function restoreFromBackup(
 ): Promise<RestoreFromBackupResult | Error> {
     const secrets = await deriveSecrets(base322buf(this.secret!), 32, 2)
     const [id, key] = secrets!
-    const data = await this.backend.storage.getSettings({ id: id })
-    const decryptedData = await aesDecrypt(data, b642buf(key))
+    const response = await this.backend.storage.getSettings({ id: id })
+
+    if ("code" in response)
+        return {
+            status: Status.Failed,
+            error: response,
+        }
+
+    const decryptedData = await aesDecrypt(response, b642buf(key))
     const dd: CloudBackupData = JSON.parse(decryptedData!)
 
     this.tokenData = dd.tokenData

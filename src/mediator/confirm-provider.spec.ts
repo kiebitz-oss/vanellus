@@ -17,11 +17,8 @@ describe("Mediator.confirmProvider()", function () {
     it("we should be able to confirm a provider", async function () {
         const be = backend()
         const keys = await adminKeys()
-        // we reset the database
         await resetDB(be, keys)
-        // we create a mediator
         const med = await mediator(be, keys)
-        // we create an unverified provider
         const up = await unverifiedProvider(be, keys)
         let pendingProviders = await med.pendingProviders()
 
