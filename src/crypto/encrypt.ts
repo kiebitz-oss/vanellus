@@ -4,91 +4,87 @@
 
 import { generateECDHKeyPair } from "./generate-key"
 import { b642buf, buf2b64, str2ab, ab2str } from "../helpers/conversion"
-import { Data } from "../interfaces"
+import { AESData } from "../interfaces"
 import { salt } from "./token"
 import { KeyPair, ECDHData } from "../interfaces"
 
-export async function aesEncrypt(rawData: string, secret: ArrayBuffer) {
+export async function aesEncrypt(
+    rawData: string,
+    secret: ArrayBuffer
+): Promise<AESData | null> {
     const data = str2ab(rawData)
 
-    try {
-        const secretKey = await crypto.subtle.importKey(
-            "raw",
-            secret,
-            "PBKDF2",
-            false,
-            ["deriveKey"]
-        )
+    const secretKey = await crypto.subtle.importKey(
+        "raw",
+        secret,
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+    )
 
-        const symmetricKey = await crypto.subtle.deriveKey(
-            { name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: 100000 },
-            secretKey,
-            { name: "AES-GCM", length: 256 },
-            false,
-            ["encrypt", "decrypt"]
-        )
+    const symmetricKey = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: 100000 },
+        secretKey,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    )
 
-        const iv = crypto.getRandomValues(new Uint8Array(12))
+    const iv = crypto.getRandomValues(new Uint8Array(12))
 
-        const encryptedData = await crypto.subtle.encrypt(
-            {
-                name: "AES-GCM",
-                tagLength: 128,
-                iv: iv,
-            },
-            symmetricKey,
-            data
-        )
+    const encryptedData = await crypto.subtle.encrypt(
+        {
+            name: "AES-GCM",
+            tagLength: 128,
+            iv: iv,
+        },
+        symmetricKey,
+        data
+    )
 
-        return {
-            iv: buf2b64(iv),
-            data: buf2b64(encryptedData),
-        }
-    } catch (e) {
-        console.error(e)
-        return null
+    return {
+        iv: buf2b64(iv),
+        data: buf2b64(encryptedData),
     }
 }
 
-export async function aesDecrypt(data: Data, secret: ArrayBuffer) {
-    try {
-        const secretKey = await crypto.subtle.importKey(
-            "raw",
-            secret,
-            "PBKDF2",
-            false,
-            ["deriveKey"]
-        )
+export async function aesDecrypt(
+    data: AESData,
+    secret: ArrayBuffer
+): Promise<string | null> {
+    const secretKey = await crypto.subtle.importKey(
+        "raw",
+        secret,
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+    )
 
-        const symmetricKey = await crypto.subtle.deriveKey(
-            { name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: 100000 },
-            secretKey,
-            { name: "AES-GCM", length: 256 },
-            false,
-            ["encrypt", "decrypt"]
-        )
+    const symmetricKey = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: 100000 },
+        secretKey,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    )
 
-        const decryptedData = await crypto.subtle.decrypt(
-            {
-                name: "AES-GCM",
-                tagLength: 128,
-                iv: b642buf(data.iv),
-            },
-            symmetricKey,
-            b642buf(data.data)
-        )
-        return ab2str(decryptedData)
-    } catch (e) {
-        console.error(e)
-        return null
-    }
+    const decryptedData = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            tagLength: 128,
+            iv: b642buf(data.iv),
+        },
+        symmetricKey,
+        b642buf(data.data)
+    )
+    return ab2str(decryptedData)
 }
 
 export async function ecdhEncrypt(
     rawData: string,
     keyPair: KeyPair,
     publicKeyData: string
-) {
+): Promise<ECDHData | null> {
     const data = str2ab(rawData)
 
     try {

@@ -33,8 +33,6 @@ export async function getAppointments(
         return bookings
     }
 
-    const openAppointments = this.openAppointments || []
-
     const response = await this.backend.appointments.getAppointments(
         { from: from, to: to },
         this.keyPairs!.signing
@@ -63,43 +61,6 @@ export async function getAppointments(
             continue
         }
 
-        const existingAppointment = openAppointments.find(
-            (app) => app.id === appData.id
-        )
-
-        if (existingAppointment) {
-            // if the remote version is older than the local one we skip this
-            if (existingAppointment.modified) continue
-
-            // we update the appointment by removing slots that do not exist
-            // in the new version and by adding slots from the new version
-            // that do not exist locally
-
-            // remove slots that do not exist in the backend
-            existingAppointment.slotData = existingAppointment.slotData.filter(
-                (sl: Slot) =>
-                    appData.slotData.some((slot: Slot) => slot.id === sl.id)
-            )
-
-            // add new slots from the backend
-            existingAppointment.slotData = [
-                ...existingAppointment.slotData,
-                ...appData.slotData.filter(
-                    (sl: any) =>
-                        !existingAppointment.slotData.some(
-                            (slot: any) => slot.id === sl.id
-                        )
-                ),
-            ]
-
-            // we update the slot data length
-            existingAppointment.updatedAt = appData.updatedAt
-            existingAppointment.bookings = await decryptBookings(
-                appointment.bookings || []
-            )
-            continue
-        }
-
         const newAppointment: Appointment = {
             updatedAt: appData.updatedAt,
             timestamp: appData.timestamp,
@@ -115,11 +76,10 @@ export async function getAppointments(
         newAppointments.push(newAppointment)
     }
 
-    const allAppointments = [...openAppointments, ...newAppointments]
-    this.openAppointments = allAppointments
+    this.openAppointments = newAppointments
 
     return {
         status: Status.Succeeded,
-        appointments: allAppointments,
+        appointments: newAppointments,
     }
 }

@@ -3,22 +3,19 @@
 // README.md contains license information.
 
 import { backupData } from "./backup-data"
-import { checkVerifiedProviderData } from "./check-verified-provider-data"
+import { checkData } from "./check-data"
 import { generateKeyPairs } from "./generate-key-pairs"
-import { keys } from "./keys"
-import { providerData } from "./provider-data"
-import { submitProviderData } from "./submit-provider-data"
+import { storeData } from "./store-data"
 import { createAppointment } from "./create-appointment"
-import { verifiedProviderData } from "./verified-provider-data"
-import { providerSecret } from "./provider-secret"
 import { restoreFromBackup } from "./restore-from-backup"
-import { updateAppointment } from "./update-appointment"
-import { cancelAppointment } from "./cancel-appointment"
 import { publishAppointments } from "./publish-appointments"
 import { getAppointments } from "./get-appointments"
 
+import { buf2base32, b642buf } from "../helpers/conversion"
+import { randomBytes } from "../crypto"
 import { Actor } from "../actor"
 import { Backend } from "../backend"
+
 import {
     ProviderBackupReferenceData,
     ProviderData,
@@ -28,24 +25,37 @@ import {
     Appointment,
 } from "../interfaces"
 
+export * from "./helpers"
+
 export class Provider extends Actor {
     public backupData = backupData
-    public checkVerifiedProviderData = checkVerifiedProviderData
-    public keys = keys
-    public providerData = providerData
-    public submitProviderData = submitProviderData
+    public checkData = checkData
+    public storeData = storeData
     public createAppointment = createAppointment
-    public verifiedProviderData = verifiedProviderData
-    public providerSecret = providerSecret
     public restoreFromBackup = restoreFromBackup
-    public updateAppointment = updateAppointment
-    public cancelAppointment = cancelAppointment
     public publishAppointments = publishAppointments
     public getAppointments = getAppointments
     public generateKeyPairs = generateKeyPairs
 
+    /**
+     * create a new blank provider object
+     * @param id A string to identify the provoder. Used to diferentiate objects
+     * in the storage backend
+     * @param backend The backend used for data storage and network
+     * communication
+     */
+
     constructor(id: string, backend: Backend) {
         super("provider", id, backend)
+    }
+
+    public async initialize() {
+        this.secret = this.generateSecret()
+        this.keyPairs = await this.generateKeyPairs()
+    }
+
+    private generateSecret(): string {
+        return buf2base32(b642buf(randomBytes(10)))
     }
 
     public get openAppointments(): Appointment[] {
@@ -70,16 +80,6 @@ export class Provider extends Actor {
 
     public set keyPairs(keyPairs: ProviderKeyPairs | null) {
         this.set("keyPairs", keyPairs)
-    }
-
-    public get referenceData(): ProviderBackupReferenceData | null {
-        return this.get("referenceData")
-    }
-
-    public set referenceData(
-        referenceData: ProviderBackupReferenceData | null
-    ) {
-        this.set("referenceData", referenceData)
     }
 
     public get data(): ProviderData | null {

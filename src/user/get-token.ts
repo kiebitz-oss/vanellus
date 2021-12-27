@@ -37,7 +37,7 @@ export async function getToken(
 
     const userToken = {
         version: "0.3",
-        code: this.userSecret!.slice(0, 4),
+        code: this.secret!.slice(0, 4),
         createdAt: new Date().toISOString(),
         publicKey: signingKeyPair!.publicKey, // the signing key to control the ID
         encryptionPublicKey: encryptionKeyPair!.publicKey,
@@ -71,7 +71,3 @@ export async function getToken(
         status: Status.Succeeded,
     }
 }
-
-getToken.reset = () => ({ status: "initialized" })
-
-getToken.actionName = "getToken"

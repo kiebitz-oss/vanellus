@@ -5,51 +5,40 @@
 import { aesDecrypt, deriveSecrets } from "../crypto"
 import { base322buf, b642buf } from "../helpers/conversion"
 import { Provider } from "./"
+import { LocalBackupData, CloudBackupData } from "./backup-data"
+import { AESData } from "../interfaces"
 
-export async function restoreFromBackup(
-    this: Provider,
-    secret: any,
-    data: any,
-    localOnly: any // if true, only local data will be imported
-) {
-    const decryptedData = await aesDecrypt(data, base322buf(secret))
-    const dd = JSON.parse(decryptedData!)
+/**
+ * Restores the data of a provider by decrypting the provider keys and
+ * subsequently downloading the provider metadata from the server
+ * @param secret the 24 character alphanumeric secret from the provider
+ * @param data the encrypted keys from the provider backup file
+ */
 
-    if (dd === null)
-        return {
-            status: "failed",
-            error: {
-                message: "decryption failed",
-            },
-        }
+export async function restoreFromBackup(this: Provider, data: AESData) {
+    const decryptedKeyData = await aesDecrypt(data, base322buf(this.secret!))
+    const dd: LocalBackupData = JSON.parse(decryptedKeyData!)
 
-    if (dd.keyPairs.sync !== undefined && localOnly !== true) {
-        const derivedSecrets = await deriveSecrets(
-            b642buf(dd.keyPairs.sync),
-            32,
-            2
-        )
+    if (dd === null) throw new Error("decryption failed")
+    if (!dd.keyPairs!.sync) throw new Error("sync key missing")
 
-        const [id, key] = derivedSecrets!
+    const derivedSecrets = await deriveSecrets(
+        b642buf(dd.keyPairs!.sync),
+        32,
+        2
+    )
 
-        try {
-            const response = await this.backend.storage.getSettings({
-                id: id,
-            })
-            const decryptedData = await aesDecrypt(
-                response.result,
-                b642buf(key)
-            )
-            const ddCloud = JSON.parse(decryptedData!)
-        } catch (e) {
-            console.error(e)
-        }
-    }
+    const [id, key] = derivedSecrets!
 
-    this.backend.local.set("provider::secret", secret)
+    const response = await this.backend.storage.getSettings({
+        id: id,
+    })
+    const decryptedData = await aesDecrypt(response, b642buf(key))
+    const ddCloud: CloudBackupData = JSON.parse(decryptedData!)
 
-    return {
-        status: "succeeded",
-        data: dd,
-    }
+    this.keyPairs = dd.keyPairs
+    this.data = ddCloud.data
+    this.verifiedData = ddCloud.verifiedData
+
+    return ddCloud.data
 }

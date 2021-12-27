@@ -54,9 +54,9 @@ export class StorageStore implements Store {
     }
 
     deleteAll(prefix: string) {
-        for (const key in this.storage) {
+        this.storage.getKeys().forEach((key) => {
             if (key.startsWith(prefix)) this.storage.removeItem(key)
-        }
+        })
     }
 }
 
@@ -73,6 +73,10 @@ export class InMemoryStorage implements Storage {
 
     setItem(key: string, value: any): void {
         this._data[key] = value
+    }
+
+    getKeys() {
+        return Object.keys(this._data)
     }
 
     removeItem(key: string): void {

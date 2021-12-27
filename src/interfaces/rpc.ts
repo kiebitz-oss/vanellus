@@ -1,8 +1,12 @@
-export interface RPCResponse {
+// Kiebitz - Privacy-Friendly Appointments
+// Copyright (C) 2021-2021 The Kiebitz Authors
+// README.md contains license information.
+
+export interface RPCResponse<Result = any> {
     jsonrpc: string
     id: string
     error?: RPCError
-    result?: any
+    result?: Result
 }
 
 export type OK = "ok"

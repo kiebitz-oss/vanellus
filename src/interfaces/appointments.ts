@@ -1,3 +1,7 @@
+// Kiebitz - Privacy-Friendly Appointments
+// Copyright (C) 2021-2021 The Kiebitz Authors
+// README.md contains license information.
+
 export interface Booking {
     id: string
 }
@@ -11,14 +15,13 @@ export interface Slot {
     open: boolean
 }
 
-export interface AcceptedInvitation {
+export interface AcceptedAppointment {
     appointment: SignedAppointment
     provider: SignedProviderData
     booking: Booking
 }
 
 export interface Appointment {
-    bookings: any[]
     updatedAt: string
     modified: boolean
     timestamp: string
@@ -27,6 +30,7 @@ export interface Appointment {
     id: string
     publicKey: string
     slotData: Slot[]
+    bookings?: any[]
 }
 export interface SignedAppointment {
     data: string
