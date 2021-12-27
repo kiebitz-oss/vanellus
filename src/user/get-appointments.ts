@@ -2,7 +2,13 @@
 // Copyright (C) 2021-2021 The Kiebitz Authors
 // README.md contains license information.
 
-import { Status, Result, Error, ProviderAppointments } from "../interfaces"
+import {
+    Status,
+    Result,
+    Error,
+    Appointment,
+    VerifiedProviderAppointments,
+} from "../interfaces"
 import { verify } from "../crypto"
 import { User } from "./"
 
@@ -42,7 +48,7 @@ async function verifyProviderData(item: any) {
 }
 
 interface GetAppointmentsResult extends Result {
-    appointments: ProviderAppointments[]
+    appointments: VerifiedProviderAppointments[]
 }
 
 interface GetAppointmentsParams {
@@ -67,29 +73,38 @@ export async function getAppointments(
             error: response,
         }
 
-    const verifiedAppointments: ProviderAppointments[] = []
+    const verifiedAppointments: VerifiedProviderAppointments[] = []
 
     for (const item of response) {
         item.provider.json = await verifyProviderData(item)
-        const verifiedProviderAppointments = []
-        for (const appointment of item.appointments) {
-            const verifiedAppointment = await verifyAppointment(
-                appointment,
+        // we copy the ID for convenience
+        item.provider.json.id = item.provider.id
+        const verifiedProviderAppointments: Appointment[] = []
+        for (const signedAppointment of item.appointments) {
+            const appointment: Appointment = await verifyAppointment(
+                signedAppointment,
                 item
             )
-            for (const slot of verifiedAppointment.slotData) {
-                if (appointment.bookedSlots!.some((id: any) => id === slot.id))
+            for (const slot of appointment.slotData) {
+                if (
+                    signedAppointment.bookedSlots!.some(
+                        (id: any) => id === slot.id
+                    )
+                )
                     slot.open = false
                 else slot.open = true
             }
-            verifiedProviderAppointments.push(verifiedAppointment)
+            verifiedProviderAppointments.push(appointment)
         }
         item.appointments = verifiedProviderAppointments
-        verifiedAppointments.push(item)
+        verifiedAppointments.push({
+            provider: item.provider.json,
+            appointments: verifiedProviderAppointments,
+        } as VerifiedProviderAppointments)
     }
 
     verifiedAppointments.sort((a, b) =>
-        a.provider.json!.name > b.provider.json!.name ? 1 : -1
+        a.provider.name > b.provider.name ? 1 : -1
     )
 
     return {

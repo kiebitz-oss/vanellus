@@ -8,11 +8,11 @@ import { formatDate } from "../helpers/time"
 import { backend } from "../testing/fixtures"
 import { User } from "./"
 
-beforeEach(function () {
+beforeEach(async function () {
     this.backend = backend()
     this.user = new User("main", this.backend)
     // we generate a secret etc.
-    this.user.initialize()
+    await this.user.initialize()
     // we set the queue data
     this.user.queueData = {
         zipCode: "10707",
@@ -25,7 +25,6 @@ beforeEach(function () {
 
 describe("User.getToken()", function () {
     it("we should be able to get a token", async function () {
-        const today = formatDate(new Date())
         const result = await this.user.getToken({})
         equal(result.status, Status.Succeeded)
         equal(result.tokenData.userToken.version, "0.3")

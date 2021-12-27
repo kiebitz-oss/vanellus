@@ -42,8 +42,8 @@ export class User extends Actor {
     }
 
     public async initialize() {
-        await this.generateKeyPairs()
         this.generateSecret()
+        await this.generateKeyPairs()
     }
 
     public get queueData(): QueueData | null {

@@ -8,8 +8,8 @@ import {
     OK,
     Result,
     AcceptedAppointment,
-    SignedProviderData,
-    SignedAppointment,
+    PublicProviderData,
+    Appointment,
     Error,
 } from "../interfaces"
 import { User } from "./"
@@ -20,15 +20,13 @@ interface BookAppointmentResult extends Result {
 
 export async function bookAppointment(
     this: User,
-    signedAppointment: SignedAppointment,
-    provider: SignedProviderData
+    appointment: Appointment,
+    provider: PublicProviderData
 ): Promise<BookAppointmentResult | Error> {
     const providerData = {
         signedToken: this.tokenData!.signedToken,
         userToken: this.tokenData!.userToken,
     }
-
-    const appointment = signedAppointment.json!
 
     const encryptedDataAndPublicKey = await ephemeralECDHEncrypt(
         JSON.stringify(providerData),
@@ -55,7 +53,7 @@ export async function bookAppointment(
         }
 
     const acceptedAppointment: AcceptedAppointment = {
-        appointment: signedAppointment,
+        appointment: appointment,
         provider: provider,
         booking: response,
     }

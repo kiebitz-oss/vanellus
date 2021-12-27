@@ -16,8 +16,8 @@ export interface Slot {
 }
 
 export interface AcceptedAppointment {
-    appointment: SignedAppointment
-    provider: SignedProviderData
+    appointment: Appointment
+    provider: PublicProviderData
     booking: Booking
 }
 
@@ -51,6 +51,7 @@ export interface SignedProviderData {
 }
 
 export interface PublicProviderData {
+    id: string
     name: string
     street: string
     city: string
@@ -86,4 +87,9 @@ export interface ProviderAppointments {
     provider: SignedProviderData
     appointments: SignedAppointment[]
     keyChain: KeyChain
+}
+
+export interface VerifiedProviderAppointments {
+    provider: PublicProviderData
+    appointments: Appointment[]
 }
