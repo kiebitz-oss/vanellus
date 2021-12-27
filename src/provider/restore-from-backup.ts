@@ -42,6 +42,13 @@ export async function restoreFromBackup(
     const response = await this.backend.storage.getSettings({
         id: id,
     })
+
+    if ("code" in response)
+        return {
+            status: Status.Failed,
+            error: response,
+        }
+
     const decryptedData = await aesDecrypt(response, b642buf(key))
     const ddCloud: CloudBackupData = JSON.parse(decryptedData!)
 
