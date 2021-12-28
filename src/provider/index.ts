@@ -6,6 +6,7 @@ import { backupData } from "./backup-data"
 import { checkData } from "./check-data"
 import { generateKeyPairs } from "./generate-key-pairs"
 import { storeData } from "./store-data"
+import { cancelAppointment } from "./cancel-appointment"
 import { createAppointment } from "./create-appointment"
 import { restoreFromBackup } from "./restore-from-backup"
 import { publishAppointments } from "./publish-appointments"
@@ -31,6 +32,7 @@ export class Provider extends Actor {
     public backupData = backupData
     public checkData = checkData
     public storeData = storeData
+    public cancelAppointment = cancelAppointment
     public createAppointment = createAppointment
     public restoreFromBackup = restoreFromBackup
     public publishAppointments = publishAppointments
