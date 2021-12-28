@@ -51,9 +51,39 @@ export class Provider extends Actor {
         super("provider", id, backend)
     }
 
-    public async initialize() {
-        this.generateSecret()
-        await this.generateKeyPairs()
+    /**
+     * create a new complete provider object from user provided data,
+     * including fresh keys
+     * @param id A string to identify the provoder. Used to diferentiate objects
+     * in the storage backend
+     * @param backend The backend used for data storage and network
+     * communication
+     * @param data The provider data
+     */
+
+    public static async initialize(
+        id: string,
+        backend: Backend,
+        data: ProviderData,
+    ) {
+        const provider = new Provider(id, backend)
+        provider.generateSecret()
+        await provider.generateKeyPairs()
+        provider.data = {
+            name: data.name,
+            street: data.street,
+            city: data.city,
+            zipCode: data.zipCode,
+            description: data.description,
+            email: data.email,
+            accessible: data.accessible,
+            website: data.website,
+            publicKeys: {
+                encryption: provider.keyPairs!.encryption.publicKey,
+                signing: provider.keyPairs!.signing.publicKey,
+            },
+        }
+        return provider
     }
 
     private generateSecret() {
