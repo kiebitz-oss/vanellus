@@ -74,7 +74,7 @@ export class Provider extends Actor {
     }
 
     private generateSecret() {
-        this.secret = buf2base32(b642buf(randomBytes(10)))
+        this.secret = buf2base32(b642buf(randomBytes(15)))
     }
 
     public get loggedOut(): boolean {
