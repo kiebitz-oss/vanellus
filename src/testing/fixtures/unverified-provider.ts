@@ -6,23 +6,19 @@ import { AdminKeys } from "./"
 import { ecdhEncrypt, ecdhDecrypt } from "../../crypto"
 import { Backend } from "../../backend"
 import { Provider } from "../../provider"
-import { ProviderData, KeyPair, Status } from "../../interfaces"
+import { ProviderPublicData, Status } from "../../interfaces"
 
 export async function unverifiedProvider(
     backend: Backend,
     adminKeys: AdminKeys
 ): Promise<Provider> {
-    const providerData: ProviderData = {
+    const providerData: ProviderPublicData = {
         name: "Max Mustermann",
         street: "Musterstr. 23",
         city: "Berlin",
         zipCode: "10707",
         description: "",
         email: "max@mustermann.de",
-        publicKeys: {
-            encryption: "",
-            signing: "",
-        }
     }
 
     const provider = await Provider.initialize(

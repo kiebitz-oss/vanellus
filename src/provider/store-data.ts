@@ -8,24 +8,23 @@ import { Provider } from "./"
 
 // store the provider data for validation in the backend
 export async function storeData(this: Provider, code?: string) {
-    const publicKeys = await this.getKeys()
+    if (this.keyPairs === null || this.data == null)
+      return { status: Status.Failed }
 
+    const publicKeys = await this.getKeys()
     if (publicKeys.status === Status.Failed) return publicKeys
 
-    const keys = publicKeys.keys
-    const data = this.data!
-
-    const dataToEncrypt = Object.assign({}, data)
-
+    const data = this.data
+    const dataToEncrypt = <ProviderData>Object.assign({}, data)
     dataToEncrypt.publicKeys = {
-        signing: this.keyPairs!.signing.publicKey,
-        encryption: this.keyPairs!.encryption.publicKey,
+        signing: this.keyPairs.signing.publicKey,
+        encryption: this.keyPairs.encryption.publicKey,
     }
 
     const encryptedData = await ecdhEncrypt(
         JSON.stringify(dataToEncrypt),
-        this.keyPairs!.data,
-        keys.providerData
+        this.keyPairs.data,
+        publicKeys.keys.providerData
     )
 
     const result = await this.backend.appointments.storeProviderData(
@@ -33,7 +32,7 @@ export async function storeData(this: Provider, code?: string) {
             encryptedData: encryptedData!,
             code: code,
         },
-        this.keyPairs!.signing
+        this.keyPairs.signing
     )
 
     if (result !== "ok")
