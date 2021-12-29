@@ -129,4 +129,12 @@ export class Provider extends Actor {
     public set secret(secret: string) {
         this.set("secret", secret)
     }
+
+    /**
+     * Deletes the local data for this provider
+     */
+
+    public clear() {
+        super.clear()
+    }
 }
