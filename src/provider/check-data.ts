@@ -18,7 +18,8 @@ interface CheckDataResult extends Result {
 
 /**
  * Tests whether the provider can successfully authenticate against the
- * backend. This may be seen as a test whether the provider is logged in.
+ * backend. This may be used as a test whether the provider is verified by a
+ * mediator.
  */
 
 export async function checkData(

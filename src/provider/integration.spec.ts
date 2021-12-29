@@ -58,6 +58,12 @@ describe("Provider integration", function () {
 
         equal(provider.secret.length, 24)
 
+        result = await provider.storeData()
+
+        if (result.status === Status.Failed)
+            throw new Error("cannot store provider data")
+
+
         // provider backup and recovery
 
         result = await provider.backupData()
@@ -78,5 +84,14 @@ describe("Provider integration", function () {
 
         equal(provider.data.name, "Max Mustermann")
 
+        // confirm provider
+        const pendingProviders = await med.pendingProviders()
+        if ("status" in pendingProviders && pendingProviders.status === Status.Failed) {
+            throw new Error("fetching provider data failed")
+        }
+        result = await med.confirmProvider(pendingProviders.providers[0])
+        if ("error" in result) throw new Error("confirmation failed")
+
+        await provider.restoreFromBackup(encryptedKeyFile)
     })
 })
