@@ -19,7 +19,7 @@ import { Backend } from "../backend"
 
 import {
     ProviderBackupReferenceData,
-    ProviderPublicData,
+    ProviderData,
     VerifiedProviderData,
     KeyPair,
     ProviderKeyPairs,
@@ -64,12 +64,25 @@ export class Provider extends Actor {
     public static async initialize(
         id: string,
         backend: Backend,
-        data: ProviderPublicData,
+        data: ProviderData,
     ) {
         const provider = new Provider(id, backend)
         provider.generateSecret()
         await provider.generateKeyPairs()
-        provider.data = data
+        provider.data = {
+            name: data.name,
+            street: data.street,
+            city: data.city,
+            zipCode: data.zipCode,
+            description: data.description,
+            email: data.email,
+            accessible: data.accessible,
+            website: data.website,
+            publicKeys: {
+                encryption: provider.keyPairs!.encryption.publicKey,
+                signing: provider.keyPairs!.signing.publicKey,
+            },
+        }
         return provider
     }
 
@@ -93,11 +106,11 @@ export class Provider extends Actor {
         this.set("keyPairs", keyPairs)
     }
 
-    public get data(): ProviderPublicData | null {
+    public get data(): ProviderData | null {
         return this.get("data")
     }
 
-    public set data(data: ProviderPublicData | null) {
+    public set data(data: ProviderData | null) {
         this.set("data", data)
     }
 

@@ -37,20 +37,10 @@ interface BackupDataResult extends Result {
 export async function backupData(
     this: Provider
 ): Promise<BackupDataResult | Error> {
-    if (this.keyPairs === null || this.data == null)
-      return { status: Status.Failed }
-
-    const data = this.data
-    const providerData = <ProviderData>Object.assign({}, data)
-    providerData.publicKeys = {
-        signing: this.keyPairs.signing.publicKey,
-        encryption: this.keyPairs.encryption.publicKey,
-    }
-
     const cloudData: CloudBackupData = {
         version: "0.2",
         createdAt: new Date().toISOString(),
-        data: providerData,
+        data: this.data,
         verifiedData: this.verifiedData,
     }
 

@@ -51,11 +51,9 @@ export async function restoreFromBackup(
 
     const decryptedData = await aesDecrypt(response, b642buf(key))
     const ddCloud: CloudBackupData = JSON.parse(decryptedData!)
-    var providerData = <any>ddCloud.data
-    delete providerData.publicKeys
 
     this.keyPairs = dd.keyPairs
-    this.data = providerData
+    this.data = ddCloud.data
     this.verifiedData = ddCloud.verifiedData
 
     return {

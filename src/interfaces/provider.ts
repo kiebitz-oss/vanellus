@@ -33,19 +33,6 @@ export interface ProviderPublicKeys {
     encryption: string
 }
 
-export interface ProviderPublicData {
-    name: string
-    street: string
-    city: string
-    zipCode: string
-    description: string
-    email: string
-    accessible?: boolean
-    website?: string
-    submittedAt?: string
-    version?: string
-}
-
 export interface ProviderData {
     name: string
     street: string
