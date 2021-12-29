@@ -34,6 +34,7 @@ export interface ProviderPublicKeys {
 }
 
 export interface ProviderData {
+    id: string
     name: string
     street: string
     city: string
