@@ -11,7 +11,7 @@ import {
     resetDB,
     mediator,
     backend,
-    verifiedProvider,
+    unverifiedProvider,
 } from "../testing/fixtures"
 
 describe("Provider.checkData()", function () {
@@ -20,9 +20,21 @@ describe("Provider.checkData()", function () {
         const keys = await adminKeys()
         await resetDB(be, keys)
         const med = await mediator(be, keys)
-        const vp = await verifiedProvider(be, keys, med)
-        const result = await vp.checkData()
+        const provider = await unverifiedProvider(be, keys)
 
+        var result
+
+        result = await provider.checkData()
+        if (result.status !== Status.Failed)
+            throw new Error("checkData should fail for unverified providers")
+
+        const pendingProviders = await med.pendingProviders()
+        if (pendingProviders.status == Status.Failed) {
+            throw new Error("fetching provider data failed")
+        }
+        result = await med.confirmProvider(pendingProviders.providers[0])
+
+        result = await provider.checkData()
         if (result.status === Status.Failed)
             throw new Error("cannot get confirmed data")
     })
