@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { ecdhEncrypt, generateECDHKeyPair, sign } from "../crypto"
-import { ProviderData, PublicKeys, Status, OK } from "../interfaces"
+import { ProviderData, PublicKeys, Error, Result, Status, OK } from "../interfaces"
 import { Provider } from "./"
 
   /**
