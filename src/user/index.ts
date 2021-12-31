@@ -40,7 +40,7 @@ export class User extends Actor {
     }
 
     constructor(id: string, backend: Backend) {
-        super("provider", id, backend)
+        super("user", id, backend)
     }
 
     public async initialize() {
