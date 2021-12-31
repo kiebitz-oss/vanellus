@@ -3,6 +3,11 @@
 // README.md contains license information.
 
 import { Backend } from "./backend"
+import { PublicKeys, Result, Error, Status } from "./interfaces"
+
+interface PublicKeysResult extends Result {
+    keys: PublicKeys
+}
 
 export class Actor {
     public backend: Backend
@@ -16,6 +21,21 @@ export class Actor {
         this.actor = actor
         this.id = id
         this.backend = backend
+    }
+
+    public async getKeys(): Promise<PublicKeysResult | Error> {
+        const result = await this.backend.appointments.getKeys()
+
+        if ("code" in result)
+            return {
+                status: Status.Failed,
+                error: result,
+            }
+
+        return {
+            status: Status.Succeeded,
+            keys: result,
+        }
     }
 
     protected get(key: string): any {
