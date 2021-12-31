@@ -12,13 +12,6 @@ interface RestoreFromBackupResult extends Result {
     data: { [Key: string]: any } | null
 }
 
-/**
- * Restores the data of a provider by decrypting the provider keys and
- * subsequently downloading the provider metadata from the server
- * @param secret the 24 character alphanumeric secret from the provider
- * @param data the encrypted keys from the provider backup file
- */
-
 export async function restoreFromBackup(
     this: Provider,
     data: AESData

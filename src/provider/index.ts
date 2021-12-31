@@ -37,14 +37,6 @@ export class Provider extends Actor {
     public getAppointments = getAppointments
     public generateKeyPairs = generateKeyPairs
 
-    /**
-     * create a new blank provider object
-     * @param id A string to identify the provoder. Used to diferentiate objects
-     * in the storage backend
-     * @param backend The backend used for data storage and network
-     * communication
-     */
-
     constructor(id: string, backend: Backend) {
         super("provider", id, backend)
     }

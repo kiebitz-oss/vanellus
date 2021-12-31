@@ -9,19 +9,9 @@ import { Appointment, Slot } from "../interfaces"
 export function createSlot() {
     return {
         open: true,
-        id: randomBytes(32), // where the user can submit his confirmation
-        status: randomBytes(32), // where the user can get the appointment status
-        cancel: randomBytes(32), // where the user can cancel his confirmation
+        id: randomBytes(32),
     }
 }
-
-/**
- * creates an initial Appointment object
- * @param duration defines the length of the appointment in minues
- * @param vaccine defines the vaccine offered at the appointment
- * @param slotN defines the number of people that can be vaccinated
- * @param timestamp defines the time of the appointment
- */
 
 export async function createAppointment(
     this: Provider,

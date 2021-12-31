@@ -6,11 +6,6 @@ import { randomBytes, sign } from "../crypto"
 import { Appointment, SignedData, Result, Error, Status } from "../interfaces"
 import { Provider } from "./"
 
-/**
- * Upload new or changed appointments to the server.
- * @param apps an array of appointment objects
- */
-
 export async function publishAppointments(
     this: Provider,
     apps: Appointment[]
