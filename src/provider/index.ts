@@ -13,7 +13,7 @@ import { getAppointments } from "./get-appointments"
 
 import { buf2base32, b642buf } from "../helpers/conversion"
 import { randomBytes } from "../crypto"
-import { Actor } from "../actor"
+import { Actor, cached } from "../actor"
 import { Backend } from "../backend"
 
 import {
@@ -34,8 +34,8 @@ export class Provider extends Actor {
     public createAppointment = createAppointment
     public restoreFromBackup = restoreFromBackup
     public publishAppointments = publishAppointments
-    public getAppointments = getAppointments
     public generateKeyPairs = generateKeyPairs
+    public appointments = cached(getAppointments, "appointments")
 
     constructor(id: string, backend: Backend) {
         super("provider", id, backend)

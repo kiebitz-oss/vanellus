@@ -47,7 +47,7 @@ async function verifyProviderData(item: any) {
     return JSON.parse(item.provider.data)
 }
 
-interface GetAppointmentResult extends Result {
+export interface GetAppointmentResult extends Result {
     appointment: Appointment
     provider: PublicProviderData
 }

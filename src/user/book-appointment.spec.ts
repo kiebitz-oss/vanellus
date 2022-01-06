@@ -63,7 +63,7 @@ describe("User.bookAppointment()", function () {
         // 24 hours in the future
         const toDate = new Date(new Date().getTime() + 48 * 60 * 60 * 1000)
 
-        const getResult = await user.getAppointments({
+        const getResult = await user.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),
             zipCode: user.queueData!.zipCode,
@@ -83,7 +83,7 @@ describe("User.bookAppointment()", function () {
         if (bookResult.status !== Status.Succeeded)
             throw new Error("should not fail")
 
-        let apptsResult = await vp.getAppointments({
+        let apptsResult = await vp.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),
         })
@@ -104,7 +104,7 @@ describe("User.bookAppointment()", function () {
         if (cancelResult.status !== Status.Succeeded)
             throw new Error("cannot cancel appointment")
 
-        apptsResult = await vp.getAppointments({
+        apptsResult = await vp.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),
         })

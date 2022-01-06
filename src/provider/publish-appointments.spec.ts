@@ -56,7 +56,7 @@ describe("Provider.publishAppointments()", function () {
         const toDate = new Date(fromDate.getTime())
         toDate.setDate(toDate.getDate() + 1)
 
-        const getResult = await vp.getAppointments({
+        const getResult = await vp.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),
         })

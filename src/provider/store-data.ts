@@ -8,7 +8,7 @@ import { Provider } from "./"
 
 // store the provider data for validation in the backend
 export async function storeData(this: Provider, code?: string) {
-    const publicKeys = await this.getKeys()
+    const publicKeys = await this.keys().get()
 
     if (publicKeys.status === Status.Failed) return publicKeys
 

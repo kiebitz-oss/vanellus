@@ -23,15 +23,15 @@ import {
     ProviderAppointments,
 } from "../interfaces"
 
-import { Actor } from "../actor"
+import { Actor, cached } from "../actor"
 
 export class User extends Actor {
     public restoreFromBackup = restoreFromBackup
     public cancelAppointment = cancelAppointment
     public generateKeyPairs = generateKeyPairs
     public bookAppointment = bookAppointment
-    public getAppointments = getAppointments
-    public getAppointment = getAppointment
+    public appointments = cached(getAppointments, "appointments")
+    public appointment = cached(getAppointment, "appointment")
     public backupData = backupData
     public getToken = getToken
 

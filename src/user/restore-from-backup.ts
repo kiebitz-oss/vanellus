@@ -8,7 +8,7 @@ import { Status, Result, Error, AESData } from "../interfaces"
 import { CloudBackupData } from "./backup-data"
 import { User } from "./"
 
-interface RestoreFromBackupResult extends Result {
+export interface RestoreFromBackupResult extends Result {
     data: CloudBackupData
 }
 

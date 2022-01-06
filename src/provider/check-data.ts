@@ -12,7 +12,7 @@ import {
 } from "../interfaces"
 import { Provider } from "./"
 
-interface CheckDataResult extends Result {
+export interface CheckDataResult extends Result {
     data: ProviderData
 }
 

@@ -14,7 +14,7 @@ import {
 } from "../testing/fixtures"
 import { User } from "./"
 
-describe("User.getAppointments()", function () {
+describe("User.appointments()", function () {
     it("we should be able to get appointments", async function () {
         const be = backend()
 
@@ -63,7 +63,7 @@ describe("User.getAppointments()", function () {
         const fromDate = new Date()
         // 24 hours in the future
         const toDate = new Date(new Date().getTime() + 48 * 60 * 60 * 1000)
-        const result = await user.getAppointments({
+        const result = await user.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),
             zipCode: user.queueData!.zipCode,

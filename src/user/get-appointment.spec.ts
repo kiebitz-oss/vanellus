@@ -62,7 +62,7 @@ describe("User.getAppointment()", function () {
         const fromDate = new Date()
         // 24 hours in the future
         const toDate = new Date(new Date().getTime() + 48 * 60 * 60 * 1000)
-        const result = await user.getAppointments({
+        const result = await user.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),
             zipCode: user.queueData!.zipCode,
@@ -74,7 +74,7 @@ describe("User.getAppointment()", function () {
         if (result.appointments.length !== 1)
             throw new Error("should return one appointment")
 
-        const getResult = await user.getAppointment({
+        const getResult = await user.appointment().get({
             id: result.appointments[0].appointments[0].id,
             providerID: result.appointments[0].provider.id,
         })

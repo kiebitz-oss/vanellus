@@ -13,7 +13,7 @@ import {
 } from "../interfaces"
 import { Provider } from "./"
 
-interface GetAppointmentsResult extends Result {
+export interface GetAppointmentsResult extends Result {
     appointments: Appointment[]
 }
 
