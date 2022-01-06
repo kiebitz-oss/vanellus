@@ -203,7 +203,11 @@ export class AppointmentsBackend extends JSONRPCBackend {
         { appointments }: { appointments: SignedData[] },
         keyPair: KeyPair
     ) {
-        return await this.call<OK>("publishAppointments", { appointments }, keyPair)
+        return await this.call<OK>(
+            "publishAppointments",
+            { appointments },
+            keyPair
+        )
     }
 
     async storeProviderData(

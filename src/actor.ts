@@ -3,13 +3,14 @@
 // README.md contains license information.
 
 import { Backend } from "./backend"
+import { Observer } from "./helpers/observer"
 import { PublicKeys, Result, Error, Status } from "./interfaces"
 
 interface PublicKeysResult extends Result {
     keys: PublicKeys
 }
 
-export class Actor {
+export class Actor extends Observer {
     public backend: Backend
     public actor: string
     public id: string
@@ -17,6 +18,8 @@ export class Actor {
     constructor(actor: string, id: string, backend: Backend) {
         // the ID will be used to address local storage so that e.g. we can
         // manage multiple providers, users etc. if necessary...
+
+        super()
 
         this.actor = actor
         this.id = id
@@ -43,6 +46,7 @@ export class Actor {
     }
 
     protected set(key: string, value: any) {
+        this.notify(key, value)
         this.backend.local.set(`${this.actor}::${this.id}::${key}`, value)
     }
 

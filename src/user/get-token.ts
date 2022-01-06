@@ -30,8 +30,13 @@ export async function getToken(
     this: User,
     { code }: { code?: string }
 ): Promise<GetTokenResult | Error> {
+    if (this.contactData === null)
+        return {
+            status: Status.Failed,
+        }
+
     // we hash the user data to prove it didn't change later...
-    const [dataHash, nonce] = await hashContactData(this.contactData!)
+    const [dataHash, nonce] = await hashContactData(this.contactData)
     const signingKeyPair = await generateECDSAKeyPair()
     const encryptionKeyPair = await generateECDHKeyPair()
 

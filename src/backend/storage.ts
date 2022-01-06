@@ -11,7 +11,7 @@ export class StorageBackend extends JSONRPCBackend {
         super(settings, "storage")
     }
 
-    async storeSettings({ id, data }: { id: string, data: AESData }) {
+    async storeSettings({ id, data }: { id: string; data: AESData }) {
         return await this.call<OK>("storeSettings", { id, data })
     }
 
