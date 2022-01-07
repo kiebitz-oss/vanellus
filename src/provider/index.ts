@@ -13,7 +13,7 @@ import { getAppointments } from "./get-appointments"
 
 import { buf2base32, b642buf } from "../helpers/conversion"
 import { randomBytes } from "../crypto"
-import { Actor, cached } from "../actor"
+import { Actor, cached, locked } from "../actor"
 import { Backend } from "../backend"
 
 import {
@@ -28,14 +28,16 @@ import {
 export * from "./helpers"
 
 export class Provider extends Actor {
-    public backupData = backupData
-    public checkData = checkData
-    public storeData = storeData
+    public backupData = locked(backupData)
+    public checkData = locked(checkData)
+    public storeData = locked(storeData)
+    public restoreFromBackup = locked(restoreFromBackup)
+    public publishAppointments = locked(publishAppointments)
+    public generateKeyPairs = locked(generateKeyPairs)
+    public appointments = cached(locked(getAppointments), "appointments")
+
+    // helper/convenience functions
     public createAppointment = createAppointment
-    public restoreFromBackup = restoreFromBackup
-    public publishAppointments = publishAppointments
-    public generateKeyPairs = generateKeyPairs
-    public appointments = cached(getAppointments, "appointments")
 
     constructor(id: string, backend: Backend) {
         super("provider", id, backend)

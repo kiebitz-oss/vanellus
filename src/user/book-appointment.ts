@@ -15,7 +15,7 @@ import {
 } from "../interfaces"
 import { User } from "./"
 
-interface BookAppointmentResult extends Result {
+export interface BookAppointmentResult extends Result {
     acceptedAppointment: AcceptedAppointment
 }
 

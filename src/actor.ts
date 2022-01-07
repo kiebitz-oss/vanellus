@@ -19,10 +19,8 @@ export interface Cache<T, G> {
     get(...args: any[]): Promise<T>
 }
 
-type Task = [string, Date, number]
-
-function timeout(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+interface Task {
+    name: string
 }
 
 export function locked<T, G extends Actor>(
@@ -30,15 +28,17 @@ export function locked<T, G extends Actor>(
 ): (this: G, ...args: any[]) => Promise<T | Error> {
     return async function (this: G, ...args: any[]): Promise<T | Error> {
         // we lock the task
-        if ((await this.lock(f.name)) === false)
-            return { status: Status.Failed } // we can't obtain a lock
-
-        const result = await f.apply(this, args)
-
-        // we unlock the task
-        this.unlock(f.name)
-
-        return result
+        const [task, existing] = this.lock(f.name)
+        if (existing) return { status: Status.Failed } // we can't obtain a lock
+        try {
+            return await f.apply(this, args)
+        } catch (e) {
+            console.log(e)
+            return { status: Status.Failed }
+        } finally {
+            // we unlock the task
+            this.unlock(f.name)
+        }
     }
 }
 
@@ -94,9 +94,7 @@ export class Actor extends Observer {
     public actor: string
     public id: string
 
-    private _taskId: number
-    private _tasks: Task[]
-    private _locked: boolean
+    private _tasks: { [Key: string]: Task }
 
     constructor(actor: string, id: string, backend: Backend) {
         // the ID will be used to address local storage so that e.g. we can
@@ -104,9 +102,7 @@ export class Actor extends Observer {
 
         super()
 
-        this._taskId = 0
-        this._tasks = []
-        this._locked = false
+        this._tasks = {}
 
         this.actor = actor
         this.id = id
@@ -132,36 +128,21 @@ export class Actor extends Observer {
     }
 
     unlock(task: string) {
-        if (this._tasks.length === 0) return false // should never happen
-        if (this._tasks[0][0] !== task) return false // wrong task order (should not happen)
-        this._tasks = this._tasks.slice(1)
-        return true
+        delete this._tasks[task]
     }
 
-    async lock(task: string) {
-        if (this._tasks.find((t: Task) => t[0] === task) !== undefined) {
-            console.warn(
-                `Task ${this.actor}::${this.id}::${task} is already in queue, aborting...`
-            )
-            return false
+    lock(task: string): [Task, boolean] {
+        if (this._tasks[task] === undefined) {
+            this._tasks[task] = {
+                name: task,
+            }
+            return [this._tasks[task], false]
         }
 
-        const taskId = this._taskId++
-        this._tasks.push([task, new Date(), taskId])
-
-        while (true) {
-            if (this._tasks.length === 0) return false // should not happen
-            const [t, dt, id] = this._tasks[0]
-            if (id === taskId) break // it's our turn
-            if (new Date().getTime() - dt.getTime() > 1000 * 10)
-                // tasks time out after 10 seconds
-                this._tasks = this._tasks.slice(1)
-            await timeout(10)
-        }
-        return true
+        return [this._tasks[task], true]
     }
 
     clearLocks() {
-        this._tasks = []
+        this._tasks = {}
     }
 }

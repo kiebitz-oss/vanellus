@@ -13,7 +13,7 @@ import {
 import { User } from "./"
 import { Result, Error, ContactData, Status } from "../interfaces"
 
-interface GetTokenResult extends Result {}
+export interface GetTokenResult extends Result {}
 
 async function hashContactData(data: ContactData) {
     const hashData = {

@@ -8,7 +8,7 @@ import { Provider } from "./"
 import { LocalBackupData, CloudBackupData } from "./backup-data"
 import { AESData, Result, Error, Status, ErrorType } from "../interfaces"
 
-interface RestoreFromBackupResult extends Result {
+export interface RestoreFromBackupResult extends Result {
     data: { [Key: string]: any } | null
 }
 

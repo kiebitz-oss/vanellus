@@ -30,7 +30,7 @@ export interface CloudBackupData extends BackupData {
     data: ProviderData | null
 }
 
-interface BackupDataResult extends Result {
+export interface BackupDataResult extends Result {
     data: AESData
 }
 

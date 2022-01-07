@@ -23,17 +23,17 @@ import {
     ProviderAppointments,
 } from "../interfaces"
 
-import { Actor, cached } from "../actor"
+import { Actor, cached, locked } from "../actor"
 
 export class User extends Actor {
-    public restoreFromBackup = restoreFromBackup
-    public cancelAppointment = cancelAppointment
-    public generateKeyPairs = generateKeyPairs
-    public bookAppointment = bookAppointment
-    public appointments = cached(getAppointments, "appointments")
-    public appointment = cached(getAppointment, "appointment")
-    public backupData = backupData
-    public getToken = getToken
+    public restoreFromBackup = locked(restoreFromBackup)
+    public cancelAppointment = locked(cancelAppointment)
+    public generateKeyPairs = locked(generateKeyPairs)
+    public bookAppointment = locked(bookAppointment)
+    public appointments = cached(locked(getAppointments), "appointments")
+    public appointment = cached(locked(getAppointment), "appointment")
+    public backupData = locked(backupData)
+    public getToken = locked(getToken)
 
     private generateSecret() {
         this.secret = buf2base32(b642buf(randomBytes(10)))
