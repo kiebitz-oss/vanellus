@@ -4,7 +4,7 @@
 
 import { aesDecrypt, deriveSecrets } from "../crypto"
 import { base322buf, b642buf } from "../helpers/conversion"
-import { Status, Result, Error, AESData } from "../interfaces"
+import { Status, Result, Error, AESData, ErrorType } from "../interfaces"
 import { CloudBackupData } from "./backup-data"
 import { User } from "./"
 
@@ -23,7 +23,10 @@ export async function restoreFromBackup(
     if ("code" in response)
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     const decryptedData = await aesDecrypt(response, b642buf(key))

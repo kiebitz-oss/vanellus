@@ -10,6 +10,7 @@ import {
     SignedAppointment,
     Result,
     Error,
+    ErrorType,
 } from "../interfaces"
 import { Provider } from "./"
 
@@ -41,7 +42,10 @@ export async function getAppointments(
     if (!(response instanceof Array))
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     const newAppointments: Appointment[] = []

@@ -26,7 +26,17 @@ export interface Result {
     [key: string]: any
 }
 
+export enum ErrorType {
+    Locking = "locking",
+    Crypto = "crypto",
+    Data = "data",
+    RPC = "rpc",
+}
+
 export interface Error {
     status: Status.Failed
-    error?: { [key: string]: any }
+    error?: {
+        type: ErrorType
+        data?: { [key: string]: any }
+    }
 }

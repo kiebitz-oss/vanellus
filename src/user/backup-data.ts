@@ -13,6 +13,7 @@ import {
     AESData,
     Result,
     Error,
+    ErrorType,
 } from "../interfaces"
 import { User } from "./"
 
@@ -68,7 +69,10 @@ export async function backupData(
     if (response !== "ok")
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     return {

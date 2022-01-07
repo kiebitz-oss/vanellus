@@ -6,6 +6,7 @@ import {
     Status,
     Result,
     Error,
+    ErrorType,
     Appointment,
     PublicProviderData,
 } from "../interfaces"
@@ -69,7 +70,10 @@ export async function getAppointment(
     if ("code" in response)
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     response.provider.json = await verifyProviderData(response)

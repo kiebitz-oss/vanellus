@@ -7,6 +7,7 @@ import {
     Error,
     Result,
     Status,
+    ErrorType,
     EncryptedProviderData,
     KeyPair,
     ProviderData,
@@ -20,18 +21,21 @@ interface ProvidersResult extends Result {
 export async function pendingProviders(
     this: Mediator
 ): Promise<ProvidersResult | Error> {
-    const providerData = await this.backend.appointments.getPendingProviderData(
+    const response = await this.backend.appointments.getPendingProviderData(
         {},
         this.keyPairs!.signing
     )
 
-    if ("code" in providerData)
+    if ("code" in response)
         return {
             status: Status.Failed,
-            error: providerData,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
-    for (const pd of providerData) {
+    for (const pd of response) {
         const decryptedData = await ecdhDecrypt(
             pd.encryptedData,
             this.keyPairs!.provider.privateKey
@@ -39,7 +43,9 @@ export async function pendingProviders(
         if (decryptedData === null)
             return {
                 status: Status.Failed,
-                error: pd,
+                error: {
+                    type: ErrorType.Crypto,
+                },
             }
 
         // to do: verify provider data!
@@ -49,26 +55,28 @@ export async function pendingProviders(
 
     return {
         status: Status.Succeeded,
-        providers: providerData,
+        providers: response,
     }
 }
 
 export async function verifiedProviders(
     this: Mediator
 ): Promise<ProvidersResult | Error> {
-    const providerData =
-        await this.backend.appointments.getVerifiedProviderData(
-            {},
-            this.keyPairs!.signing
-        )
+    const response = await this.backend.appointments.getVerifiedProviderData(
+        {},
+        this.keyPairs!.signing
+    )
 
-    if ("code" in providerData)
+    if ("code" in response)
         return {
             status: Status.Failed,
-            error: providerData,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
-    for (const pd of providerData) {
+    for (const pd of response) {
         const decryptedData = await ecdhDecrypt(
             pd.encryptedData,
             this.keyPairs!.provider.privateKey
@@ -76,7 +84,9 @@ export async function verifiedProviders(
         if (decryptedData === null)
             return {
                 status: Status.Failed,
-                error: pd,
+                error: {
+                    type: ErrorType.Crypto,
+                },
             }
 
         // to do: verify provider data!
@@ -86,6 +96,6 @@ export async function verifiedProviders(
 
     return {
         status: Status.Succeeded,
-        providers: providerData,
+        providers: response,
     }
 }

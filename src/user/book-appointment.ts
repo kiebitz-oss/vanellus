@@ -7,6 +7,7 @@ import {
     Status,
     OK,
     Result,
+    ErrorType,
     AcceptedAppointment,
     PublicProviderData,
     Appointment,
@@ -49,7 +50,10 @@ export async function bookAppointment(
     if ("code" in response)
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     const acceptedAppointment: AcceptedAppointment = {

@@ -3,7 +3,14 @@
 // README.md contains license information.
 
 import { randomBytes, sign } from "../crypto"
-import { Appointment, SignedData, Result, Error, Status } from "../interfaces"
+import {
+    Appointment,
+    SignedData,
+    Result,
+    Error,
+    ErrorType,
+    Status,
+} from "../interfaces"
 import { Provider } from "./"
 
 export async function publishAppointments(
@@ -48,17 +55,20 @@ export async function publishAppointments(
             status: Status.Succeeded,
         }
 
-    const result = await this.backend.appointments.publishAppointments(
+    const response = await this.backend.appointments.publishAppointments(
         {
             appointments: signedAppointments,
         },
         this.keyPairs!.signing
     )
 
-    if (result !== "ok")
+    if (response !== "ok")
         return {
             status: Status.Failed,
-            error: result,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     return {

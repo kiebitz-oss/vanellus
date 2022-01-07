@@ -6,6 +6,7 @@ import {
     Status,
     Result,
     Error,
+    ErrorType,
     Appointment,
     VerifiedProviderAppointments,
 } from "../interfaces"
@@ -70,7 +71,10 @@ export async function getAppointments(
     if (!(response instanceof Array))
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     const verifiedAppointments: VerifiedProviderAppointments[] = []

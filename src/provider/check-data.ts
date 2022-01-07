@@ -6,6 +6,7 @@ import { ecdhDecrypt } from "../crypto"
 import {
     Result,
     Error,
+    ErrorType,
     Status,
     ConfirmedProviderData,
     ProviderData,
@@ -28,7 +29,10 @@ export async function checkData(
     if ("code" in response)
         return {
             status: Status.Failed,
-            error: response,
+            error: {
+                type: ErrorType.RPC,
+                data: response,
+            },
         }
 
     // to do: check signature
