@@ -29,11 +29,13 @@ export * from "./helpers"
 
 export class Provider extends Actor {
     public backupData = locked(backupData)
-    public checkData = locked(checkData)
     public storeData = locked(storeData)
     public restoreFromBackup = locked(restoreFromBackup)
     public publishAppointments = locked(publishAppointments)
     public generateKeyPairs = locked(generateKeyPairs)
+
+    // cached endpoints
+    public checkData = cached(locked(checkData), "checkData")
     public appointments = cached(locked(getAppointments), "appointments")
 
     // helper/convenience functions

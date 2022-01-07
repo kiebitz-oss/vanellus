@@ -90,6 +90,7 @@ async function getKeys(this: Actor): Promise<PublicKeysResult | Error> {
 
 export class Actor extends Observer {
     public keys = cached(locked(getKeys), "keys")
+
     public backend: Backend
     public actor: string
     public id: string

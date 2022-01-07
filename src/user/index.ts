@@ -30,10 +30,12 @@ export class User extends Actor {
     public cancelAppointment = locked(cancelAppointment)
     public generateKeyPairs = locked(generateKeyPairs)
     public bookAppointment = locked(bookAppointment)
-    public appointments = cached(locked(getAppointments), "appointments")
-    public appointment = cached(locked(getAppointment), "appointment")
     public backupData = locked(backupData)
     public getToken = locked(getToken)
+
+    // cached endpoints
+    public appointments = cached(locked(getAppointments), "appointments")
+    public appointment = cached(locked(getAppointment), "appointment")
 
     private generateSecret() {
         this.secret = buf2base32(b642buf(randomBytes(10)))
