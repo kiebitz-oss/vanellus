@@ -134,14 +134,20 @@ export class AppointmentsBackend extends JSONRPCBackend {
     async cancelAppointment(
         {
             providerID,
+            slotID,
             id,
             signedTokenData,
-        }: { providerID: string; id: string; signedTokenData: SignedData },
+        }: {
+            providerID: string
+            slotID: string
+            id: string
+            signedTokenData: SignedData
+        },
         keyPair: KeyPair
     ) {
         return this.call<OK>(
             "cancelAppointment",
-            { providerID, id, signedTokenData },
+            { providerID, slotID, id, signedTokenData },
             keyPair
         )
     }

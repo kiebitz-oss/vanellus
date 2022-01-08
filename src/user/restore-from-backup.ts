@@ -35,7 +35,7 @@ export async function restoreFromBackup(
     this.tokenData = dd.tokenData
     this.queueData = dd.queueData
     this.contactData = dd.contactData
-    this.acceptedAppointment = dd.acceptedAppointment
+    this.acceptedAppointments = dd.acceptedAppointments
 
     return {
         status: Status.Succeeded,

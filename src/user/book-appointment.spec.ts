@@ -104,6 +104,8 @@ describe("User.bookAppointment()", function () {
         if (cancelResult.status !== Status.Succeeded)
             throw new Error("cannot cancel appointment")
 
+        equal(user.appointments.length, 0)
+
         apptsResult = await vp.appointments().get({
             from: formatDatetime(fromDate),
             to: formatDatetime(toDate),

@@ -27,7 +27,7 @@ export interface CloudBackupData extends BackupData {
     tokenData: TokenData | null
     queueData: QueueData | null
     contactData: ContactData | null
-    acceptedAppointment: AcceptedAppointment | null
+    acceptedAppointments: AcceptedAppointment[]
 }
 
 export interface BackupDataResult extends Result {
@@ -44,7 +44,7 @@ export async function backupData(
         tokenData: this.tokenData,
         queueData: this.queueData,
         contactData: this.contactData,
-        acceptedAppointment: this.acceptedAppointment,
+        acceptedAppointments: this.acceptedAppointments,
     }
 
     const idAndKey = await deriveSecrets(base322buf(this.secret!), 32, 2)

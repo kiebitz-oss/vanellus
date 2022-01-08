@@ -1,8 +1,6 @@
-Welcome! Vanellus is the Kiebitzt Typescript library that provides
-all necessary functionality for building web applications based on
-the Kiebitz API and data models.
-
-**This is still a work in progress.**
+Welcome! Vanellus is the official Kiebitz Typescript library that acts as an
+interface to the Kiebitz backend services and provides necessary functionality
+for building end-to-end encrypted applications with Kiebitz.
 
 # Requirements
 

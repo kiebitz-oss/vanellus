@@ -90,23 +90,13 @@ export class User extends Actor {
         this.set("contactData", contactData)
     }
 
-    public get verifiedAppointments(): ProviderAppointments[] | null {
-        return this.get("verifiedAppointments")
+    public get acceptedAppointments(): AcceptedAppointment[] {
+        return this.get("acceptedAppointments") || []
     }
 
-    public set verifiedAppointments(
-        verifiedAppointments: ProviderAppointments[] | null
+    public set acceptedAppointments(
+        acceptedAppointments: AcceptedAppointment[]
     ) {
-        this.set("verifiedAppointments", verifiedAppointments)
-    }
-
-    public get acceptedAppointment(): AcceptedAppointment | null {
-        return this.get("acceptedAppointment")
-    }
-
-    public set acceptedAppointment(
-        acceptedAppointment: AcceptedAppointment | null
-    ) {
-        this.set("acceptedAppointment", acceptedAppointment)
+        this.set("acceptedAppointments", acceptedAppointments)
     }
 }

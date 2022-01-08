@@ -63,7 +63,9 @@ export async function bookAppointment(
     }
 
     // we store the information about the offer which we've accepted
-    this.acceptedAppointment = acceptedAppointment
+    const aa = this.acceptedAppointments
+    aa.push(acceptedAppointment)
+    this.acceptedAppointments = aa
 
     return {
         status: Status.Succeeded,

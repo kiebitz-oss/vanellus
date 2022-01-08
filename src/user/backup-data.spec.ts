@@ -46,7 +46,7 @@ describe("User.backupData()", function () {
         deepEqual(newUser.contactData, user.contactData)
         deepEqual(newUser.tokenData, user.tokenData)
         deepEqual(newUser.queueData, user.queueData)
-        deepEqual(newUser.acceptedAppointment, user.acceptedAppointment)
+        deepEqual(newUser.acceptedAppointments, user.acceptedAppointments)
 
         // we overwrite the secret
         newUser.initialize()

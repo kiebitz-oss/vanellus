@@ -19,10 +19,16 @@ export async function cancelAppointment(
     const response = await this.backend.appointments.cancelAppointment(
         {
             id: acceptedAppointment.appointment.id,
+            slotID: acceptedAppointment.booking.id,
             signedTokenData: this.tokenData!.signedToken,
             providerID: acceptedAppointment.provider.id,
         },
         this.tokenData!.keyPairs.signing
+    )
+
+    // we remove the accepted appointment
+    this.acceptedAppointments = this.acceptedAppointments.filter(
+        (aa) => aa.booking.id !== acceptedAppointment.booking.id
     )
 
     if (response !== "ok")
