@@ -14,8 +14,8 @@ import {
 } from "../interfaces"
 import { Mediator } from "./"
 
-interface ProvidersResult extends Result {
-    providers: EncryptedProviderData[]
+export interface ProvidersResult extends Result {
+    data: EncryptedProviderData[]
 }
 
 export async function pendingProviders(
@@ -55,7 +55,7 @@ export async function pendingProviders(
 
     return {
         status: Status.Succeeded,
-        providers: response,
+        data: response,
     }
 }
 
@@ -96,6 +96,6 @@ export async function verifiedProviders(
 
     return {
         status: Status.Succeeded,
-        providers: response,
+        data: response,
     }
 }

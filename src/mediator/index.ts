@@ -6,13 +6,20 @@ import { confirmProvider } from "./confirm-provider"
 import { pendingProviders, verifiedProviders } from "./providers"
 import { getStats } from "./get-stats"
 import { MediatorKeyPairs } from "../interfaces"
-import { Actor } from "../actor"
+import { Actor, cached, locked } from "../actor"
 import { Backend } from "../backend"
 
 export class Mediator extends Actor {
     public confirmProvider = confirmProvider
-    public pendingProviders = pendingProviders
-    public verifiedProviders = verifiedProviders
+
+    public pendingProviders = cached(
+        locked(pendingProviders),
+        "pendingProviders"
+    )
+    public verifiedProviders = cached(
+        locked(verifiedProviders),
+        "verifiedProviders"
+    )
     public getStats = getStats
 
     constructor(id: string, backend: Backend) {

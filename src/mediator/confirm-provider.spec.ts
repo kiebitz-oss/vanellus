@@ -20,35 +20,35 @@ describe("Mediator.confirmProvider()", function () {
         await resetDB(be, keys)
         const med = await mediator(be, keys)
         const up = await unverifiedProvider(be, keys)
-        let pendingProviders = await med.pendingProviders()
+        let pendingProviders = await med.pendingProviders().get()
 
         if (pendingProviders.status == Status.Failed) {
             throw new Error("fetching provider data failed")
         }
 
-        equal(pendingProviders.providers.length, 1)
-        equal(pendingProviders.providers[0].data!.name, up.data!.name)
+        equal(pendingProviders.data.length, 1)
+        equal(pendingProviders.data[0].data!.name, up.data!.name)
 
-        const result = await med.confirmProvider(pendingProviders.providers[0])
+        const result = await med.confirmProvider(pendingProviders.data[0])
 
         if ("error" in result) throw new Error("confirmation failed")
 
-        pendingProviders = await med.pendingProviders()
+        pendingProviders = await med.pendingProviders().get()
 
         if (pendingProviders.status == Status.Failed) {
             throw new Error("fetching provider data failed")
         }
 
         // the pending provider data should be gone
-        equal(pendingProviders.providers.length, 0)
+        equal(pendingProviders.data.length, 0)
 
-        const verifiedProviders = await med.verifiedProviders()
+        const verifiedProviders = await med.verifiedProviders().get()
 
         if (verifiedProviders.status == Status.Failed) {
             throw new Error("fetching provider data failed")
         }
 
         // we should have a verified provider
-        equal(verifiedProviders.providers.length, 1)
+        equal(verifiedProviders.data.length, 1)
     })
 })
