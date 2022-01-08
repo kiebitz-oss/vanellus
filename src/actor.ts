@@ -115,8 +115,8 @@ export class Actor extends Observer {
     }
 
     protected set(key: string, value: any) {
-        this.notify(key, value)
         this.backend.local.set(`${this.actor}::${this.id}::${key}`, value)
+        this.notify(key, value)
     }
 
     protected getTemporarily(key: string): any {
@@ -124,8 +124,8 @@ export class Actor extends Observer {
     }
 
     protected setTemporarily(key: string, value: any) {
-        this.notify(key, value)
         this.backend.temporary.set(`${this.actor}::${this.id}::${key}`, value)
+        this.notify(key, value)
     }
 
     unlock(task: string) {
