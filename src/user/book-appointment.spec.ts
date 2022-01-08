@@ -72,12 +72,12 @@ describe("User.bookAppointment()", function () {
         if (getResult.status !== Status.Succeeded)
             throw new Error("should not fail")
 
-        if (getResult.appointments.length !== 1)
+        if (getResult.data.length !== 1)
             throw new Error("should return one appointment")
 
         const bookResult = await user.bookAppointment(
-            getResult.appointments[0].appointments[0],
-            getResult.appointments[0].provider
+            getResult.data[0].appointments[0],
+            getResult.data[0].provider
         )
 
         if (bookResult.status !== Status.Succeeded)
@@ -92,14 +92,12 @@ describe("User.bookAppointment()", function () {
             throw new Error("should be able to get appointments")
 
         if (
-            apptsResult.appointments[0].bookings![0].data.userToken.code !==
+            apptsResult.data[0].bookings![0].data.userToken.code !==
             user.secret!.slice(0, 4)
         )
             throw new Error("booking code does not match")
 
-        const cancelResult = await user.cancelAppointment(
-            bookResult.acceptedAppointment
-        )
+        const cancelResult = await user.cancelAppointment(bookResult.data)
 
         if (cancelResult.status !== Status.Succeeded)
             throw new Error("cannot cancel appointment")
@@ -114,7 +112,7 @@ describe("User.bookAppointment()", function () {
         if (apptsResult.status !== Status.Succeeded)
             throw new Error("should be able to get appointments")
 
-        if (apptsResult.appointments[0].bookings!.length !== 0)
+        if (apptsResult.data[0].bookings!.length !== 0)
             throw new Error("excepted no more bookings")
     })
 })

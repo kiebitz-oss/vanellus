@@ -71,18 +71,18 @@ describe("User.getAppointment()", function () {
         if (result.status !== Status.Succeeded)
             throw new Error("should not fail")
 
-        if (result.appointments.length !== 1)
+        if (result.data.length !== 1)
             throw new Error("should return one appointment")
 
         const getResult = await user.appointment().get({
-            id: result.appointments[0].appointments[0].id,
-            providerID: result.appointments[0].provider.id,
+            id: result.data[0].appointments[0].id,
+            providerID: result.data[0].provider.id,
         })
 
         if (getResult.status !== Status.Succeeded)
             throw new Error("should be able to get appointment")
 
-        if (getResult.appointment.id !== app.id)
+        if (getResult.data.appointment.id !== app.id)
             throw new Error("IDs should match")
     })
 })

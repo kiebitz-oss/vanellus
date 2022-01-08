@@ -16,7 +16,7 @@ import {
 import { User } from "./"
 
 export interface BookAppointmentResult extends Result {
-    acceptedAppointment: AcceptedAppointment
+    data: AcceptedAppointment
 }
 
 export async function bookAppointment(
@@ -69,6 +69,6 @@ export async function bookAppointment(
 
     return {
         status: Status.Succeeded,
-        acceptedAppointment: acceptedAppointment,
+        data: acceptedAppointment,
     }
 }

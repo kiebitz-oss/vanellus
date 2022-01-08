@@ -16,7 +16,7 @@ export async function verifiedProvider(
 ): Promise<Provider> {
     const provider = await unverifiedProvider(backend, adminKeys)
 
-    let pendingProviders = await mediator.pendingProviders()
+    let pendingProviders = await mediator.pendingProviders().get()
 
     if ("code" in provider) throw new Error("cannot create unverified provider")
 
@@ -24,7 +24,7 @@ export async function verifiedProvider(
         throw new Error("fetching provider data failed")
     }
 
-    const pendingProvider = pendingProviders.providers.find(
+    const pendingProvider = pendingProviders.data.find(
         (pr: EncryptedProviderData) =>
             pr.data!.publicKeys.signing === provider.keyPairs!.signing.publicKey
     )

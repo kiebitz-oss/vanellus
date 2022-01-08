@@ -72,7 +72,7 @@ describe("User.appointments()", function () {
         if (result.status !== Status.Succeeded)
             throw new Error("should not fail")
 
-        if (result.appointments.length !== 1)
+        if (result.data.length !== 1)
             throw new Error("should return one appointment")
     })
 })

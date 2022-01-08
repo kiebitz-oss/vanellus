@@ -63,10 +63,10 @@ describe("Provider.publishAppointments()", function () {
 
         if (getResult.status !== Status.Succeeded)
             throw new Error("cannot get appointments")
-        if (getResult.appointments.length != 5)
+        if (getResult.data.length != 5)
             throw new Error("expected 5 appointments")
 
-        for (const app of getResult.appointments) {
+        for (const app of getResult.data) {
             equal(app.properties.vaccine, "moderna")
             equal(app.duration, 15)
             equal(app.slotData.length, 5)

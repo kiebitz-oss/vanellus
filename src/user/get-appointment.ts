@@ -49,8 +49,10 @@ async function verifyProviderData(item: any) {
 }
 
 export interface GetAppointmentResult extends Result {
-    appointment: Appointment
-    provider: PublicProviderData
+    data: {
+        appointment: Appointment
+        provider: PublicProviderData
+    }
 }
 
 interface GetAppointmentsParams {
@@ -94,7 +96,9 @@ export async function getAppointment(
 
     return {
         status: Status.Succeeded,
-        provider: response.provider.json!,
-        appointment: appointment,
+        data: {
+            provider: response.provider.json!,
+            appointment: appointment,
+        },
     }
 }

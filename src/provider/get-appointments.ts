@@ -15,7 +15,7 @@ import {
 import { Provider } from "./"
 
 export interface GetAppointmentsResult extends Result {
-    appointments: Appointment[]
+    data: Appointment[]
 }
 
 export async function getAppointments(
@@ -82,6 +82,6 @@ export async function getAppointments(
 
     return {
         status: Status.Succeeded,
-        appointments: newAppointments,
+        data: newAppointments,
     }
 }
