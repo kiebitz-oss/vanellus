@@ -8,8 +8,9 @@ import {
     Error,
     ErrorType,
     Appointment,
-    VerifiedProviderAppointments,
+    VerifiedAggregatedProviderAppointments,
 } from "../interfaces"
+import { GetAppointmentsParams } from "./get-appointments"
 import { verify } from "../crypto"
 import { User } from "./"
 
@@ -48,25 +49,20 @@ async function verifyProviderData(item: any) {
     return JSON.parse(item.provider.data)
 }
 
-export interface GetAppointmentsResult extends Result {
-    data: VerifiedProviderAppointments[]
+export interface GetAggregatedAppointmentsResult extends Result {
+    data: VerifiedAggregatedProviderAppointments[]
 }
 
-export interface GetAppointmentsParams {
-    from: string
-    to: string
-    zipCode: string
-}
-
-export async function getAppointments(
+export async function getAggregatedAppointments(
     this: User,
     { from, to, zipCode }: GetAppointmentsParams
-): Promise<GetAppointmentsResult | Error> {
-    const response = await this.backend.appointments.getAppointmentsByZipCode({
-        zipCode: zipCode,
-        from: from,
-        to: to,
-    })
+): Promise<GetAggregatedAppointmentsResult | Error> {
+    const response =
+        await this.backend.appointments.getAggregatedAppointmentsByZipCode({
+            zipCode: zipCode,
+            from: from,
+            to: to,
+        })
 
     if (!(response instanceof Array))
         return {
@@ -77,33 +73,16 @@ export async function getAppointments(
             },
         }
 
-    const verifiedAppointments: VerifiedProviderAppointments[] = []
+    const verifiedAppointments: VerifiedAggregatedProviderAppointments[] = []
 
     for (const item of response) {
         item.provider.json = await verifyProviderData(item)
         // we copy the ID for convenience
         item.provider.json!.id = item.provider.id
-        const verifiedProviderAppointments: Appointment[] = []
-        for (const signedAppointment of item.appointments) {
-            const appointment: Appointment = await verifyAppointment(
-                signedAppointment,
-                item
-            )
-            for (const slot of appointment.slotData) {
-                if (
-                    signedAppointment.bookedSlots!.some(
-                        (id: any) => id === slot.id
-                    )
-                )
-                    slot.open = false
-                else slot.open = true
-            }
-            verifiedProviderAppointments.push(appointment)
-        }
         verifiedAppointments.push({
             provider: item.provider.json,
-            appointments: verifiedProviderAppointments,
-        } as VerifiedProviderAppointments)
+            aggregatedAppointments: item.aggregatedAppointments,
+        } as VerifiedAggregatedProviderAppointments)
     }
 
     verifiedAppointments.sort((a, b) =>

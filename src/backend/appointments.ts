@@ -16,8 +16,15 @@ import {
     SignedMediatorKeyData,
     EncryptedProviderData,
     ProviderAppointments,
+    AggregatedProviderAppointments,
 } from "../interfaces"
 import JSONRPCBackend from "./jsonrpc"
+
+export interface GetAppointmentsArgs {
+    zipCode: string
+    from: string
+    to: string
+}
 
 // The appointments backend
 export class AppointmentsBackend extends JSONRPCBackend {
@@ -62,20 +69,29 @@ export class AppointmentsBackend extends JSONRPCBackend {
             providerID,
         })
     }
-    async getAppointmentsByZipCode({
-        zipCode,
-        from,
-        to,
-    }: {
-        zipCode: string
-        from: string
-        to: string
-    }) {
+
+    async getAppointmentsByZipCode({ zipCode, from, to }: GetAppointmentsArgs) {
         return this.call<ProviderAppointments[]>("getAppointmentsByZipCode", {
             zipCode,
             from,
             to,
         })
+    }
+
+    async getAggregatedAppointmentsByZipCode({
+        zipCode,
+        from,
+        to,
+    }: GetAppointmentsArgs) {
+        return this.call<AggregatedProviderAppointments[]>(
+            "getAppointmentsByZipCode",
+            {
+                aggregate: true,
+                zipCode,
+                from,
+                to,
+            }
+        )
     }
 
     async getStats({

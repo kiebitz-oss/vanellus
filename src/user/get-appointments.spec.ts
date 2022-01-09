@@ -4,7 +4,7 @@
 
 import { Status } from "../interfaces"
 import { equal } from "assert"
-import { formatDatetime } from "../helpers/time"
+import { formatDatetime, formatDate } from "../helpers/time"
 import {
     backend,
     adminKeys,
@@ -36,10 +36,12 @@ describe("User.appointments()", function () {
         date.setSeconds(0)
         date.setMilliseconds(0)
 
+        const SLOTS = 5
+
         var app = await vp.createAppointment(
             15,
             "moderna",
-            5,
+            SLOTS,
             date.toISOString()
         )
 
@@ -74,5 +76,29 @@ describe("User.appointments()", function () {
 
         if (result.data.length !== 1)
             throw new Error("should return one appointment")
+
+        const aggregatedResult = await user.aggregatedAppointments().get({
+            from: formatDatetime(fromDate),
+            to: formatDatetime(toDate),
+            zipCode: user.queueData!.zipCode,
+        })
+
+        if (aggregatedResult.status !== Status.Succeeded)
+            throw new Error("should not fail")
+
+        equal(aggregatedResult.data.length, 1)
+
+        if (
+            !(
+                formatDate(date) in
+                aggregatedResult.data[0].aggregatedAppointments
+            )
+        )
+            throw new Error("expected appointment to show up")
+
+        equal(
+            aggregatedResult.data[0].aggregatedAppointments[formatDate(date)],
+            SLOTS
+        )
     })
 })

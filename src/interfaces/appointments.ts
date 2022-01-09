@@ -83,13 +83,26 @@ export interface ActorKeyData {
     data?: { [Key: string]: any }
 }
 
-export interface ProviderAppointments {
+interface BaseProviderAppointments {
     provider: SignedProviderData
-    appointments: SignedAppointment[]
     keyChain: KeyChain
+}
+
+export interface ProviderAppointments extends BaseProviderAppointments {
+    appointments: SignedAppointment[]
+}
+
+export interface AggregatedProviderAppointments
+    extends BaseProviderAppointments {
+    aggregatedAppointments: { [Key: string]: number }
 }
 
 export interface VerifiedProviderAppointments {
     provider: PublicProviderData
     appointments: Appointment[]
+}
+
+export interface VerifiedAggregatedProviderAppointments {
+    provider: PublicProviderData
+    aggregatedAppointments: { [Key: string]: number }
 }

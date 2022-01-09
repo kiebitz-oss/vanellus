@@ -10,6 +10,7 @@ import { bookAppointment } from "./book-appointment"
 import { cancelAppointment } from "./cancel-appointment"
 import { getAppointment } from "./get-appointment"
 import { getAppointments } from "./get-appointments"
+import { getAggregatedAppointments } from "./get-aggregated-appointments"
 import { buf2base32, b642buf } from "../helpers/conversion"
 import { randomBytes } from "../crypto"
 import { Backend } from "../backend"
@@ -34,6 +35,10 @@ export class User extends Actor {
     public getToken = locked(getToken)
 
     // cached endpoints
+    public aggregatedAppointments = cached(
+        locked(getAggregatedAppointments),
+        "aggregatedAppointments"
+    )
     public appointments = cached(locked(getAppointments), "appointments")
     public appointment = cached(locked(getAppointment), "appointment")
 
