@@ -26,8 +26,6 @@ export interface ConfirmedProviderData {
     json?: EncryptedConfirmedProviderData
 }
 
-export interface VerifiedProviderData {}
-
 export interface ProviderPublicKeys {
     signing: string
     encryption: string
@@ -46,6 +44,10 @@ export interface ProviderData {
     submittedAt?: string
     version?: string
     id?: string
+}
+
+export interface VerifiedProviderData extends ProviderData {
+
 }
 
 export interface ProviderKeyPairs {
