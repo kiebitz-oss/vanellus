@@ -13,8 +13,8 @@ export async function confirmProvider(
     const data = providerData.data!
 
     const keyHashesData = {
-        signing: data.publicKeys.signing,
-        encryption: data.publicKeys.encryption,
+        signing: data.publicKeys!.signing,
+        encryption: data.publicKeys!.encryption,
         queueData: {
             zipCode: data.zipCode,
             accessible: data.accessible,

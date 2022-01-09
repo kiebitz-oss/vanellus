@@ -10,7 +10,7 @@ import {
     ErrorType,
     EncryptedProviderData,
     KeyPair,
-    ProviderData,
+    SubmittedProviderData,
 } from "../interfaces"
 import { Mediator } from "./"
 
@@ -50,7 +50,7 @@ export async function pendingProviders(
 
         // to do: verify provider data!
 
-        pd.data = JSON.parse(decryptedData) as ProviderData
+        pd.data = JSON.parse(decryptedData) as SubmittedProviderData
     }
 
     return {
@@ -91,7 +91,7 @@ export async function verifiedProviders(
 
         // to do: verify provider data!
 
-        pd.data = JSON.parse(decryptedData) as ProviderData
+        pd.data = JSON.parse(decryptedData) as SubmittedProviderData
     }
 
     return {

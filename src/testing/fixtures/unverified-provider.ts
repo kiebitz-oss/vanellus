@@ -23,10 +23,6 @@ export async function unverifiedProvider(
         zipCode: "10707",
         description: "",
         email: "max@mustermann.de",
-        publicKeys: {
-            encryption: provider.keyPairs!.encryption.publicKey,
-            signing: provider.keyPairs!.signing.publicKey,
-        },
     }
 
     provider.data = providerData

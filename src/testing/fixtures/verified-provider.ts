@@ -26,7 +26,8 @@ export async function verifiedProvider(
 
     const pendingProvider = pendingProviders.data.find(
         (pr: EncryptedProviderData) =>
-            pr.data!.publicKeys.signing === provider.keyPairs!.signing.publicKey
+            pr.data!.publicKeys!.signing ===
+            provider.keyPairs!.signing.publicKey
     )
 
     const result = await mediator.confirmProvider(pendingProvider!)

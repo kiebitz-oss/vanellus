@@ -3,7 +3,7 @@
 // README.md contains license information.
 
 import { ecdhEncrypt, generateECDHKeyPair, sign } from "../crypto"
-import { ProviderData, PublicKeys, Status, OK } from "../interfaces"
+import { SubmittedProviderData, PublicKeys, Status, OK } from "../interfaces"
 import { Provider } from "./"
 
 // store the provider data for validation in the backend
@@ -15,7 +15,7 @@ export async function storeData(this: Provider, code?: string) {
     const keys = publicKeys.keys
     const data = this.data!
 
-    const dataToEncrypt = Object.assign({}, data)
+    const dataToEncrypt: SubmittedProviderData = Object.assign({}, data)
 
     dataToEncrypt.publicKeys = {
         signing: this.keyPairs!.signing.publicKey,

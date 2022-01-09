@@ -10,7 +10,7 @@ export interface ProviderBackupReferenceData {
 
 export interface EncryptedProviderData {
     encryptedData: ECDHData
-    data?: ProviderData
+    data?: SubmittedProviderData
 }
 
 export interface EncryptedConfirmedProviderData {
@@ -40,15 +40,16 @@ export interface ProviderData {
     email: string
     accessible?: boolean
     website?: string
-    publicKeys: ProviderPublicKeys
     submittedAt?: string
     version?: string
     id?: string
 }
 
-export interface VerifiedProviderData extends ProviderData {
-
+export interface SubmittedProviderData extends ProviderData {
+    publicKeys?: ProviderPublicKeys
 }
+
+export interface VerifiedProviderData extends ProviderData {}
 
 export interface ProviderKeyPairs {
     signing: KeyPair
